@@ -5,7 +5,6 @@ build/
 out/
 META-INF/
 *.ipr
-*.iml
 *.iws
 
 #Other stuff
