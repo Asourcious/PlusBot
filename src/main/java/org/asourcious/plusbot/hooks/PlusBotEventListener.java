@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
+import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.handle.CommandHandler;
 
 public class PlusBotEventListener extends ListenerAdapter {
@@ -23,6 +24,7 @@ public class PlusBotEventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        Statistics.numMessages++;
         if (!event.isFromType(ChannelType.PRIVATE) && !event.isFromType(ChannelType.TEXT))
             return;
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage())

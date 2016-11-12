@@ -53,6 +53,26 @@ public class ShardHandler {
         shards.forEach(jda -> jda.shutdown(free));
     }
 
+    public int getNumberOfShards() {
+        return shards.size();
+    }
+
+    public int getNumberOfGuilds() {
+        return shards.parallelStream().mapToInt(jda -> jda.getGuilds().size()).sum();
+    }
+
+    public int getNumberOfTextChannels() {
+        return shards.parallelStream().mapToInt(jda -> jda.getTextChannels().size()).sum();
+    }
+
+    public int getNumberOfVoiceChannels() {
+        return shards.parallelStream().mapToInt(jda -> jda.getVoiceChannels().size()).sum();
+    }
+
+    public int getNumberOfUsers() {
+        return shards.parallelStream().mapToInt(jda -> jda.getUsers().size()).sum();
+    }
+
     public List<JDA> getShards() {
         return Collections.unmodifiableList(new ArrayList<>(shards));
     }

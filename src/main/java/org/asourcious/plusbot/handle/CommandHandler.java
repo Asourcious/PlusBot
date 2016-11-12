@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
+import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.utils.DiscordUtil;
@@ -68,6 +69,7 @@ public class CommandHandler {
             return;
         }
 
+        Statistics.numCommands++;
         executorService.execute(() -> {
             if (!getRateLimitHandler(name).execute(channel.getId(), stripped, message, author, channel, guild))
                 channel.sendMessage("You have used this command too frequently. Try again later.").queue();

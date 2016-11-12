@@ -2,6 +2,8 @@ package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 
+import java.time.OffsetDateTime;
+
 public class BootLoader {
 
     private static PlusBot instance;
@@ -11,6 +13,7 @@ public class BootLoader {
 
     public static void main(String[] args) {
         createInstance();
+        Statistics.startTime = OffsetDateTime.now();
     }
 
     public static void restart() {

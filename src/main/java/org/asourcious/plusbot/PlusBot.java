@@ -1,10 +1,7 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.asourcious.plusbot.commands.maintenance.Eval;
-import org.asourcious.plusbot.commands.maintenance.Ping;
-import org.asourcious.plusbot.commands.maintenance.Restart;
-import org.asourcious.plusbot.commands.maintenance.Shutdown;
+import org.asourcious.plusbot.commands.maintenance.*;
 import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.handle.CommandHandler;
 import org.asourcious.plusbot.handle.ShardHandler;
@@ -29,6 +26,7 @@ public class PlusBot {
         commandHandler.registerCommand(new Ping(this));
         commandHandler.registerCommand(new Restart(this));
         commandHandler.registerCommand(new Shutdown(this));
+        commandHandler.registerCommand(new Status(this));
     }
 
     public void shutdown(boolean free) {
