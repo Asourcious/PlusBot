@@ -38,4 +38,12 @@ public class PlusBot {
     public Settings getSettings() {
         return settings;
     }
+
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
+    }
+
+    public ShardHandler getShardHandler() {
+        return shardHandler;
+    }
 }
