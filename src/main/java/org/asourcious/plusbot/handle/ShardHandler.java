@@ -53,6 +53,14 @@ public class ShardHandler {
         shards.forEach(jda -> jda.shutdown(free));
     }
 
+    public String getInformation(JDA shard) {
+        return  "Shard: " + shards.indexOf(shard)
+                + "Guilds: " + shard.getGuilds().size() + " "
+                + "TC's: " + shard.getTextChannels().size() + " "
+                + "VC's: " + shard.getVoiceChannels().size() + " "
+                + "Status: " + shard.getStatus().toString() + " ";
+    }
+
     public int getNumberOfShards() {
         return shards.size();
     }
