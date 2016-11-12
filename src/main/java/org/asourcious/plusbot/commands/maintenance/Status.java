@@ -45,7 +45,7 @@ public class Status extends NoArgumentCommand {
         msg += "- Statistics\n";
         msg += "+ Messages Received: " + Statistics.numMessages + "\n";
         msg += "+ Commands Executed: " + Statistics.numCommands + "\n";
-        msg += "+ Guilds: " + shardHandler.getNumberOfShards() + "\n";
+        msg += "+ Guilds: " + shardHandler.getNumberOfGuilds() + "\n";
         msg += "+ TC's: " + shardHandler.getNumberOfTextChannels() + "\n";
         msg += "+ VC's: " + shardHandler.getNumberOfVoiceChannels() + "\n";
         msg += "+ Users: " + shardHandler.getNumberOfUsers() + "\n";
