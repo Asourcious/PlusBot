@@ -10,4 +10,6 @@ public final class Constants {
 
     // Responses
     public static final String READY_MESSAGE = NAME + " now online.";
+    public static final String NOT_ENOUGH_PERMISSIONS = "You don't have the necessary permissions for this command";
+    public static final String UNAVAILABLE_VIA_PM = "That command isn't supported in Private Channels.";
 }

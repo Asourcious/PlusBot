@@ -4,18 +4,24 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.utils.DiscordUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CommandHandler {
 
     private PlusBot plusBot;
+    private ExecutorService executorService;
 
     private final Map<String, Command> commands;
     private final Map<String, String> aliases;
@@ -23,13 +29,49 @@ public class CommandHandler {
 
     public CommandHandler(PlusBot plusBot) {
         this.plusBot = plusBot;
+        this.executorService = Executors.newCachedThreadPool();
         this.commands = new ConcurrentHashMap<>();
         this.aliases = new ConcurrentHashMap<>();
         this.rateLimitHandlers = new ConcurrentHashMap<>();
     }
 
     public void handle(Message message, User author, MessageChannel channel, Guild guild, boolean isPrivate) {
+        String prefix = DiscordUtil.getPrefix(plusBot, message);
 
+        if (prefix == null)
+            return;
+
+        String formattedMessage = message.getRawContent()
+                .substring(prefix.length())
+                .replaceAll("<(@(!|&)?|#)\\d+>", "")
+                .trim();
+        String name = formattedMessage.split("\\s+")[0];
+        String stripped = formattedMessage.substring(name.length()).trim();
+        Command command = getCommand(name);
+
+        if (command == null)
+            return;
+
+        if (!isPrivate && !PermissionLevel.hasPermission(guild.getMember(author), command.getRequiredPermission())) {
+            channel.sendMessage(Constants.NOT_ENOUGH_PERMISSIONS).queue();
+            return;
+        }
+
+        if (isPrivate && !command.isPMSupported()) {
+            channel.sendMessage(Constants.UNAVAILABLE_VIA_PM).queue();
+            return;
+        }
+
+        String response = command.isValid(message, stripped);
+        if (response != null) {
+            channel.sendMessage(response).queue();
+            return;
+        }
+
+        executorService.execute(() -> {
+            if (!getRateLimitHandler(name).execute(channel.getId(), stripped, message, author, channel, guild))
+                channel.sendMessage("You have used this command too frequently. Try again later.").queue();
+        });
     }
 
     public Command getCommand(String name) {
