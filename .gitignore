@@ -8,6 +8,6 @@ META-INF/
 *.iws
 
 #Other stuff
-credentials.txt
+credentials.json
 out.log
 err.log
