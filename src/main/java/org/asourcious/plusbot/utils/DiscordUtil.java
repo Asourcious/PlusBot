@@ -3,6 +3,8 @@ package org.asourcious.plusbot.utils;
 import net.dv8tion.jda.core.entities.Message;
 import org.asourcious.plusbot.PlusBot;
 
+import java.util.Set;
+
 public final class DiscordUtil {
     private DiscordUtil() {}
 
@@ -13,7 +15,11 @@ public final class DiscordUtil {
         if (message.getGuild() == null)
             return null;
 
-        // TODO: custom prefixes
-        return null;
+        Set<String> prefixes = plusBot.getSettings().getConfiguration(message.getGuild()).getPrefixes();
+
+        return prefixes.parallelStream()
+                .filter(prefix -> message.getContent().startsWith(prefix))
+                .findAny()
+                .orElse(null);
     }
 }
