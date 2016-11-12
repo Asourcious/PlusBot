@@ -1,7 +1,9 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.asourcious.plusbot.commands.maintenance.Ping;
 import org.asourcious.plusbot.config.Settings;
+import org.asourcious.plusbot.handle.CommandHandler;
 import org.asourcious.plusbot.handle.ShardHandler;
 
 import javax.security.auth.login.LoginException;
@@ -12,11 +14,15 @@ public class PlusBot {
     public static final SimpleLog LOG = SimpleLog.getLog("PlusBot");
 
     private Settings settings;
+    private CommandHandler commandHandler;
     private ShardHandler shardHandler;
 
     public PlusBot() throws LoginException, IOException {
         this.settings = new Settings();
-        this.shardHandler = new ShardHandler(this, 1);
+        this.commandHandler = new CommandHandler(this);
+        this.shardHandler = new ShardHandler(this, commandHandler, 1);
+
+        commandHandler.registerCommand(new Ping(this));
     }
 
     public void shutdown(boolean free) {

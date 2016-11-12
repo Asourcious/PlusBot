@@ -47,10 +47,10 @@ public class CommandHandler {
                 .trim();
         String name = formattedMessage.split("\\s+")[0];
         String stripped = formattedMessage.substring(name.length()).trim();
-        Command command = getCommand(name);
 
-        if (command == null)
+        if (!hasCommand(name))
             return;
+        Command command = getCommand(name);
 
         if (!isPrivate && !PermissionLevel.hasPermission(guild.getMember(author), command.getRequiredPermission())) {
             channel.sendMessage(Constants.NOT_ENOUGH_PERMISSIONS).queue();

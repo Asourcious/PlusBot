@@ -4,8 +4,8 @@ public final class Constants {
     private Constants() {}
 
     // Information
-    public static final String NAME = "CivBot";
-    public static final String VERSION = "1.0 DEV";
+    public static final String NAME = "PlusBot";
+    public static final String VERSION = "2.0 DEV";
     public static final String OWNER_ID = "142843635057164288";
 
     // Responses
@@ -18,4 +18,6 @@ public final class Constants {
     public static final String GUILD_DISABLED_COMMANDS = "guild_disabled_commands";
     public static final String CHANNEL_DISABLED_COMMANDS = "channel_disabled_commands";
     public static final String PREFIXES = "prefixes";
+    public static final String AUTOROLE_HUMAN = "autorole_human";
+    public static final String AUTOROLE_Bot = "autorole_bot";
 }
