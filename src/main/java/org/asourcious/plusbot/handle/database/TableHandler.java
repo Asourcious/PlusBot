@@ -1,4 +1,4 @@
-package org.asourcious.plusbot.handle;
+package org.asourcious.plusbot.handle.database;
 
 import java.sql.*;
 import java.util.Set;

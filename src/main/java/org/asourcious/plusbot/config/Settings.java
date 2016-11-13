@@ -3,7 +3,7 @@ package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import org.asourcious.plusbot.handle.DatabaseController;
+import org.asourcious.plusbot.handle.database.DatabaseController;
 import org.json.JSONObject;
 
 import java.io.IOException;

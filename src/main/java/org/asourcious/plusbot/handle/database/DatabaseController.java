@@ -1,4 +1,4 @@
-package org.asourcious.plusbot.handle;
+package org.asourcious.plusbot.handle.database;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;

@@ -1,7 +1,7 @@
 package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
-import org.asourcious.plusbot.handle.DatabaseController;
+import org.asourcious.plusbot.handle.database.DatabaseController;
 
 import java.sql.Connection;
 import java.sql.SQLException;
