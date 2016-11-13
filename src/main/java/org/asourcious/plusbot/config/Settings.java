@@ -58,4 +58,8 @@ public class Settings {
 
         return channelConfigurations.get(channel.getId());
     }
+
+    public void shutdown() {
+        executorService.shutdown();
+    }
 }
