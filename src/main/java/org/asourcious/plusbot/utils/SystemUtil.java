@@ -1,6 +1,7 @@
 package org.asourcious.plusbot.utils;
 
 import com.sun.management.OperatingSystemMXBean;
+import org.apache.commons.math3.util.Precision;
 
 import java.lang.management.ManagementFactory;
 
@@ -11,7 +12,7 @@ public final class SystemUtil {
     private static OperatingSystemMXBean systemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     public static double getCPUUsage() {
-        return systemMXBean.getProcessCpuLoad() * 100;
+        return Precision.round(systemMXBean.getProcessCpuLoad() * 100, 2);
     }
 
     public static long getUsedMemory() {
