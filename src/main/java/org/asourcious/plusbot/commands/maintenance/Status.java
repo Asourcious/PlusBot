@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands.maintenance;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
@@ -21,12 +21,11 @@ public class Status extends NoArgumentCommand {
         super(civBot);
         this.name = "Status";
         this.help = "Returns information about the status of " + Constants.NAME;
-        this.isPMSupported = true;
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         ShardHandler shardHandler = plusBot.getShardHandler();
 
         String msg = "```diff\n";

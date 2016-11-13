@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands.config;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
@@ -42,7 +42,7 @@ public class Prefix extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         String[] args = stripped.split("\\s+", 2);
 
         Configuration configuration = settings.getConfiguration(guild);

@@ -23,7 +23,7 @@ public class RoleInfo extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         if (guild.getRolesByName(stripped, true).size() > 1 && message.getMentionedRoles().isEmpty()) {
             channel.sendMessage("Multiple roles exist with that name! Please mention the role instead.").queue();
             return;

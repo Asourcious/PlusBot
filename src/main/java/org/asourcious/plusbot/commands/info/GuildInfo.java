@@ -18,7 +18,7 @@ public class GuildInfo extends NoArgumentCommand {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         List<String> roles = guild.getRoles().parallelStream()
                 .filter(role -> !role.equals(guild.getPublicRole()))
                 .map(Role::getName)

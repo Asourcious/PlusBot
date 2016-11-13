@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands.maintenance;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.BootLoader;
 import org.asourcious.plusbot.Constants;
@@ -16,12 +16,11 @@ public class Shutdown extends NoArgumentCommand {
         super(plusBot);
         this.name = "Shutdown";
         this.help = "Shuts down " + Constants.NAME + ". Only available to the bot owner";
-        this.isPMSupported = true;
         this.requiredPermission = PermissionLevel.OWNER;
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         channel.sendMessage("Shutting down...").queue();
         BootLoader.shutdown();
     }

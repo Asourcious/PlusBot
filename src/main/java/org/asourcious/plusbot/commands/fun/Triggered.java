@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands.fun;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
@@ -24,7 +24,7 @@ public class Triggered extends NoArgumentCommand {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         try {
             channel.sendFile(new File("media/triggered" + (random.nextInt(3) + 1) + ".gif"), null).queue();
         } catch (IOException ignored) {}

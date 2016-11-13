@@ -23,7 +23,7 @@ public class UserInfo extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         List<User> users = DiscordUtil.getTrimmedMentions(message);
 
         Member target;

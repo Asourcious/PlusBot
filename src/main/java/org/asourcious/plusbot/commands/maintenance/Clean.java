@@ -1,6 +1,9 @@
 package org.asourcious.plusbot.commands.maintenance;
 
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
@@ -20,13 +23,13 @@ public class Clean extends NoArgumentCommand {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         try {
             List<Message> messages = channel.getHistory().retrievePast(100).block()
                     .parallelStream()
                     .filter(msg -> msg.getAuthor().equals(msg.getJDA().getSelfUser()) || DiscordUtil.isCommand(plusBot, msg))
                     .collect(Collectors.toList());
-            ((TextChannel) channel).deleteMessages(messages).queue();
+            channel.deleteMessages(messages).queue();
             channel.sendMessage("Deleted **" + messages.size() + "** messages").queue();
         } catch (RateLimitedException ignored) {}
     }

@@ -2,7 +2,7 @@ package org.asourcious.plusbot.handle;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
@@ -36,7 +36,7 @@ public class CommandHandler {
         this.rateLimitHandlers = new ConcurrentHashMap<>();
     }
 
-    public void handle(Message message, User author, MessageChannel channel, Guild guild, boolean isPrivate) {
+    public void handle(Message message, User author, TextChannel channel, Guild guild) {
         String prefix = DiscordUtil.getPrefix(plusBot, message);
 
         if (prefix == null)
@@ -53,17 +53,12 @@ public class CommandHandler {
             return;
         Command command = getCommand(name);
 
-        if (!isPrivate && !PermissionLevel.hasPermission(guild.getMember(author), command.getRequiredPermission())) {
+        if (!PermissionLevel.hasPermission(guild.getMember(author), command.getRequiredPermission())) {
             channel.sendMessage(Constants.NOT_ENOUGH_PERMISSIONS).queue();
             return;
         }
 
-        if (isPrivate && !command.isPMSupported()) {
-            channel.sendMessage(Constants.UNAVAILABLE_VIA_PM).queue();
-            return;
-        }
-
-        if (!isPrivate && plusBot.getSettings().getConfiguration(guild).getBlacklist().contains(author.getId()))
+        if (plusBot.getSettings().getConfiguration(guild).getBlacklist().contains(author.getId()))
             return;
 
         String response = command.isValid(message, stripped);

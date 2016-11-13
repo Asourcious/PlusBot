@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands.info;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
@@ -16,7 +16,6 @@ public class Help extends Command {
         super(plusBot);
         this.name = "Help";
         this.help = "Lists all commands, or gives information about a specific command";
-        this.isPMSupported = true;
         this.aliases = new String[] { "Commands", "CommandList" };
     }
 
@@ -26,7 +25,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         String msg = "";
 
         if (stripped.length() == 0) {

@@ -2,7 +2,7 @@ package org.asourcious.plusbot.handle;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.Command.RateLimit;
@@ -27,7 +27,7 @@ public class RateLimitHandler {
         this.timer = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public boolean execute(String id, String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public boolean execute(String id, String stripped, Message message, User author, TextChannel channel, Guild guild) {
         if (rateLimit != null) {
             if (!useMap.containsKey(id)) {
                 useMap.put(id, 1);

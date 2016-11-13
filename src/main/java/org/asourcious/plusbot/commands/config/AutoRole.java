@@ -35,7 +35,7 @@ public class AutoRole extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         String[] args = stripped.toLowerCase().split("\\s+", 3);
         boolean isBot = args[0].equals("bot");
         boolean isAdd = isBot ? args[1].equals("add") : args[0].equals("add");

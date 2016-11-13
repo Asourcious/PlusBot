@@ -2,7 +2,7 @@ package org.asourcious.plusbot.commands;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.Settings;
@@ -16,7 +16,6 @@ public abstract class Command {
 
     protected String name;
     protected String help = "No help is provided. Please contact Asourcious if you see this.";
-    protected boolean isPMSupported = false;
     protected RateLimit rateLimit;
     protected String[] aliases = new String[0];
     protected PermissionLevel requiredPermission = PermissionLevel.EVERYONE;
@@ -27,7 +26,7 @@ public abstract class Command {
     }
 
     public abstract String isValid(Message message, String stripped);
-    public abstract void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild);
+    public abstract void execute(String stripped, Message message, User author, TextChannel channel, Guild guild);
 
     public String getName() {
         return name;
@@ -35,10 +34,6 @@ public abstract class Command {
 
     public String getHelp() {
         return help;
-    }
-
-    public boolean isPMSupported() {
-        return isPMSupported;
     }
 
     public RateLimit getRateLimit() {

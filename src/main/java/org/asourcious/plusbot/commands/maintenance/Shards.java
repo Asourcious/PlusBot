@@ -3,7 +3,7 @@ package org.asourcious.plusbot.commands.maintenance;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
@@ -19,7 +19,7 @@ public class Shards extends NoArgumentCommand {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, MessageChannel channel, Guild guild) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         String msg = "";
         msg += "Shards:\n```";
         for (JDA shard : plusBot.getShardHandler().getShards()) {
