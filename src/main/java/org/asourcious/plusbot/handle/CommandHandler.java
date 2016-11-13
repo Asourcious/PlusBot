@@ -63,6 +63,9 @@ public class CommandHandler {
             return;
         }
 
+        if (!isPrivate && plusBot.getSettings().getConfiguration(guild).getBlacklist().contains(author.getId()))
+            return;
+
         String response = command.isValid(message, stripped);
         if (response != null) {
             channel.sendMessage(response).queue();
