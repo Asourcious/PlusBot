@@ -33,4 +33,13 @@ public final class DiscordUtil {
 
         return users;
     }
+
+    public static boolean isCommand(PlusBot plusBot, Message message) {
+        String prefix = getPrefix(plusBot, message);
+
+        return prefix != null && plusBot.getCommandHandler().hasCommand(
+                message.getRawContent().substring(prefix.length()).replaceAll("<(@(!|&)?|#)\\d+>", "").trim().split("\\s+")[0]
+        );
+
+    }
 }
