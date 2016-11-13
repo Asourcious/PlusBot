@@ -18,6 +18,8 @@ public class DatabaseController {
     private TableHandler blacklist;
     private TableHandler disabledCommands;
     private TableHandler prefixes;
+    private TableHandler humanAutoRoles;
+    private TableHandler botAutoRoles;
 
     public DatabaseController(Connection connection, ISnowflake entity) throws SQLException {
         this.entity = entity;
@@ -28,6 +30,8 @@ public class DatabaseController {
                         ? Constants.GUILD_DISABLED_COMMANDS
                         : Constants.CHANNEL_DISABLED_COMMANDS);
         this.prefixes = new TableHandler(connection, Constants.PREFIXES);
+        this.humanAutoRoles = new TableHandler(connection, Constants.AUTOROLE_HUMAN);
+        this.botAutoRoles = new TableHandler(connection, Constants.AUTOROLE_BOT);
     }
 
     public Set<String> loadBlacklist() {
@@ -76,5 +80,37 @@ public class DatabaseController {
 
     public void clearPrefixes() {
         prefixes.clearEntries(entity.getId());
+    }
+
+    public Set<String> loadHumanAutoRoles() {
+        return humanAutoRoles.loadTable(entity.getId());
+    }
+
+    public void addHumanAutoRole(String roleID) {
+        humanAutoRoles.addEntry(entity.getId(), roleID);
+    }
+
+    public void removeHumanAutoRole(String roleID) {
+        humanAutoRoles.removeEntry(entity.getId(), roleID);
+    }
+
+    public void clearHumanAutoRoles() {
+        humanAutoRoles.clearEntries(entity.getId());
+    }
+
+    public Set<String> loadBotAutoRoles() {
+        return botAutoRoles.loadTable(entity.getId());
+    }
+
+    public void addBotAutoRole(String roleID) {
+        botAutoRoles.addEntry(entity.getId(), roleID);
+    }
+
+    public void removeBotAutoRole(String roleID) {
+        botAutoRoles.removeEntry(entity.getId(), roleID);
+    }
+
+    public void clearBotAutoRoles() {
+        botAutoRoles.clearEntries(entity.getId());
     }
 }

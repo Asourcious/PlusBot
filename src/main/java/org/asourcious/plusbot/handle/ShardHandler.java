@@ -18,12 +18,13 @@ public class ShardHandler {
 
     public ShardHandler(PlusBot plusBot, CommandHandler commandHandler, int numShards) throws LoginException {
         this.shards = new ArrayList<>();
+        AutoRoleHandler roleHandler = new AutoRoleHandler(plusBot);
 
         if (numShards == 1) {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler))
+                        .addListener(new PlusBotEventListener(commandHandler, roleHandler))
                         .setBulkDeleteSplittingEnabled(false)
                         .buildAsync()
                 );
@@ -38,7 +39,7 @@ public class ShardHandler {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler))
+                        .addListener(new PlusBotEventListener(commandHandler, roleHandler))
                         .setBulkDeleteSplittingEnabled(false)
                         .useSharding(i, numShards)
                         .buildAsync());

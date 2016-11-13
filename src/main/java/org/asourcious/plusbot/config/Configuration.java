@@ -19,6 +19,8 @@ public class Configuration {
     private Set<String> blacklist;
     private Set<String> disabledCommands;
     private Set<String> prefixes;
+    private Set<String> humanAutoRoles;
+    private Set<String> botAutoRoles;
 
     public Configuration(ISnowflake entity, Connection connection, ExecutorService executor) {
         this.executor = executor;
@@ -29,6 +31,8 @@ public class Configuration {
             this.blacklist = databaseController.loadBlacklist();
             this.disabledCommands = databaseController.loadGuildDisabledCommands();
             this.prefixes = databaseController.loadPrefixes();
+            this.humanAutoRoles = databaseController.loadHumanAutoRoles();
+            this.botAutoRoles = databaseController.loadBotAutoRoles();
         } catch (SQLException ex) {
             DatabaseController.LOG.log(ex);
             System.exit(1);
@@ -90,5 +94,43 @@ public class Configuration {
     public void clearPrefixes() {
         prefixes.clear();
         executor.execute(() -> databaseController.clearPrefixes());
+    }
+
+    public Set<String> getHumanAutoRoles() {
+        return Collections.unmodifiableSet(new HashSet<>(humanAutoRoles));
+    }
+
+    public void addHumanAutoRole(String roleID) {
+        humanAutoRoles.add(roleID);
+        executor.execute(() -> databaseController.addHumanAutoRole(roleID));
+    }
+
+    public void removeHumanAutoRole(String roleID) {
+        humanAutoRoles.remove(roleID);
+        executor.execute(() -> databaseController.removeHumanAutoRole(roleID));
+    }
+
+    public void clearHumanAutoRoles() {
+        humanAutoRoles.clear();
+        executor.execute(() -> databaseController.clearHumanAutoRoles());
+    }
+
+    public Set<String> getBotAutoRoles() {
+        return Collections.unmodifiableSet(new HashSet<>(botAutoRoles));
+    }
+
+    public void addBotAutoRole(String roleID) {
+        botAutoRoles.add(roleID);
+        executor.execute(() -> databaseController.addBotAutoRole(roleID));
+    }
+
+    public void removeBotAutoRole(String roleID) {
+        botAutoRoles.remove(roleID);
+        executor.execute(() -> databaseController.removeBotAutoRole(roleID));
+    }
+
+    public void clearBotAutoRoles() {
+        botAutoRoles.clear();
+        executor.execute(() -> databaseController.clearBotAutoRoles());
     }
 }

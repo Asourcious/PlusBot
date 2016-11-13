@@ -18,6 +18,6 @@ public final class Constants {
     public static final String GUILD_DISABLED_COMMANDS = "guild_disabled_commands";
     public static final String CHANNEL_DISABLED_COMMANDS = "channel_disabled_commands";
     public static final String PREFIXES = "prefixes";
-    public static final String AUTOROLE_HUMAN = "autorole_human";
-    public static final String AUTOROLE_Bot = "autorole_bot";
+    public static final String AUTOROLE_HUMAN = "autoroles_human";
+    public static final String AUTOROLE_BOT = "autoroles_bot";
 }

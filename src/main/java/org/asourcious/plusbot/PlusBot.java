@@ -1,6 +1,7 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.asourcious.plusbot.commands.config.AutoRole;
 import org.asourcious.plusbot.commands.config.Blacklist;
 import org.asourcious.plusbot.commands.config.CommandToggle;
 import org.asourcious.plusbot.commands.config.Prefix;
@@ -28,6 +29,7 @@ public class PlusBot {
         this.commandHandler = new CommandHandler(this);
         this.shardHandler = new ShardHandler(this, commandHandler, 1);
 
+        commandHandler.registerCommand(new AutoRole(this));
         commandHandler.registerCommand(new Blacklist(this));
         commandHandler.registerCommand(new CommandToggle(this));
         commandHandler.registerCommand(new Prefix(this));
