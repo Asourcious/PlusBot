@@ -1,6 +1,7 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.asourcious.plusbot.commands.config.Blacklist;
 import org.asourcious.plusbot.commands.maintenance.*;
 import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.handle.CommandHandler;
@@ -21,6 +22,8 @@ public class PlusBot {
         this.settings = new Settings();
         this.commandHandler = new CommandHandler(this);
         this.shardHandler = new ShardHandler(this, commandHandler, 1);
+
+        commandHandler.registerCommand(new Blacklist(this));
 
         commandHandler.registerCommand(new Eval(this));
         commandHandler.registerCommand(new Ping(this));
