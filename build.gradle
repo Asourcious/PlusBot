@@ -18,5 +18,5 @@ dependencies {
 compileJava.options.encoding = 'UTF-8'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
+    gradleVersion = '3.1'
 }
