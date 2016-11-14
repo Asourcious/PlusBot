@@ -18,7 +18,7 @@ public class Clean extends NoArgumentCommand {
     public Clean(PlusBot plusBot) {
         super(plusBot);
         this.name = "Clean";
-        this.help = "Removes all commands and responses in the last x messages, defaulting at 100";
+        this.help = "Removes all commands and responses in the last 100 messages.";
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
 
