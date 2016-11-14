@@ -19,8 +19,7 @@ public final class DiscordUtil {
 
         Set<String> prefixes = plusBot.getSettings().getConfiguration(message.getGuild()).getPrefixes();
 
-        return prefixes.parallelStream()
-                .filter(prefix -> message.getContent().startsWith(prefix))
+        return prefixes.parallelStream().filter(prefix -> message.getContent().startsWith(prefix))
                 .findAny()
                 .orElse(null);
     }
@@ -40,6 +39,5 @@ public final class DiscordUtil {
         return prefix != null && plusBot.getCommandHandler().hasCommand(
                 message.getRawContent().substring(prefix.length()).replaceAll("<(@(!|&)?|#)\\d+>", "").trim().split("\\s+")[0]
         );
-
     }
 }

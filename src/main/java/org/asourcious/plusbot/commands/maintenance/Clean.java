@@ -33,5 +33,4 @@ public class Clean extends NoArgumentCommand {
             channel.sendMessage("Deleted **" + messages.size() + "** messages").queue();
         } catch (RateLimitedException ignored) {}
     }
-
 }

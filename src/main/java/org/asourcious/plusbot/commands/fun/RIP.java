@@ -43,7 +43,6 @@ public class RIP extends Command {
                 ? guild.getMember(DiscordUtil.getTrimmedMentions(message).get(0)).getEffectiveName()
                 : stripped;
 
-
         try {
             BufferedImage image = ImageIO.read(new File("media/tombstone.png"));
 
