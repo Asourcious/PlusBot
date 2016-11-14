@@ -1,12 +1,11 @@
 package org.asourcious.plusbot.handle;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.Command.RateLimit;
+import org.asourcious.plusbot.utils.ConversionUtil;
 
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -14,33 +13,30 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class RateLimitHandler {
 
-    private Command command;
     private RateLimit rateLimit;
 
-    private Map<String, Integer> useMap;
+    private Map<String, Pair<Integer, OffsetDateTime>> useMap;
     private ScheduledExecutorService timer;
 
     public RateLimitHandler(Command command) {
-        this.command = command;
         this.rateLimit = command.getRateLimit();
         this.useMap = new ConcurrentHashMap<>();
         this.timer = Executors.newSingleThreadScheduledExecutor();
     }
 
-    public boolean execute(String id, String stripped, Message message, User author, TextChannel channel, Guild guild) {
+    public OffsetDateTime execute(String id) {
         if (rateLimit != null) {
             if (!useMap.containsKey(id)) {
-                useMap.put(id, 1);
+                useMap.put(id, new Pair<>(1, OffsetDateTime.now().plus(rateLimit.getAmountTime(), ConversionUtil.convert(rateLimit.getUnit()))));
                 timer.schedule(() -> useMap.remove(id), rateLimit.getAmountTime(), rateLimit.getUnit());
             } else {
-                useMap.put(id, useMap.get(id) + 1);
+                useMap.put(id, new Pair<>(useMap.get(id).getFirst() + 1, useMap.get(id).getSecond()));
             }
 
-            if (useMap.get(id) > rateLimit.getNumUses())
-                return false;
+            if (useMap.get(id).getFirst() > rateLimit.getNumUses())
+                return useMap.get(id).getSecond();
         }
 
-        command.execute(stripped, message, author, channel, guild);
-        return true;
+        return null;
     }
 }

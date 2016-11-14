@@ -10,7 +10,9 @@ import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.utils.FormatUtil;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,8 +71,14 @@ public class CommandHandler {
 
         Statistics.numCommands++;
         executorService.execute(() -> {
-            if (!getRateLimitHandler(name).execute(channel.getId(), stripped, message, author, channel, guild))
-                channel.sendMessage("You have used this command too frequently. Try again later.").queue();
+            OffsetDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
+
+            if (nextAvailable == null) {
+                command.execute(stripped, message, author, channel, guild);
+            } else {
+                channel.sendMessage("You have used this command too frequently. Try again in "
+                        + FormatUtil.getFormattedDuration(OffsetDateTime.now(), nextAvailable) + ".").queue();
+            }
         });
     }
 
