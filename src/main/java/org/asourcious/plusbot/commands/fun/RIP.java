@@ -21,7 +21,7 @@ public class RIP extends Command {
     public RIP(PlusBot plusBot) {
         super(plusBot);
         this.name = "RIP";
-        this.help = "";
+        this.help = "Generates an image of a tombstone with the provided text or the name of the mentioned user on it.";
         this.rateLimit = new RateLimit(4, 1, TimeUnit.MINUTES);
     }
 
