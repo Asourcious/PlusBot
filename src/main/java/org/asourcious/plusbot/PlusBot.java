@@ -74,6 +74,7 @@ public class PlusBot {
         settings.shutdown();
         cacheCleaner.shutdown();
         shardHandler.shutdown(free);
+        commandHandler.shutdown();
     }
 
     public Settings getSettings() {

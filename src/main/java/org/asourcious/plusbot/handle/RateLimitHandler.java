@@ -39,4 +39,8 @@ public class RateLimitHandler {
 
         return null;
     }
+
+    public void shutdown() {
+        timer.shutdown();
+    }
 }

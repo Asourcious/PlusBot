@@ -82,6 +82,11 @@ public class CommandHandler {
         });
     }
 
+    public void shutdown() {
+        executorService.shutdown();
+        rateLimitHandlers.values().forEach(RateLimitHandler::shutdown);
+    }
+
     public Command getCommand(String name) {
         if (aliases.containsKey(name.toLowerCase()))
             return commands.get(aliases.get(name.toLowerCase()));
