@@ -13,10 +13,7 @@ import org.asourcious.plusbot.utils.DiscordUtil;
 import org.asourcious.plusbot.utils.FormatUtil;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,16 +67,30 @@ public class CommandHandler {
         }
 
         Statistics.numCommands++;
-        executorService.execute(() -> {
-            OffsetDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
+        OffsetDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
 
-            if (nextAvailable == null) {
-                command.execute(stripped, message, author, channel, guild);
-            } else {
-                channel.sendMessage("You have used this command too frequently. Try again in "
-                        + FormatUtil.getFormattedDuration(OffsetDateTime.now(), nextAvailable) + ".").queue();
+        if (nextAvailable != null) {
+            channel.sendMessage("You have used this command too frequently. Try again in "
+                    + FormatUtil.getFormattedDuration(OffsetDateTime.now(), nextAvailable) + ".").queue();
+            return;
+        }
+
+        Command toRun = command;
+        boolean complete = false;
+        while (toRun.getChildren().length > 0 && !complete) {
+            for (Command cmd : toRun.getChildren()) {
+                if (cmd.getName().equalsIgnoreCase(FormatUtil.getFirstArgument(stripped))) {
+                    toRun = cmd;
+                    stripped = stripped.substring(cmd.getName().length()).trim();
+                    break;
+                }
+                complete = true;
             }
-        });
+        }
+        final Command fToRun = toRun;
+        final String fStripped = stripped;
+
+        executorService.execute(() -> fToRun.execute(fStripped, message, author, channel, guild));
     }
 
     public void shutdown() {

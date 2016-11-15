@@ -18,6 +18,7 @@ public abstract class Command {
     protected String help = "No help is provided. Please contact Asourcious if you see this.";
     protected RateLimit rateLimit;
     protected String[] aliases = new String[0];
+    protected Command[] children = new Command[0];
     protected PermissionLevel requiredPermission = PermissionLevel.EVERYONE;
 
     public Command(PlusBot plusBot) {
@@ -42,6 +43,10 @@ public abstract class Command {
 
     public String[] getAliases() {
         return aliases;
+    }
+
+    public Command[] getChildren() {
+        return children;
     }
 
     public PermissionLevel getRequiredPermission() {

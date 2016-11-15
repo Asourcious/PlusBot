@@ -11,6 +11,10 @@ import java.util.Collection;
 public final class FormatUtil {
     private FormatUtil() {}
 
+    public static String getFirstArgument(String message) {
+        return message.split("\\s+")[0];
+    }
+
     public static String getFormatted(Object[] ary) {
         String raw = Arrays.toString(ary);
         return raw.substring(1, raw.length() - 1);
