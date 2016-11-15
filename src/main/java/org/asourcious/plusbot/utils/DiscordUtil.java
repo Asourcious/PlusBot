@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public final class DiscordUtil {
     }
 
     public static List<User> getTrimmedMentions(Message message) {
-        List<User> users = message.getMentionedUsers();
+        List<User> users = new ArrayList<>(message.getMentionedUsers());
 
         if (message.getRawContent().startsWith(message.getJDA().getSelfUser().getAsMention()))
             users.remove(0);
