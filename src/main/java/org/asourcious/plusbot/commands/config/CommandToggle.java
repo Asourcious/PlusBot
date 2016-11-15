@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.Configuration;
 
 public class CommandToggle extends Command {
@@ -12,6 +13,10 @@ public class CommandToggle extends Command {
         super(plusBot);
         this.name = "Command";
         this.help = "Used to enable and disable commands on a channel or server-wide basis";
+        this.children = new Command[] {
+                new Enable(plusBot),
+                new Disable(plusBot)
+        };
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
 
@@ -31,45 +36,56 @@ public class CommandToggle extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        String[] args = stripped.toLowerCase().split("\\s+");
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {}
 
-        if (args[0].equals("enable")) {
-            enableCommand(args, guild, channel, args.length == 2);
-        } else {
-            disableCommand(args, guild, channel, args.length == 2);
+    private class Enable extends SubCommand {
+        public Enable(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Enable";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            String[] args = stripped.split("\\s+");
+            boolean isChannel = args.length == 2;
+
+            Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
+            if (args[0].equals("all")) {
+                config.clearDisabledCommands();
+                channel.sendMessage("Enabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
+            } else {
+                if (!config.getDisabledCommands().contains(args[1])) {
+                    channel.sendMessage("That command is already enabled!").queue();
+                    return;
+                }
+                config.removeDisabledCommand(args[1]);
+                channel.sendMessage("Successfully enabled command.").queue();
+            }
         }
     }
 
-    private void enableCommand(String[] args, Guild guild, MessageChannel channel, boolean isChannel) {
-        Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
-        if (args[1].equals("all")) {
-            config.clearDisabledCommands();
-            channel.sendMessage("Enabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
-        } else {
-            if (!config.getDisabledCommands().contains(args[1])) {
-                channel.sendMessage("That command is already enabled!").queue();
-                return;
-            }
-            config.removeDisabledCommand(args[1]);
-            channel.sendMessage("Successfully enabled command.").queue();
+    private class Disable extends SubCommand {
+        public Disable(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Disable";
         }
-    }
 
-    private void disableCommand(String[] args, Guild guild, MessageChannel channel, boolean isChannel) {
-        Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
-        if (args[1].equals("all")) {
-            for (Command cmd : plusBot.getCommandHandler().getRegisteredCommands()) {
-                config.addDisabledCommand(cmd.getName().toLowerCase());
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            String[] args = stripped.split("\\s+");
+            boolean isChannel = args.length == 2;
+
+            Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
+            if (args[0].equals("all")) {
+                channel.sendMessage("Disabling all commands is not allowed!").queue();
+            } else {
+                if (config.getDisabledCommands().contains(args[1])) {
+                    channel.sendMessage("That command is already disabled!").queue();
+                    return;
+                }
+                config.addDisabledCommand(args[1]);
+                channel.sendMessage("Successfully disabled command.").queue();
             }
-            channel.sendMessage("Disabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
-        } else {
-            if (config.getDisabledCommands().contains(args[1])) {
-                channel.sendMessage("That command is already disabled!").queue();
-                return;
-            }
-            config.addDisabledCommand(args[1]);
-            channel.sendMessage("Successfully disabled command.").queue();
         }
     }
 }
