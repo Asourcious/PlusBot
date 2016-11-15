@@ -6,11 +6,12 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.Configuration;
 
-public class CommandToggle extends Command {
+public class CommandToggle extends CommandContainer {
 
     public CommandToggle(PlusBot plusBot) {
         super(plusBot);
@@ -37,9 +38,6 @@ public class CommandToggle extends Command {
 
         return null;
     }
-
-    @Override
-    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {}
 
     private class Enable extends SubCommand {
         public Enable(PlusBot plusBot) {
