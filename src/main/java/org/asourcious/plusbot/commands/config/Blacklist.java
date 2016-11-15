@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.Configuration;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
@@ -18,6 +19,11 @@ public class Blacklist extends Command {
         super(plusBot);
         this.name = "Blacklist";
         this.help = "Adds and removes users from the server's blacklist.";
+        this.children = new Command[] {
+                new Add(plusBot),
+                new Remove(plusBot),
+                new Clear(plusBot)
+        };
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
 
@@ -32,13 +38,20 @@ public class Blacklist extends Command {
     }
 
     @Override
-    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        List<User> targets = DiscordUtil.getTrimmedMentions(message);
-        int numUpdated = 0;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {}
 
-        Configuration configuration = settings.getConfiguration(guild);
+    private class Add extends SubCommand {
+        public Add(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Add";
+        }
 
-        if (stripped.equalsIgnoreCase("add")) {
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            Configuration configuration = settings.getConfiguration(guild);
+            List<User> targets = DiscordUtil.getTrimmedMentions(message);
+            int numUpdated = 0;
+
             for (User user : targets) {
                 if (!configuration.getBlacklist().contains(user.getId())) {
                     if (PermissionLevel.canInteract(guild.getMember(author), guild.getMember(user))) {
@@ -50,7 +63,21 @@ public class Blacklist extends Command {
                 }
             }
             channel.sendMessage("Successfully added **" + numUpdated + "** users to the blacklist.").queue();
-        } else if (stripped.equalsIgnoreCase("remove")) {
+        }
+    }
+
+    private class Remove extends SubCommand {
+        public Remove(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Remove";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            Configuration configuration = settings.getConfiguration(guild);
+            List<User> targets = DiscordUtil.getTrimmedMentions(message);
+            int numUpdated = 0;
+
             for (User user : targets) {
                 if (configuration.getBlacklist().contains(user.getId())) {
                     configuration.removeUserFromBlacklist(user.getId());
@@ -58,8 +85,18 @@ public class Blacklist extends Command {
                 }
             }
             channel.sendMessage("Successfully removed **" + numUpdated + "** users from the blacklist.").queue();
-        } else {
-            configuration.clearBlacklist();
+        }
+    }
+
+    private class Clear extends SubCommand {
+        public Clear(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Clear";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            settings.getConfiguration(guild).clearBlacklist();
             channel.sendMessage("Successfully cleared blacklist.").queue();
         }
     }
