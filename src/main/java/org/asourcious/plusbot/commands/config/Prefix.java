@@ -6,15 +6,22 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.config.DataSource;
+import org.asourcious.plusbot.commands.SubCommand;
 
-public class Prefix extends Command {
+public class Prefix extends CommandContainer {
 
     public Prefix(PlusBot plusBot) {
         super(plusBot);
         this.name = "Prefix";
         this.help = "Modifies custom prefixes for the server.";
+        this.children = new Command[] {
+                new Add(plusBot),
+                new Remove(plusBot),
+                new Clear(plusBot),
+                new List(plusBot)
+        };
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
 
@@ -39,38 +46,70 @@ public class Prefix extends Command {
         return null;
     }
 
-    @Override
-    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        String[] args = stripped.split("\\s+", 2);
+    private class Add extends SubCommand {
+        public Add(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Add";
+        }
 
-        DataSource prefixes = settings.getPrefixes();
-        if (args[0].equalsIgnoreCase("add")) {
-            if (prefixes.has(guild.getId(), args[1])) {
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            if (settings.getPrefixes().has(guild.getId(), stripped)) {
                 channel.sendMessage("That prefix is already added!").queue();
                 return;
             }
 
-            if (prefixes.get(guild.getId()).size() >= 15) {
+            if (settings.getPrefixes().get(guild.getId()).size() >= 15) {
                 channel.sendMessage("This server already has the maximum number of prefixes, delete some to add more.").queue();
                 return;
             }
 
-            prefixes.add(guild.getId(), args[1]);
-            channel.sendMessage("Added prefix **" + args[1] + "**").queue();
-        } else if (args[0].equalsIgnoreCase("remove")) {
-            if (!prefixes.has(guild.getId(), args[1])) {
+            settings.getPrefixes().add(guild.getId(), stripped);
+            channel.sendMessage("Added prefix **" + stripped + "**").queue();
+        }
+    }
+
+    private class Remove extends SubCommand {
+        public Remove(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Remove";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            if (!settings.getPrefixes().has(guild.getId(), stripped)) {
                 channel.sendMessage("That prefix doesn't exist!").queue();
                 return;
             }
 
-            prefixes.remove(guild.getId(), args[1]);
-            channel.sendMessage("Removed prefix **" + args[1] + "**").queue();
-        } else if (args[0].equalsIgnoreCase("clear")) {
-            prefixes.clear(guild.getId());
+            settings.getPrefixes().remove(guild.getId(), stripped);
+            channel.sendMessage("Removed prefix **" + stripped + "**").queue();
+        }
+    }
+
+    private class Clear extends SubCommand {
+        public Clear(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "Clear";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            settings.getPrefixes().clear(guild.getId());
             channel.sendMessage("Cleared prefixes").queue();
-        } else {
+        }
+    }
+
+    private class List extends SubCommand {
+        public List(PlusBot plusBot) {
+            super(plusBot);
+            this.name = "List";
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             String msg = "Current prefixes:\n```diff\n";
-            for (String prefix : prefixes.get(guild.getId())) {
+            for (String prefix : settings.getPrefixes().get(guild.getId())) {
                 msg += "- " + prefix;
             }
             msg += "```";
