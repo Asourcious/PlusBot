@@ -16,11 +16,17 @@ public final class FormatUtil {
     }
 
     public static String getFormatted(Object[] ary) {
+        if (ary.length == 0)
+            return "None";
+
         String raw = Arrays.toString(ary);
         return raw.substring(1, raw.length() - 1);
     }
 
     public static String getFormatted(Collection collection) {
+        if (collection.isEmpty())
+            return "None";
+
         String raw = collection.toString();
         return raw.substring(1, raw.length() - 1);
     }

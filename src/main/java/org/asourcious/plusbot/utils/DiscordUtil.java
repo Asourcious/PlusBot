@@ -1,8 +1,10 @@
 package org.asourcious.plusbot.utils;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
+import org.asourcious.plusbot.config.DataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,18 @@ import java.util.Set;
 
 public final class DiscordUtil {
     private DiscordUtil() {}
+
+    public static void checkForMissingAutoRoles(PlusBot plusBot, Guild guild) {
+        DataSource autoBotRoles = plusBot.getSettings().getAutoBotRoles();
+        DataSource autoHumanRoles = plusBot.getSettings().getAutoHumanRoles();
+
+        autoBotRoles.get(guild.getId()).parallelStream()
+                .filter(id -> guild.getRoleById(id) == null)
+                .forEach(id -> autoBotRoles.remove(guild.getId(), id));
+        autoHumanRoles.get(guild.getId()).parallelStream()
+                .filter(id -> guild.getRoleById(id) == null)
+                .forEach(id -> autoHumanRoles.remove(guild.getId(), id));
+    }
 
     public static String getPrefix(PlusBot plusBot, Message message) {
         if (message.getRawContent().startsWith(message.getJDA().getSelfUser().getAsMention()))
