@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.DataSource;
+import org.asourcious.plusbot.config.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,9 @@ import java.util.Set;
 public final class DiscordUtil {
     private DiscordUtil() {}
 
-    public static void checkForMissingAutoRoles(PlusBot plusBot, Guild guild) {
-        DataSource autoBotRoles = plusBot.getSettings().getAutoBotRoles();
-        DataSource autoHumanRoles = plusBot.getSettings().getAutoHumanRoles();
+    public static void checkForMissingAutoRoles(Settings settings, Guild guild) {
+        DataSource autoBotRoles = settings.getAutoBotRoles();
+        DataSource autoHumanRoles = settings.getAutoHumanRoles();
 
         autoBotRoles.get(guild.getId()).parallelStream()
                 .filter(id -> guild.getRoleById(id) == null)

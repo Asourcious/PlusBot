@@ -5,9 +5,10 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.Settings;
+import org.asourcious.plusbot.utils.DiscordUtil;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AutoRoleHandler {
 
@@ -18,26 +19,15 @@ public class AutoRoleHandler {
     }
 
     public void handleMemberJoin(Guild guild, Member member) {
-        Set<Role> roles = new HashSet<>();
+        DiscordUtil.checkForMissingAutoRoles(settings, guild);
+
+        Set<Role> roles;
         if (member.getUser().isBot()) {
-            Set<String> roleIDs = settings.getAutoBotRoles().get(guild.getId());
-            roleIDs.forEach(id -> {
-                if (guild.getRoleById(id) == null) {
-                    settings.getAutoBotRoles().remove(guild.getId(), id);
-                } else {
-                    roles.add(guild.getRoleById(id));
-                }
-            });
+            roles = settings.getAutoBotRoles().get(guild.getId()).parallelStream().map(guild::getRoleById).collect(Collectors.toSet());
         } else {
-            Set<String> roleIDs = settings.getAutoHumanRoles().get(guild.getId());
-            roleIDs.forEach(id -> {
-                if (guild.getRoleById(id) == null) {
-                    settings.getAutoHumanRoles().remove(guild.getId(), id);
-                } else {
-                    roles.add(guild.getRoleById(id));
-                }
-            });
+            roles = settings.getAutoHumanRoles().get(guild.getId()).parallelStream().map(guild::getRoleById).collect(Collectors.toSet());
         }
+
         if (!roles.isEmpty() && guild.getSelfMember().canInteract(member))
             guild.getController().addRolesToMember(member, roles).queue();
     }

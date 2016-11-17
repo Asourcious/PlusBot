@@ -51,7 +51,7 @@ public class AutoRole extends Command {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        DiscordUtil.checkForMissingAutoRoles(plusBot, guild);
+        DiscordUtil.checkForMissingAutoRoles(plusBot.getSettings(), guild);
 
         Set<String> humanRoleNames = settings.getAutoHumanRoles().get(guild.getId())
                 .parallelStream().map(id -> guild.getRoleById(id).getName()).collect(Collectors.toSet());
