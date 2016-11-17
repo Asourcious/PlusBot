@@ -59,14 +59,20 @@ public class DataSource {
     }
 
     public void add(String container, String entry) {
+        if (!cache.containsKey(container))
+            cache.put(container, ConcurrentHashMap.newKeySet());
+
+        cache.get(container).add(entry);
         executeStatement(add, container, entry);
     }
 
     public void remove(String container, String entry) {
+        cache.get(container).remove(entry);
         executeStatement(remove, container, entry);
     }
 
     public void clear(String container) {
+        cache.get(container).clear();
         try {
             clear.setString(1, container);
             clear.execute();
