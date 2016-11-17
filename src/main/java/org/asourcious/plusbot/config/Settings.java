@@ -32,12 +32,12 @@ public class Settings {
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
 
-            autoBotRoles = new DataSource(connection, Constants.AUTOROLE_BOT).load();
-            autoHumanRoles = new DataSource(connection, Constants.AUTOROLE_HUMAN).load();
-            blacklist = new DataSource(connection, Constants.BLACKLIST).load();
-            channelDisabledCommands = new DataSource(connection, Constants.CHANNEL_DISABLED_COMMANDS).load();
-            guildDisabledCommands = new DataSource(connection, Constants.GUILD_DISABLED_COMMANDS).load();
-            prefixes = new DataSource(connection, Constants.PREFIXES).load();
+            autoBotRoles = new DataSource(connection, Constants.AUTOROLE_BOT, executorService).load();
+            autoHumanRoles = new DataSource(connection, Constants.AUTOROLE_HUMAN, executorService).load();
+            blacklist = new DataSource(connection, Constants.BLACKLIST, executorService).load();
+            channelDisabledCommands = new DataSource(connection, Constants.CHANNEL_DISABLED_COMMANDS, executorService).load();
+            guildDisabledCommands = new DataSource(connection, Constants.GUILD_DISABLED_COMMANDS, executorService).load();
+            prefixes = new DataSource(connection, Constants.PREFIXES, executorService).load();
         } catch (SQLException e) {
             DataSource.LOG.log(e);
             System.exit(1);

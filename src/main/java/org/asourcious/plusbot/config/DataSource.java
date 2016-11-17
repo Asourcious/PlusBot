@@ -7,12 +7,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 public class DataSource {
 
     public static final SimpleLog LOG = SimpleLog.getLog("Database");
 
     protected Connection connection;
+    private ExecutorService executorService;
 
     protected String table;
     protected Map<String, Set<String>> cache;
@@ -21,8 +23,9 @@ public class DataSource {
     protected PreparedStatement remove;
     protected PreparedStatement clear;
 
-    public DataSource(Connection connection, String table) throws SQLException {
+    public DataSource(Connection connection, String table, ExecutorService executorService) throws SQLException {
         this.connection = connection;
+        this.executorService = executorService;
         this.table = table;
 
         this.add = connection.prepareStatement("INSERT INTO " + table + " (container, entry) VALUES (?, ?);");
@@ -77,13 +80,15 @@ public class DataSource {
     }
 
     protected void executeStatement(PreparedStatement statement, String... args) {
-        try {
-            for (int i = 0; i < args.length; i++) {
-                statement.setString(i + 1, args[i]);
+        executorService.execute(() -> {
+            try {
+                for (int i = 0; i < args.length; i++) {
+                    statement.setString(i + 1, args[i]);
+                }
+                statement.execute();
+            } catch (SQLException ex) {
+                LOG.log(ex);
             }
-            statement.execute();
-        } catch (SQLException ex) {
-            LOG.log(ex);
-        }
+        });
     }
 }
