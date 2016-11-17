@@ -58,6 +58,9 @@ public class DataSource {
     }
 
     public Set<String> get(String container) {
+        if (!cache.containsKey(container))
+            return Collections.emptySet();
+
         return Collections.unmodifiableSet(cache.get(container));
     }
 
