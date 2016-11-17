@@ -1,12 +1,16 @@
 package org.asourcious.plusbot.commands.info;
 
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.utils.FormatUtil;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.awt.Color;
 
 public class GuildInfo extends NoArgumentCommand {
 
@@ -19,20 +23,21 @@ public class GuildInfo extends NoArgumentCommand {
 
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        List<String> roles = guild.getRoles().parallelStream()
-                .filter(role -> !role.equals(guild.getPublicRole()))
-                .map(Role::getName)
-                .collect(Collectors.toList());
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(guild.getIconUrl())
+                .addField("Name", guild.getName(), true)
+                .addField("ID", guild.getId(), true)
+                .addField("Owner", guild.getOwner().getEffectiveName(), true)
+                .addField("Owner ID", guild.getOwner().getUser().getId(), true)
+                .addField("Text Channels", String.valueOf(guild.getTextChannels().size()), true)
+                .addField("Voice Channels", String.valueOf(guild.getVoiceChannels().size()), true)
+                .addField("Roles", String.valueOf(guild.getRoles().size()), true)
+                .addField("Emotes", String.valueOf(guild.getEmotes().size()), true)
+                .addField("Region", guild.getRegion().toString(), true)
+                .addField("Creation", FormatUtil.getFormattedTime(guild.getCreationTime()), true);
 
-        String msg = "";
-        msg += "Name: **"  + guild.getName() + "**\n";
-        msg += "ID: **"    + guild.getId() + "**\n";
-        msg += "Users: **" + guild.getMembers().size() + "**\n";
-        msg += "Roles: **" + FormatUtil.getFormatted(roles) + "**\n";
-        msg += "Owner: **" + guild.getOwner().getEffectiveName() + "**\n";
-        msg += "Creation Time: **" + FormatUtil.getFormattedTime(guild.getCreationTime()) + "**\n";
-        msg += "Icon: " + guild.getIconUrl();
-
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }

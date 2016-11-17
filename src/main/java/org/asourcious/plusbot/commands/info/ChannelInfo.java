@@ -1,5 +1,7 @@
 package org.asourcious.plusbot.commands.info;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -7,6 +9,8 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.utils.FormatUtil;
+
+import java.awt.Color;
 
 public class ChannelInfo extends Command {
 
@@ -38,13 +42,16 @@ public class ChannelInfo extends Command {
             }
         }
 
-        String msg = "";
-        msg += "Name: **" + target.getName() + "**\n";
-        msg += "ID: **" + target.getId() + "**\n";
-        msg += "Topic: **" + (target.getTopic() == null ? target.getTopic() :"None") + "**\n";
-        msg += "Position: **" + target.getPosition() + "**\n";
-        msg += "Creation Time: **" + FormatUtil.getFormattedTime(target.getCreationTime()) + "**";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(guild.getIconUrl())
+                .addField("Name", target.getName(), true)
+                .addField("ID", target.getId(), true)
+                .addField("Topic", target.getTopic() == null ? target.getTopic() : "None", true)
+                .addField("Position", String.valueOf(target.getPosition()), true)
+                .addField("Creation Time", FormatUtil.getFormattedTime(target.getCreationTime()), false);
 
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }

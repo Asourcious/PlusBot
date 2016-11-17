@@ -1,11 +1,14 @@
 package org.asourcious.plusbot.commands.info;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.utils.DiscordUtil;
 import org.asourcious.plusbot.utils.FormatUtil;
 
+import java.awt.Color;
 import java.util.List;
 
 public class UserInfo extends Command {
@@ -39,14 +42,19 @@ public class UserInfo extends Command {
             target = guild.getMember(users.get(0));
         }
 
-        String msg = "";
-        msg += "Name: **" + target.getEffectiveName() + "**\n";
-        msg += "ID: **" + target.getUser().getId() + "**\n";
-        msg += "Status: **" + target.getOnlineStatus().toString() + "**\n";
-        msg += "Game: **" + (target.getGame() != null ? target.getGame() : "None") + "**\n";
-        msg += "Account Creation Time: **" + FormatUtil.getFormattedTime(target.getUser().getCreationTime()) + "**\n";
-        msg += "Avatar: " + target.getUser().getAvatarUrl() + "\n";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(target.getUser().getAvatarUrl())
+                .addField("Name", target.getEffectiveName(), true)
+                .addField("ID", target.getUser().getId(), true)
+                .addField("Online Status", target.getOnlineStatus().toString(), true)
+                .addField("Voice Status", target.getVoiceState().inVoiceChannel() ? "Connected" : "Disconnected", true)
+                .addField("Game", target.getGame() != null ? target.getGame().getName() : "None", true)
+                .addField("Account Type", target.getUser().isBot() ? "Bot" : "User", true)
+                .addField("Creation Time", FormatUtil.getFormattedTime(target.getUser().getCreationTime()), true)
+                .addField("Join Date", FormatUtil.getFormattedTime(target.getJoinDate()), true);
 
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }

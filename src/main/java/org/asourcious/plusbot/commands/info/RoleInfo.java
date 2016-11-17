@@ -1,9 +1,13 @@
 package org.asourcious.plusbot.commands.info;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.utils.FormatUtil;
+
+import java.awt.Color;
 
 public class RoleInfo extends Command {
     public RoleInfo(PlusBot plusBot) {
@@ -33,13 +37,15 @@ public class RoleInfo extends Command {
                 ? guild.getRolesByName(stripped, true).get(0)
                 : message.getMentionedRoles().get(0);
 
-        String msg = "";
-        msg += "Name: **" + target.getName() + "**\n";
-        msg += "ID: **" + target.getId() + "**\n";
-        msg += "Permissions: **" + target.getPermissions().toString() + "**\n";
-        msg += "Position: **" + target.getPosition() + "**\n";
-        msg += "Creation Time: **" + FormatUtil.getFormattedTime(target.getCreationTime()) + "**";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(guild.getIconUrl())
+                .addField("Name", target.getName(), true)
+                .addField("ID", target.getId(), true)
+                .addField("Position", String.valueOf(target.getPosition()), true)
+                .addField("Creation Time", FormatUtil.getFormattedTime(target.getCreationTime()), true);
 
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }
