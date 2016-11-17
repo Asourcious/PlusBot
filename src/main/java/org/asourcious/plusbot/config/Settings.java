@@ -1,8 +1,6 @@
 package org.asourcious.plusbot.config;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import org.asourcious.plusbot.handle.database.DatabaseController;
+import org.asourcious.plusbot.Constants;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -11,8 +9,6 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,22 +16,30 @@ public class Settings {
 
     private JSONObject credentials;
 
-    private Connection connection;
     private ExecutorService executorService;
 
-    private Map<String, Configuration> guildConfigurations;
-    private Map<String, Configuration> channelConfigurations;
+    private DataSource autoBotRoles;
+    private DataSource autoHumanRoles;
+    private DataSource blacklist;
+    private DataSource channelDisabledCommands;
+    private DataSource guildDisabledCommands;
+    private DataSource prefixes;
 
     public Settings() throws IOException {
         this.credentials = new JSONObject(new String(Files.readAllBytes(Paths.get("credentials.json"))));
         this.executorService = Executors.newSingleThreadExecutor();
-        this.guildConfigurations = new ConcurrentHashMap<>();
-        this.channelConfigurations = new ConcurrentHashMap<>();
 
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
+
+            autoBotRoles = new DataSource(connection, Constants.AUTOROLE_BOT).load();
+            autoHumanRoles = new DataSource(connection, Constants.AUTOROLE_HUMAN).load();
+            blacklist = new DataSource(connection, Constants.BLACKLIST).load();
+            channelDisabledCommands = new DataSource(connection, Constants.CHANNEL_DISABLED_COMMANDS).load();
+            guildDisabledCommands = new DataSource(connection, Constants.GUILD_DISABLED_COMMANDS).load();
+            prefixes = new DataSource(connection, Constants.PREFIXES).load();
         } catch (SQLException e) {
-            DatabaseController.LOG.log(e);
+            DataSource.LOG.log(e);
             System.exit(1);
         }
     }
@@ -44,18 +48,28 @@ public class Settings {
         return credentials.getString("token");
     }
 
-    public Configuration getConfiguration(Guild guild) {
-        if (!guildConfigurations.containsKey(guild.getId()))
-            guildConfigurations.put(guild.getId(), new Configuration(guild, connection, executorService));
-
-        return guildConfigurations.get(guild.getId());
+    public DataSource getAutoBotRoles() {
+        return autoBotRoles;
     }
 
-    public Configuration getConfiguration(MessageChannel channel) {
-        if (!channelConfigurations.containsKey(channel.getId()))
-            channelConfigurations.put(channel.getId(), new Configuration(channel, connection, executorService));
+    public DataSource getAutoHumanRoles() {
+        return autoHumanRoles;
+    }
 
-        return channelConfigurations.get(channel.getId());
+    public DataSource getBlacklist() {
+        return blacklist;
+    }
+
+    public DataSource getChannelDisabledCommands() {
+        return channelDisabledCommands;
+    }
+
+    public DataSource getGuildDisabledCommands() {
+        return guildDisabledCommands;
+    }
+
+    public DataSource getPrefixes() {
+        return prefixes;
     }
 
     public void shutdown() {

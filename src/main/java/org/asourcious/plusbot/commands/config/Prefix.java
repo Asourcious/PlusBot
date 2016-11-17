@@ -7,9 +7,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.config.Configuration;
-
-import java.util.Set;
+import org.asourcious.plusbot.config.DataSource;
 
 public class Prefix extends Command {
 
@@ -45,36 +43,34 @@ public class Prefix extends Command {
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         String[] args = stripped.split("\\s+", 2);
 
-        Configuration configuration = settings.getConfiguration(guild);
+        DataSource prefixes = settings.getPrefixes();
         if (args[0].equalsIgnoreCase("add")) {
-            if (configuration.getPrefixes().contains(args[1])) {
+            if (prefixes.has(guild.getId(), args[1])) {
                 channel.sendMessage("That prefix is already added!").queue();
                 return;
             }
 
-            if (configuration.getPrefixes().size() >= 15) {
+            if (prefixes.get(guild.getId()).size() >= 15) {
                 channel.sendMessage("This server already has the maximum number of prefixes, delete some to add more.").queue();
                 return;
             }
 
-            configuration.addPrefix(args[1]);
+            prefixes.add(guild.getId(), args[1]);
             channel.sendMessage("Added prefix **" + args[1] + "**").queue();
         } else if (args[0].equalsIgnoreCase("remove")) {
-            if (!configuration.getPrefixes().contains(args[1])) {
+            if (!prefixes.has(guild.getId(), args[1])) {
                 channel.sendMessage("That prefix doesn't exist!").queue();
                 return;
             }
 
-            configuration.removePrefix(args[1]);
+            prefixes.remove(guild.getId(), args[1]);
             channel.sendMessage("Removed prefix **" + args[1] + "**").queue();
         } else if (args[0].equalsIgnoreCase("clear")) {
-            configuration.clearPrefixes();
+            prefixes.clear(guild.getId());
             channel.sendMessage("Cleared prefixes").queue();
         } else {
-            Set<String> prefixes = configuration.getPrefixes();
-
             String msg = "Current prefixes:\n```diff\n";
-            for (String prefix : prefixes) {
+            for (String prefix : prefixes.get(guild.getId())) {
                 msg += "- " + prefix;
             }
             msg += "```";

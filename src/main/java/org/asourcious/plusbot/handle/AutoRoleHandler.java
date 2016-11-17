@@ -20,19 +20,19 @@ public class AutoRoleHandler {
     public void handleMemberJoin(Guild guild, Member member) {
         Set<Role> roles = new HashSet<>();
         if (member.getUser().isBot()) {
-            Set<String> roleIDs = settings.getConfiguration(guild).getBotAutoRoles();
+            Set<String> roleIDs = settings.getAutoBotRoles().get(guild.getId());
             roleIDs.forEach(id -> {
                 if (guild.getRoleById(id) == null) {
-                    settings.getConfiguration(guild).removeBotAutoRole(id);
+                    settings.getAutoBotRoles().remove(guild.getId(), id);
                 } else {
                     roles.add(guild.getRoleById(id));
                 }
             });
         } else {
-            Set<String> roleIDs = settings.getConfiguration(guild).getHumanAutoRoles();
+            Set<String> roleIDs = settings.getAutoHumanRoles().get(guild.getId());
             roleIDs.forEach(id -> {
                 if (guild.getRoleById(id) == null) {
-                    settings.getConfiguration(guild).removeHumanAutoRole(id);
+                    settings.getAutoHumanRoles().remove(guild.getId(), id);
                 } else {
                     roles.add(guild.getRoleById(id));
                 }

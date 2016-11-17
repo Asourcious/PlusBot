@@ -1,0 +1,87 @@
+package org.asourcious.plusbot.config;
+
+import net.dv8tion.jda.core.utils.SimpleLog;
+
+import java.sql.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DataSource {
+
+    public static final SimpleLog LOG = SimpleLog.getLog("Database");
+
+    protected Connection connection;
+
+    protected String table;
+    protected Map<String, Set<String>> cache;
+
+    protected PreparedStatement add;
+    protected PreparedStatement remove;
+    protected PreparedStatement clear;
+
+    public DataSource(Connection connection, String table) throws SQLException {
+        this.connection = connection;
+        this.table = table;
+
+        this.add = connection.prepareStatement("INSERT INTO " + table + " (container, entry) VALUES (?, ?);");
+        this.remove = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ? AND entry = ?;");
+        this.clear = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ?;");
+    }
+
+    public DataSource load() {
+        cache = new ConcurrentHashMap<>();
+
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table);
+
+            while (resultSet.next()) {
+                if (!cache.containsKey(resultSet.getString(2)))
+                    cache.put(resultSet.getString(2), ConcurrentHashMap.newKeySet());
+
+                cache.get(resultSet.getString(2)).add(resultSet.getString(3));
+            }
+        } catch (SQLException ex) {
+            LOG.log(ex);
+            System.exit(1);
+        }
+
+        return this;
+    }
+
+    public boolean has(String container, String entry) {
+        return cache.containsKey(container) && cache.get(container).contains(entry);
+    }
+
+    public Set<String> get(String container) {
+        return Collections.unmodifiableSet(cache.get(container));
+    }
+
+    public void add(String container, String entry) {
+        executeStatement(add, container, entry);
+    }
+
+    public void remove(String container, String entry) {
+        executeStatement(remove, container, entry);
+    }
+
+    public void clear(String container) {
+        try {
+            clear.setString(1, container);
+            clear.execute();
+        } catch (SQLException ex) {
+            LOG.log(ex);
+        }
+    }
+
+    protected void executeStatement(PreparedStatement statement, String container, String entry) {
+        try {
+            statement.setString(1, container);
+            statement.setString(2, entry);
+            statement.execute();
+        } catch (SQLException ex) {
+            LOG.log(ex);
+        }
+    }
+}

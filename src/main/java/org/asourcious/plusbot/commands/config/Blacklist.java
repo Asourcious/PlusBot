@@ -9,7 +9,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
-import org.asourcious.plusbot.config.Configuration;
+import org.asourcious.plusbot.config.DataSource;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
 import java.util.List;
@@ -46,14 +46,14 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            Configuration configuration = settings.getConfiguration(guild);
+            DataSource blacklist = settings.getBlacklist();
             List<User> targets = DiscordUtil.getTrimmedMentions(message);
             int numUpdated = 0;
 
             for (User user : targets) {
-                if (!configuration.getBlacklist().contains(user.getId())) {
+                if (!blacklist.has(guild.getId(), user.getId())) {
                     if (PermissionLevel.canInteract(guild.getMember(author), guild.getMember(user))) {
-                        configuration.addUserToBlacklist(user.getId());
+                        blacklist.add(guild.getId(), user.getId());
                         numUpdated++;
                     } else {
                         channel.sendMessage("You don't have the necessary permissions to add **" + user.getName() + "** to the blacklist").queue();
@@ -72,13 +72,13 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            Configuration configuration = settings.getConfiguration(guild);
+            DataSource blacklist = settings.getBlacklist();
             List<User> targets = DiscordUtil.getTrimmedMentions(message);
             int numUpdated = 0;
 
             for (User user : targets) {
-                if (configuration.getBlacklist().contains(user.getId())) {
-                    configuration.removeUserFromBlacklist(user.getId());
+                if (blacklist.has(guild.getId(), user.getId())) {
+                    blacklist.remove(guild.getId(), user.getId());
                     numUpdated++;
                 }
             }
@@ -94,7 +94,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            settings.getConfiguration(guild).clearBlacklist();
+            settings.getBlacklist().clear(guild.getId());
             channel.sendMessage("Successfully cleared blacklist.").queue();
         }
     }

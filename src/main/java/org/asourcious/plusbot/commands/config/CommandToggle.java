@@ -9,7 +9,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
-import org.asourcious.plusbot.config.Configuration;
+import org.asourcious.plusbot.config.DataSource;
 
 public class CommandToggle extends CommandContainer {
 
@@ -50,16 +50,17 @@ public class CommandToggle extends CommandContainer {
             String[] args = stripped.split("\\s+");
             boolean isChannel = args.length == 2;
 
-            Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
+            String containerId = isChannel ? channel.getId() : guild.getId();
+            DataSource disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
             if (args[0].equals("all")) {
-                config.clearDisabledCommands();
+                disabledCommands.clear(containerId);
                 channel.sendMessage("Enabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
             } else {
-                if (!config.getDisabledCommands().contains(args[1])) {
+                if (!disabledCommands.has(containerId, args[0])) {
                     channel.sendMessage("That command is already enabled!").queue();
                     return;
                 }
-                config.removeDisabledCommand(args[1]);
+                disabledCommands.remove(containerId, args[0]);
                 channel.sendMessage("Successfully enabled command.").queue();
             }
         }
@@ -76,15 +77,16 @@ public class CommandToggle extends CommandContainer {
             String[] args = stripped.split("\\s+");
             boolean isChannel = args.length == 2;
 
-            Configuration config = isChannel ? settings.getConfiguration(channel) : settings.getConfiguration(guild);
+            String containerId = isChannel ? channel.getId() : guild.getId();
+            DataSource disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
             if (args[0].equals("all")) {
                 channel.sendMessage("Disabling all commands is not allowed!").queue();
             } else {
-                if (config.getDisabledCommands().contains(args[1])) {
+                if (disabledCommands.has(containerId, args[0])) {
                     channel.sendMessage("That command is already disabled!").queue();
                     return;
                 }
-                config.addDisabledCommand(args[1]);
+                disabledCommands.add(containerId, args[0]);
                 channel.sendMessage("Successfully disabled command.").queue();
             }
         }

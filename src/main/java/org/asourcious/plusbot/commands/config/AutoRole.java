@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.config.Configuration;
+import org.asourcious.plusbot.config.DataSource;
 
 import java.util.List;
 
@@ -66,18 +66,19 @@ public class AutoRole extends Command {
             target = roles.get(0);
         }
 
-        Configuration configuration = settings.getConfiguration(guild);
         if (isBot) {
+            DataSource autoBotRoles = settings.getAutoBotRoles();
             if (isAdd) {
-                configuration.addBotAutoRole(target.getId());
+                autoBotRoles.add(guild.getId(), target.getId());
             } else {
-                configuration.removeBotAutoRole(target.getId());
+                autoBotRoles.remove(guild.getId(), target.getId());
             }
         } else {
+            DataSource autoHumanRoles = settings.getAutoHumanRoles();
             if (isAdd) {
-                configuration.addHumanAutoRole(target.getId());
+                autoHumanRoles.add(guild.getId(), target.getId());
             } else {
-                configuration.removeHumanAutoRole(target.getId());
+                autoHumanRoles.remove(guild.getId(), target.getId());
             }
         }
         channel.sendMessage("Updated auto roles").queue();

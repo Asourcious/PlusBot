@@ -60,7 +60,11 @@ public class CommandHandler {
             return;
         }
 
-        if (plusBot.getSettings().getConfiguration(guild).getBlacklist().contains(author.getId()))
+        if (plusBot.getSettings().getGuildDisabledCommands().has(guild.getId(), command.getName().toLowerCase())
+                || plusBot.getSettings().getChannelDisabledCommands().has(channel.getId(), command.getName().toLowerCase()))
+            return;
+
+        if (plusBot.getSettings().getBlacklist().has(guild.getId(), author.getId()))
             return;
 
         String response = command.isValid(message, stripped);

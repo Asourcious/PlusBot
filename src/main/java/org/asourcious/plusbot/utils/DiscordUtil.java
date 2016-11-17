@@ -18,7 +18,7 @@ public final class DiscordUtil {
         if (message.getGuild() == null)
             return null;
 
-        Set<String> prefixes = plusBot.getSettings().getConfiguration(message.getGuild()).getPrefixes();
+        Set<String> prefixes = plusBot.getSettings().getPrefixes().get(message.getGuild().getId());
 
         return prefixes.parallelStream().filter(prefix -> message.getContent().startsWith(prefix))
                 .findAny()
