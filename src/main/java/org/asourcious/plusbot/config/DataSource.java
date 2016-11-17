@@ -73,18 +73,14 @@ public class DataSource {
 
     public void clear(String container) {
         cache.get(container).clear();
-        try {
-            clear.setString(1, container);
-            clear.execute();
-        } catch (SQLException ex) {
-            LOG.log(ex);
-        }
+        executeStatement(clear, container);
     }
 
-    protected void executeStatement(PreparedStatement statement, String container, String entry) {
+    protected void executeStatement(PreparedStatement statement, String... args) {
         try {
-            statement.setString(1, container);
-            statement.setString(2, entry);
+            for (int i = 0; i < args.length; i++) {
+                statement.setString(i + 1, args[i]);
+            }
             statement.execute();
         } catch (SQLException ex) {
             LOG.log(ex);
