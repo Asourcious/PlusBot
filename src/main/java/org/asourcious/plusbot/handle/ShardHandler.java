@@ -8,16 +8,15 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ShardHandler {
 
-    private List<JDA> shards;
+    private Set<JDA> shards;
 
     public ShardHandler(PlusBot plusBot, CommandHandler commandHandler, int numShards) throws LoginException {
-        this.shards = new ArrayList<>();
+        this.shards = ConcurrentHashMap.newKeySet();
         AutoRoleHandler roleHandler = new AutoRoleHandler(plusBot);
 
         if (numShards == 1) {
@@ -55,15 +54,14 @@ public class ShardHandler {
     }
 
     public String getInformation(JDA shard) {
-        return  "Shard: " + shards.indexOf(shard)
-                + "Guilds: " + shard.getGuilds().size() + " "
+        return  "Guilds: " + shard.getGuilds().size() + " "
                 + "TC's: " + shard.getTextChannels().size() + " "
                 + "VC's: " + shard.getVoiceChannels().size() + " "
                 + "Status: " + shard.getStatus().toString() + " ";
     }
 
-    public int getNumberOfShards() {
-        return shards.size();
+    public int getId(JDA shard) {
+        return shard.getShardInfo().getShardId();
     }
 
     public int getNumberOfGuilds() {
@@ -82,7 +80,10 @@ public class ShardHandler {
         return shards.parallelStream().mapToInt(jda -> jda.getUsers().size()).sum();
     }
 
-    public List<JDA> getShards() {
-        return Collections.unmodifiableList(new ArrayList<>(shards));
+    public Set<JDA> getShards() {
+        Set<JDA> copy = new TreeSet<>((o1, o2) -> o1.getShardInfo().getShardId() - o2.getShardInfo().getShardId());
+        copy.addAll(shards);
+
+        return Collections.unmodifiableSet(copy);
     }
 }

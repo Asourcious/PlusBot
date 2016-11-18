@@ -59,8 +59,6 @@ public class PlusBot {
         commandHandler.registerCommand(new Eval(this));
         commandHandler.registerCommand(new Ping(this));
         commandHandler.registerCommand(new Restart(this));
-        commandHandler.registerCommand(new Shard(this));
-        commandHandler.registerCommand(new Shards(this));
         commandHandler.registerCommand(new Shutdown(this));
         commandHandler.registerCommand(new Status(this));
 
