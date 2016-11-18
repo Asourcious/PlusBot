@@ -11,7 +11,6 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.utils.FormatUtil;
 
 import java.awt.Color;
-import java.util.List;
 
 public class Help extends Command {
 
@@ -34,11 +33,8 @@ public class Help extends Command {
 
         if (stripped.length() == 0) {
             embedBuilder.setAuthor("Currently supported commands", null, null);
-
-            List<Command> commands = plusBot.getCommandHandler().getRegisteredCommands();
-            for (Command command : commands) {
-                embedBuilder.addField(command.getName(), command.getHelp(), true);
-            }
+            plusBot.getCommandHandler().getRegisteredCommands()
+                    .forEach(command -> embedBuilder.addField(command.getName(), command.getHelp(), true));
         } else {
             Command command = plusBot.getCommandHandler().getCommand(stripped);
 
