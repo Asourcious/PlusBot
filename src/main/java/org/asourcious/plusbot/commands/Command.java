@@ -76,5 +76,10 @@ public abstract class Command {
         public TimeUnit getUnit() {
             return unit;
         }
+
+        @Override
+        public String toString() {
+            return numUses + " per " + amountTime + " " + unit.toString();
+        }
     }
 }

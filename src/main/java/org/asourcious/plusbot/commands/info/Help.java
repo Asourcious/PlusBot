@@ -45,6 +45,7 @@ public class Help extends Command {
 
             embedBuilder.addField("Name", command.getName(), true);
             embedBuilder.addField("Help", command.getHelp(), true);
+            embedBuilder.addField("Ratelimit", command.getRateLimit() != null ? command.getRateLimit().toString() : "None", true);
             embedBuilder.addField("Aliases", FormatUtil.getFormatted(command.getAliases()), true);
             embedBuilder.addField("Required Permission", command.getRequiredPermission().toString(), true);
         }
