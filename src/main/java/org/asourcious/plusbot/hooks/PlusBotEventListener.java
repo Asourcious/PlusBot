@@ -40,10 +40,9 @@ public class PlusBotEventListener extends ListenerAdapter {
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage())
             return;
+        if (!event.getChannel().canTalk())
+            return;
 
-        commandHandler.handle(event.getMessage(),
-                event.getAuthor(),
-                event.getChannel(),
-                event.getGuild());
+        commandHandler.handle(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
     }
 }
