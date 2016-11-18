@@ -1,5 +1,7 @@
 package org.asourcious.plusbot.commands.info;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -8,6 +10,7 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.utils.FormatUtil;
 
+import java.awt.Color;
 import java.util.List;
 
 public class Help extends Command {
@@ -26,31 +29,30 @@ public class Help extends Command {
 
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        String msg = "";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.GREEN);
 
         if (stripped.length() == 0) {
-            msg += "Currently supported commands: ";
-            msg += "```diff\n";
+            embedBuilder.setAuthor("Currently supported commands", null, null);
+
             List<Command> commands = plusBot.getCommandHandler().getRegisteredCommands();
             for (Command command : commands) {
-                msg += "- " + command.getName() + "\n";
+                embedBuilder.addField(command.getName(), command.getHelp(), true);
             }
         } else {
             Command command = plusBot.getCommandHandler().getCommand(stripped);
-            msg += "```diff\n";
 
             if (command == null) {
                 channel.sendMessage("There is no command with the name \"" + stripped + "\"").queue();
                 return;
             }
 
-            msg += "- Name: " + command.getName() + "\n";
-            msg += "+ Help: " + command.getHelp() + "\n";
-            msg += "+ Aliases: " + FormatUtil.getFormatted(command.getAliases()) + "\n";
-            msg += "+ Required Permission: " + command.getRequiredPermission().toString() + "\n";
+            embedBuilder.addField("Name", command.getName(), true);
+            embedBuilder.addField("Help", command.getHelp(), true);
+            embedBuilder.addField("Aliases", FormatUtil.getFormatted(command.getAliases()), true);
+            embedBuilder.addField("Required Permission", command.getRequiredPermission().toString(), true);
         }
-        msg += "```";
 
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }

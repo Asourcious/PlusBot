@@ -1,5 +1,7 @@
 package org.asourcious.plusbot.commands.maintenance;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -13,6 +15,7 @@ import org.asourcious.plusbot.handle.ShardHandler;
 import org.asourcious.plusbot.utils.FormatUtil;
 import org.asourcious.plusbot.utils.SystemUtil;
 
+import java.awt.Color;
 import java.time.OffsetDateTime;
 
 public class Status extends NoArgumentCommand {
@@ -27,31 +30,24 @@ public class Status extends NoArgumentCommand {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         ShardHandler shardHandler = plusBot.getShardHandler();
+        EmbedBuilder embedBuilder = new EmbedBuilder();
 
-        String msg = "```diff\n";
-        msg += "- General\n";
-        msg += "+ Name: " + Constants.NAME + "\n";
-        msg += "+ Version: " + Constants.VERSION + "\n";
-        msg += "+ Uptime: " + FormatUtil.getFormattedDuration(Statistics.startTime, OffsetDateTime.now()) + "\n";
-        msg += "\n";
+        embedBuilder
+                .setColor(Color.CYAN)
+                .addField("Name", Constants.NAME, true)
+                .addField("Version", Constants.VERSION, true)
+                .addField("Uptime", FormatUtil.getFormattedDuration(Statistics.startTime, OffsetDateTime.now()), true)
+                .addField("Threads", String.valueOf(Thread.activeCount()), true)
+                .addField("CPU Usage", SystemUtil.getCPUUsage() + "%", true)
+                .addField("RAM Usage", SystemUtil.getUsedMemory() + "/" + SystemUtil.getTotalMemory() + "MB", true)
+                .addField("Messages Received", String.valueOf(Statistics.numMessages), true)
+                .addField("Commands Executed", String.valueOf(Statistics.numCommands), true)
+                .addField("Guilds", String.valueOf(shardHandler.getNumberOfGuilds()), true)
+                .addField("Text Channels", String.valueOf(shardHandler.getNumberOfTextChannels()), true)
+                .addField("Voice Channels", String.valueOf(shardHandler.getNumberOfVoiceChannels()), true)
+                .addField("Users", String.valueOf(shardHandler.getNumberOfUsers()), true);
 
-        msg += "- System\n";
-        msg += "+ Threads: " + Thread.activeCount() + "\n";
-        msg += "+ CPU Usage: " + SystemUtil.getCPUUsage() + "%\n";
-        msg += "+ RAM Usage: " + SystemUtil.getUsedMemory() + "/" + SystemUtil.getTotalMemory() + "MB\n";
-        msg += "\n";
-
-        msg += "- Statistics\n";
-        msg += "+ Messages Received: " + Statistics.numMessages + "\n";
-        msg += "+ Commands Executed: " + Statistics.numCommands + "\n";
-        msg += "+ Guilds: " + shardHandler.getNumberOfGuilds() + "\n";
-        msg += "+ TC's: " + shardHandler.getNumberOfTextChannels() + "\n";
-        msg += "+ VC's: " + shardHandler.getNumberOfVoiceChannels() + "\n";
-        msg += "+ Users: " + shardHandler.getNumberOfUsers() + "\n";
-
-        msg += "```";
-
-        channel.sendMessage(msg).queue();
+        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
 }
 
