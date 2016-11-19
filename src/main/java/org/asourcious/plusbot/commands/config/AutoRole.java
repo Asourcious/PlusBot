@@ -7,14 +7,10 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
-import org.asourcious.plusbot.config.DataSource;
 import org.asourcious.plusbot.utils.DiscordUtil;
-import org.asourcious.plusbot.utils.FormatUtil;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AutoRole extends Command {
 
@@ -23,8 +19,8 @@ public class AutoRole extends Command {
         this.name = "AutoRole";
         this.help = "Modifies roles to be automatically assigned to members when they join the server";
         this.children = new Command[] {
-                new Add(plusBot),
-                new Remove(plusBot)
+                new Human(plusBot),
+                new Bot(plusBot)
         };
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }
@@ -34,16 +30,10 @@ public class AutoRole extends Command {
         if (stripped.isEmpty())
             return null;
 
-        String[] args = stripped.toLowerCase().split("\\s+", 3);
+        String[] args = stripped.toLowerCase().split("\\s+", 2);
 
-        boolean isBot = args[1].equals("bot");
-
-        if (args.length < 1)
-            return "You must use at least one argument!";
-        if (isBot && args.length < 2)
-            return "You must supply at least two arguments if the first argument is bot!";
-        if (!args[0].equals("add") && !args[0].equals("remove"))
-            return "The first argument must be add or remove!";
+        if (args.length != 2)
+            return "You must use two arguments!";
 
         return null;
     }
@@ -53,16 +43,14 @@ public class AutoRole extends Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         DiscordUtil.checkForMissingAutoRoles(plusBot.getSettings(), guild);
 
-        Set<String> humanRoleNames = settings.getAutoHumanRoles().get(guild.getId())
-                .parallelStream().map(id -> guild.getRoleById(id).getName()).collect(Collectors.toSet());
-        Set<String> botRoleNames = settings.getAutoBotRoles().get(guild.getId())
-                .parallelStream().map(id -> guild.getRoleById(id).getName()).collect(Collectors.toSet());
+        Role autoBotRole = guild.getRoleById(settings.getProfile(guild).getAutoBotRole());
+        Role autoHumanRole = guild.getRoleById(settings.getProfile(guild).getAutoHumanRole());
 
         embedBuilder
                 .setColor(Color.green)
-                .setTitle("Auto Roles for " + guild.getName())
-                .addField("Humans", FormatUtil.getFormatted(humanRoleNames), false)
-                .addField("Bots", FormatUtil.getFormatted(botRoleNames), false);
+                .setDescription("Auto Roles for " + guild.getName())
+                .addField("Human", autoHumanRole == null ? "None" : autoHumanRole.getName(), false)
+                .addField("Bots", autoBotRole == null ? "None" : autoBotRole.getName(), false);
 
         channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }
@@ -93,46 +81,48 @@ public class AutoRole extends Command {
         }
     }
 
-    private class Add extends SubCommand {
-        public Add(PlusBot plusBot) {
+    private class Human extends SubCommand {
+        public Human(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Add";
+            this.name = "Human";
         }
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            boolean isBot = stripped.split("\\s+")[0].equalsIgnoreCase("bot");
-            if (isBot)
-                stripped = stripped.substring("bot".length()).trim();
+            if (stripped.equals("clear")) {
+                settings.getProfile(guild).removeAutoHumanRole();
+                channel.sendMessage("Removed auto human role").queue();
+                return;
+            }
 
             Role target = getTargetRole(stripped, channel, message, guild);
             if (target == null)
                 return;
 
-            DataSource autoRoles = isBot ? settings.getAutoBotRoles() : settings.getAutoHumanRoles();
-            autoRoles.add(guild.getId(), target.getId());
+            settings.getProfile(guild).setAutoHumanRole(target.getId());
             channel.sendMessage("Updated auto roles").queue();
         }
     }
 
-    private class Remove extends SubCommand {
-        public Remove(PlusBot plusBot) {
+    private class Bot extends SubCommand {
+        public Bot(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Remove";
+            this.name = "Bot";
         }
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            boolean isBot = stripped.split("\\s+")[0].equalsIgnoreCase("bot");
-            if (isBot)
-                stripped = stripped.substring("bot".length()).trim();
+            if (stripped.equals("clear")) {
+                settings.getProfile(guild).removeAutoBotRole();
+                channel.sendMessage("Removed auto bot role").queue();
+                return;
+            }
 
             Role target = getTargetRole(stripped, channel, message, guild);
             if (target == null)
                 return;
 
-            DataSource autoRoles = isBot ? settings.getAutoBotRoles() : settings.getAutoHumanRoles();
-            autoRoles.remove(guild.getId(), target.getId());
+            settings.getProfile(guild).setAutoBotRole(target.getId());
             channel.sendMessage("Updated auto roles").queue();
         }
     }

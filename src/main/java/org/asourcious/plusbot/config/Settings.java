@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.config;
 
+import net.dv8tion.jda.core.entities.Guild;
 import org.asourcious.plusbot.Constants;
 import org.json.JSONObject;
 
@@ -9,6 +10,8 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,10 +19,10 @@ public class Settings {
 
     private JSONObject credentials;
 
+    private Connection connection;
     private ExecutorService executorService;
 
-    private DataSource autoBotRoles;
-    private DataSource autoHumanRoles;
+    private Map<String, GuildProfile> guildProfiles;
     private DataSource blacklist;
     private DataSource channelDisabledCommands;
     private DataSource guildDisabledCommands;
@@ -27,13 +30,12 @@ public class Settings {
 
     public Settings() throws IOException {
         this.credentials = new JSONObject(new String(Files.readAllBytes(Paths.get("credentials.json"))));
+        this.guildProfiles = new ConcurrentHashMap<>();
         this.executorService = Executors.newSingleThreadExecutor();
 
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
 
-            autoBotRoles = new DataSource(connection, Constants.AUTOROLE_BOT, executorService).load();
-            autoHumanRoles = new DataSource(connection, Constants.AUTOROLE_HUMAN, executorService).load();
             blacklist = new DataSource(connection, Constants.BLACKLIST, executorService).load();
             channelDisabledCommands = new DataSource(connection, Constants.CHANNEL_DISABLED_COMMANDS, executorService).load();
             guildDisabledCommands = new DataSource(connection, Constants.GUILD_DISABLED_COMMANDS, executorService).load();
@@ -48,12 +50,11 @@ public class Settings {
         return credentials.getString("token");
     }
 
-    public DataSource getAutoBotRoles() {
-        return autoBotRoles;
-    }
+    public GuildProfile getProfile(Guild guild) {
+        if (!guildProfiles.containsKey(guild.getId()))
+            guildProfiles.put(guild.getId(), new GuildProfile(guild.getId(), connection, executorService).load());
 
-    public DataSource getAutoHumanRoles() {
-        return autoHumanRoles;
+        return guildProfiles.get(guild.getId());
     }
 
     public DataSource getBlacklist() {

@@ -2,13 +2,9 @@ package org.asourcious.plusbot.handle;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.utils.DiscordUtil;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AutoRoleHandler {
 
@@ -21,14 +17,10 @@ public class AutoRoleHandler {
     public void handleMemberJoin(Guild guild, Member member) {
         DiscordUtil.checkForMissingAutoRoles(settings, guild);
 
-        Set<Role> roles;
-        if (member.getUser().isBot()) {
-            roles = settings.getAutoBotRoles().get(guild.getId()).parallelStream().map(guild::getRoleById).collect(Collectors.toSet());
-        } else {
-            roles = settings.getAutoHumanRoles().get(guild.getId()).parallelStream().map(guild::getRoleById).collect(Collectors.toSet());
-        }
+        String id = member.getUser().isBot() ? settings.getProfile(guild).getAutoBotRole() : settings.getProfile(guild).getAutoHumanRole();
+        if (id == null)
+            return;
 
-        if (!roles.isEmpty() && guild.getSelfMember().canInteract(member))
-            guild.getController().addRolesToMember(member, roles).queue();
+        guild.getController().addRolesToMember(member, guild.getRoleById(id)).queue();
     }
 }
