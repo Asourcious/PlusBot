@@ -8,8 +8,9 @@ public enum PermissionLevel {
 
     EVERYONE(0, "Everyone"),
     SERVER_MODERATOR(1, "Server Moderator"),
-    SERVER_OWNER(2, "Server Owner"),
-    OWNER(3, "Bot Owner");
+    SERVER_ADMIN(2, "Server Administrator"),
+    SERVER_OWNER(3, "Server Owner"),
+    OWNER(4, "Bot Owner");
 
     private final int value;
     private final String name;
@@ -24,6 +25,8 @@ public enum PermissionLevel {
             return PermissionLevel.OWNER;
         if (member.isOwner())
             return PermissionLevel.SERVER_OWNER;
+        if (member.hasPermission(Permission.ADMINISTRATOR))
+            return PermissionLevel.SERVER_ADMIN;
         if (member.hasPermission(Permission.MANAGE_SERVER))
             return PermissionLevel.SERVER_MODERATOR;
 
