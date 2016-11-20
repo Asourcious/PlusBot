@@ -42,7 +42,7 @@ public class Settings {
             prefixes = new DataSource(connection, Constants.PREFIXES, executorService).load();
         } catch (SQLException e) {
             DataSource.LOG.log(e);
-            System.exit(1);
+            System.exit(Constants.DATABASE_ERROR);
         }
     }
 

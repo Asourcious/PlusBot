@@ -33,7 +33,7 @@ public class BootLoader {
             instance = new PlusBot();
         } catch (Exception ex) {
             LOG.log(ex);
-            System.exit(1);
+            System.exit(Constants.BOT_INITIALIZATION_ERROR);
         }
     }
 }

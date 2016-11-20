@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
@@ -32,7 +33,7 @@ public class ShardHandler {
                 );
             } catch (RateLimitedException e) {
                 PlusBot.LOG.log(e);
-                System.exit(1);
+                System.exit(Constants.BOT_LOGIN_ERROR);
             }
             return;
         }
@@ -47,7 +48,7 @@ public class ShardHandler {
                         .buildAsync());
             } catch (RateLimitedException e) {
                 PlusBot.LOG.log(e);
-                System.exit(1);
+                System.exit(Constants.BOT_LOGIN_ERROR);
             }
         }
     }
