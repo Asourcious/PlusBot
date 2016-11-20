@@ -38,7 +38,7 @@ public class CommandHandler {
         this.rateLimitHandlers = new ConcurrentHashMap<>();
     }
 
-    public void handle(Message message, User author, TextChannel channel, Guild guild) {
+    public void handleMessage(Message message, User author, TextChannel channel, Guild guild) {
         String prefix = DiscordUtil.getPrefix(plusBot, message);
 
         if (prefix == null)

@@ -19,6 +19,8 @@ public class GuildProfile {
     private String autoHumanRole;
     private String modLogChannel;
     private String welcomeChannel;
+    private String welcomeMessage;
+    private String welcomeDMMessage;
 
     public GuildProfile(String guild, Connection connection, ExecutorService executorService) {
         this.guild = guild;
@@ -36,6 +38,8 @@ public class GuildProfile {
             autoHumanRole = resultSet.getString(3);
             modLogChannel = resultSet.getString(4);
             welcomeChannel = resultSet.getString(5);
+            welcomeMessage = resultSet.getString(6);
+            welcomeDMMessage = resultSet.getString(7);
         } catch (SQLException e) {
             DataSource.LOG.log(e);
         }
@@ -45,8 +49,9 @@ public class GuildProfile {
     public void update() {
         try (Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM " + Constants.GUILD_PROFILES + " WHERE guild_id = '" + guild + "'");
-            statement.execute("INSERT INTO " + Constants.GUILD_PROFILES + " (guild_id, bot_role, human_role, mod_log_channel, welcome_channel) VALUES ('"
-                    + guild + "', '" + autoBotRole + "', '" + autoHumanRole + "', '" + modLogChannel + "', '" + welcomeChannel + "')");
+            statement.execute("INSERT INTO " + Constants.GUILD_PROFILES
+                    + " (guild_id, bot_role, human_role, mod_log_channel, welcome_channel, welcome_message, welcome_dm_message) VALUES ('"
+                    + guild + "', '" + autoBotRole + "', '" + autoHumanRole + "', '" + modLogChannel + "', '" + welcomeChannel + "', '" + welcomeMessage  + "', '" + welcomeDMMessage + "')");
         } catch (SQLException e) {
             DataSource.LOG.log(e);
         }
@@ -106,5 +111,32 @@ public class GuildProfile {
     public void removeWelcomeChannel() {
         welcomeChannel = null;
         executorService.execute(this::update);
+    }
+
+    public String getWelcomeMessage() {
+        return welcomeMessage;
+    }
+
+    public void setWelcomeMessage(String welcomeMessage) {
+        this.welcomeMessage = welcomeMessage;
+        executorService.execute(this::update);
+    }
+
+    public void removeWelcomeMessage() {
+        welcomeChannel = null;
+        executorService.execute(this::update);
+    }
+
+    public String getWelcomeDMMessage() {
+        return welcomeDMMessage;
+    }
+
+    public void setWelcomeDMMessage(String welcomeDMMessage) {
+        this.welcomeDMMessage = welcomeDMMessage;
+        executorService.execute(this::update);
+    }
+
+    public void removeWelcomeDMMessage() {
+        this.welcomeDMMessage = null;
     }
 }

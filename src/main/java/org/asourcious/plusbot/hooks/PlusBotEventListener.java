@@ -10,15 +10,18 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.handle.AutoRoleHandler;
 import org.asourcious.plusbot.handle.CommandHandler;
+import org.asourcious.plusbot.handle.WelcomeHandler;
 
 public class PlusBotEventListener extends ListenerAdapter {
 
+    private WelcomeHandler welcomeHandler;
     private AutoRoleHandler roleHandler;
     private CommandHandler commandHandler;
 
-    public PlusBotEventListener(CommandHandler commandHandler, AutoRoleHandler roleHandler) {
+    public PlusBotEventListener(CommandHandler commandHandler, AutoRoleHandler roleHandler, WelcomeHandler welcomeHandler) {
         this.commandHandler = commandHandler;
         this.roleHandler = roleHandler;
+        this.welcomeHandler = welcomeHandler;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class PlusBotEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        welcomeHandler.handleMemberJoin(event.getGuild(), event.getMember());
         roleHandler.handleMemberJoin(event.getGuild(), event.getMember());
     }
 
@@ -43,6 +47,6 @@ public class PlusBotEventListener extends ListenerAdapter {
         if (!event.getChannel().canTalk())
             return;
 
-        commandHandler.handle(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
+        commandHandler.handleMessage(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
     }
 }

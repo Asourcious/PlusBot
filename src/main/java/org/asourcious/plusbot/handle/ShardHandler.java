@@ -8,7 +8,9 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
 import javax.security.auth.login.LoginException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShardHandler {
@@ -18,12 +20,13 @@ public class ShardHandler {
     public ShardHandler(PlusBot plusBot, CommandHandler commandHandler, int numShards) throws LoginException {
         this.shards = ConcurrentHashMap.newKeySet();
         AutoRoleHandler roleHandler = new AutoRoleHandler(plusBot);
+        WelcomeHandler welcomeHandler = new WelcomeHandler(plusBot);
 
         if (numShards == 1) {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler, roleHandler))
+                        .addListener(new PlusBotEventListener(commandHandler, roleHandler, welcomeHandler))
                         .setBulkDeleteSplittingEnabled(false)
                         .buildAsync()
                 );
@@ -38,7 +41,7 @@ public class ShardHandler {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler, roleHandler))
+                        .addListener(new PlusBotEventListener(commandHandler, roleHandler, welcomeHandler))
                         .setBulkDeleteSplittingEnabled(false)
                         .useSharding(i, numShards)
                         .buildAsync());

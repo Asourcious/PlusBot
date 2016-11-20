@@ -1,10 +1,7 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.asourcious.plusbot.commands.config.AutoRole;
-import org.asourcious.plusbot.commands.config.Blacklist;
-import org.asourcious.plusbot.commands.config.CommandToggle;
-import org.asourcious.plusbot.commands.config.Prefix;
+import org.asourcious.plusbot.commands.config.*;
 import org.asourcious.plusbot.commands.fun.Google;
 import org.asourcious.plusbot.commands.fun.RIP;
 import org.asourcious.plusbot.commands.fun.Triggered;
@@ -44,6 +41,8 @@ public class PlusBot {
         commandHandler.registerCommand(new Blacklist(this));
         commandHandler.registerCommand(new CommandToggle(this));
         commandHandler.registerCommand(new Prefix(this));
+        commandHandler.registerCommand(new Welcome(this));
+        commandHandler.registerCommand(new WelcomeDM(this));
 
         commandHandler.registerCommand(new Google(this));
         commandHandler.registerCommand(new RIP(this));
