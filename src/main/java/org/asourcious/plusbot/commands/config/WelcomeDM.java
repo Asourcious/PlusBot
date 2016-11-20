@@ -15,6 +15,7 @@ public class WelcomeDM extends CommandContainer {
 
     public WelcomeDM(PlusBot plusBot) {
         super(plusBot);
+        this.help = "Sets the message to be DM'ed to users when they join the server";
         this.children = new Command[] {
                 new Clear(plusBot),
                 new Text(plusBot)
@@ -24,6 +25,14 @@ public class WelcomeDM extends CommandContainer {
 
     @Override
     public String isValid(Message message, String stripped) {
+        String[] args = stripped.toLowerCase().split("\\s+", 2);
+        if (args[0].equals("clear") && !args[1].isEmpty())
+            return "Clear doesn't take any arguments!";
+        if (args[0].equals("text") && args[1].isEmpty())
+            return "You must supply a message for text!";
+        if (!args[0].equals("text") && !args[0].equals("clear"))
+            return "Text and Clear are the only allowed commands!";
+
         return null;
     }
 

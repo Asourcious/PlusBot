@@ -17,6 +17,7 @@ public class Welcome extends CommandContainer {
 
     public Welcome(PlusBot plusBot) {
         super(plusBot);
+        this.help = "Sets the message and channel for the server's welcome message.";
         this.children = new Command[] {
                 new Clear(plusBot),
                 new Channel(plusBot),
@@ -27,6 +28,14 @@ public class Welcome extends CommandContainer {
 
     @Override
     public String isValid(Message message, String stripped) {
+        String[] args = stripped.toLowerCase().split("\\s+", 2);
+        if ((args[0].equals("clear") || args[0].equals("channel")) && !args[2].isEmpty())
+            return args[0] + " doesn't take any arguments!";
+        if (args[0].equals("text") && stripped.isEmpty())
+            return "You must supply a message with Text!";
+        if (args[0].equals("clear") && !args[0].equals("channel") && !args[0].equals("text"))
+            return "The only accepted arguments are clear, channel, and text!";
+
         return null;
     }
 
@@ -47,7 +56,6 @@ public class Welcome extends CommandContainer {
     private class Channel extends SubCommand {
         public Channel(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Channel";
         }
 
         @Override
@@ -66,7 +74,6 @@ public class Welcome extends CommandContainer {
     private class Text extends SubCommand {
         public Text(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Text";
         }
 
         @Override
