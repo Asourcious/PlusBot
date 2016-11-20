@@ -16,7 +16,6 @@ public class AutoRole extends Command {
 
     public AutoRole(PlusBot plusBot) {
         super(plusBot);
-        this.name = "AutoRole";
         this.help = "Modifies roles to be automatically assigned to members when they join the server";
         this.children = new Command[] {
                 new Human(plusBot),
@@ -84,7 +83,6 @@ public class AutoRole extends Command {
     private class Human extends SubCommand {
         public Human(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Human";
         }
 
         @Override
@@ -107,7 +105,6 @@ public class AutoRole extends Command {
     private class Bot extends SubCommand {
         public Bot(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Bot";
         }
 
         @Override

@@ -11,7 +11,6 @@ public class Google extends Command {
 
     public Google(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Google";
         this.help = "Searches google for the specified query.";
         this.aliases = new String[] { "g" };
     }

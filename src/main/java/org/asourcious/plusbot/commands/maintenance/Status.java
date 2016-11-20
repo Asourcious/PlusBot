@@ -22,7 +22,6 @@ public class Status extends NoArgumentCommand {
 
     public Status(PlusBot civBot) {
         super(civBot);
-        this.name = "Status";
         this.help = "Returns information about the status of " + Constants.NAME;
         this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
     }

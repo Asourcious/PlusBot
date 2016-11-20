@@ -15,7 +15,6 @@ public class Ping extends NoArgumentCommand {
 
     public Ping(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Ping";
         this.help = "Measures the response time of " + Constants.NAME;
         this.rateLimit = new RateLimit(2, 30, TimeUnit.SECONDS);
     }

@@ -18,7 +18,6 @@ public class Blacklist extends CommandContainer {
 
     public Blacklist(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Blacklist";
         this.help = "Adds and removes users from the server's blacklist.";
         this.children = new Command[] {
                 new Add(plusBot),
@@ -41,7 +40,6 @@ public class Blacklist extends CommandContainer {
     private class Add extends SubCommand {
         public Add(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Add";
         }
 
         @Override
@@ -67,7 +65,6 @@ public class Blacklist extends CommandContainer {
     private class Remove extends SubCommand {
         public Remove(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Remove";
         }
 
         @Override
@@ -89,7 +86,6 @@ public class Blacklist extends CommandContainer {
     private class Clear extends SubCommand {
         public Clear(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Clear";
         }
 
         @Override

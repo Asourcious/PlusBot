@@ -16,7 +16,6 @@ public class ChannelInfo extends Command {
 
     public ChannelInfo(PlusBot plusBot) {
         super(plusBot);
-        this.name = "ChannelInfo";
         this.help = "Gives information about the current or specified channel";
     }
 

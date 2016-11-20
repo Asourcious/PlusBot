@@ -14,7 +14,6 @@ public class Prefix extends CommandContainer {
 
     public Prefix(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Prefix";
         this.help = "Modifies custom prefixes for the server.";
         this.children = new Command[] {
                 new Add(plusBot),
@@ -49,7 +48,6 @@ public class Prefix extends CommandContainer {
     private class Add extends SubCommand {
         public Add(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Add";
         }
 
         @Override
@@ -72,7 +70,6 @@ public class Prefix extends CommandContainer {
     private class Remove extends SubCommand {
         public Remove(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Remove";
         }
 
         @Override
@@ -90,7 +87,6 @@ public class Prefix extends CommandContainer {
     private class Clear extends SubCommand {
         public Clear(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Clear";
         }
 
         @Override
@@ -103,7 +99,6 @@ public class Prefix extends CommandContainer {
     private class List extends SubCommand {
         public List(PlusBot plusBot) {
             super(plusBot);
-            this.name = "List";
         }
 
         @Override

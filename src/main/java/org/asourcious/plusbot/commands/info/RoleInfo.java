@@ -12,7 +12,6 @@ import java.awt.Color;
 public class RoleInfo extends Command {
     public RoleInfo(PlusBot plusBot) {
         super(plusBot);
-        this.name = "RoleInfo";
         this.help = "Gives information about the specified role";
     }
 

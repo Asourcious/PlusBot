@@ -17,7 +17,6 @@ public class Triggered extends NoArgumentCommand {
 
     public Triggered(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Triggered";
         this.help = "Posts a \"triggered\" GIF.";
 
         this.random = new Random();

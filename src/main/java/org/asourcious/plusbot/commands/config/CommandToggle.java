@@ -42,7 +42,6 @@ public class CommandToggle extends CommandContainer {
     private class Enable extends SubCommand {
         public Enable(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Enable";
         }
 
         @Override
@@ -69,7 +68,6 @@ public class CommandToggle extends CommandContainer {
     private class Disable extends SubCommand {
         public Disable(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Disable";
         }
 
         @Override

@@ -16,7 +16,6 @@ public class Welcome extends CommandContainer {
 
     public Welcome(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Welcome";
         this.children = new Command[] {
                 new Clear(plusBot),
                 new Channel(plusBot),

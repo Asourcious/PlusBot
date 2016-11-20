@@ -16,7 +16,6 @@ public class GuildInfo extends NoArgumentCommand {
 
     public GuildInfo(PlusBot plusBot) {
         super(plusBot);
-        this.name = "GuildInfo";
         this.help = "Gives information about the server";
         this.aliases = new String[] { "ServerInfo" };
     }

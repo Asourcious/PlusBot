@@ -14,7 +14,7 @@ public abstract class Command {
     protected final PlusBot plusBot;
     protected final Settings settings;
 
-    protected String name;
+    protected String name = getClass().getSimpleName();
     protected String help = "No help is provided. Please contact Asourcious if you see this.";
     protected RateLimit rateLimit;
     protected String[] aliases = new String[0];

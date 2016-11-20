@@ -14,7 +14,6 @@ public class WelcomeDM extends CommandContainer {
 
     public WelcomeDM(PlusBot plusBot) {
         super(plusBot);
-        this.name = "WelcomeDM";
         this.children = new Command[] {
                 new Clear(plusBot),
                 new Text(plusBot)
@@ -30,7 +29,6 @@ public class WelcomeDM extends CommandContainer {
     private class Clear extends SubCommand {
         public Clear(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Clear";
         }
 
         @Override
@@ -43,7 +41,6 @@ public class WelcomeDM extends CommandContainer {
     private class Text extends SubCommand {
         public Text(PlusBot plusBot) {
             super(plusBot);
-            this.name = "Text";
         }
 
         @Override

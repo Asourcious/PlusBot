@@ -16,7 +16,6 @@ public class Help extends Command {
 
     public Help(PlusBot plusBot) {
         super(plusBot);
-        this.name = "Help";
         this.help = "Lists all commands, or gives information about a specific command";
         this.aliases = new String[] { "Commands", "CommandList" };
     }

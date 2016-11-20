@@ -14,7 +14,6 @@ import java.util.List;
 public class UserInfo extends Command {
     public UserInfo(PlusBot plusBot) {
         super(plusBot);
-        this.name = "UserInfo";
         this.help = "Gives information about you, a mentioned user, or the user whose id you provide (As long as they are in this server)";
     }
 
