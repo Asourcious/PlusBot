@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
+import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.config.Settings;
 
 import java.util.ArrayList;
@@ -14,13 +15,13 @@ public final class DiscordUtil {
     private DiscordUtil() {}
 
     public static void checkForMissingAutoRoles(Settings settings, Guild guild) {
-        String autoBotRole = settings.getProfile(guild).getAutoBotRole();
-        String autoHumanRole = settings.getProfile(guild).getAutoHumanRole();
+        String autoBotRole = settings.getProfile(guild).getProperty(GuildProfile.BOT_ROLE);
+        String autoHumanRole = settings.getProfile(guild).getProperty(GuildProfile.HUMAN_ROLE);
 
         if (autoBotRole != null && guild.getRoleById(autoBotRole) == null)
-            settings.getProfile(guild).removeAutoBotRole();
+            settings.getProfile(guild).removeProperty(GuildProfile.BOT_ROLE);
         if (autoHumanRole != null && guild.getRoleById(autoHumanRole) == null)
-            settings.getProfile(guild).removeAutoHumanRole();
+            settings.getProfile(guild).removeProperty(GuildProfile.HUMAN_ROLE);
     }
 
     public static String getPrefix(PlusBot plusBot, Message message) {

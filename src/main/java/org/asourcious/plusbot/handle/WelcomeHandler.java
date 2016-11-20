@@ -19,14 +19,14 @@ public class WelcomeHandler {
         GuildProfile profile = settings.getProfile(guild);
 
         try {
-            if (profile.getWelcomeChannel() != null) {
-                TextChannel channel = guild.getTextChannelById(profile.getWelcomeChannel());
+            if (profile.hasProperty(GuildProfile.WELCOME_CHANNEL)) {
+                TextChannel channel = guild.getTextChannelById(profile.getProperty(GuildProfile.WELCOME_CHANNEL));
 
-                channel.sendMessage(profile.getWelcomeMessage()).queue();
+                channel.sendMessage(profile.getProperty(GuildProfile.WELCOME_MESSAGE)).queue();
             }
 
-            if (profile.getWelcomeDMMessage() != null) {
-                member.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(profile.getWelcomeDMMessage()).queue());
+            if (profile.hasProperty(GuildProfile.WELCOME_DM_MESSAGE)) {
+                member.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(profile.getProperty(GuildProfile.WELCOME_DM_MESSAGE)).queue());
             }
         } catch (Exception ignored) {}
     }

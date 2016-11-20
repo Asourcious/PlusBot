@@ -7,6 +7,7 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
+import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
 import java.awt.Color;
@@ -42,8 +43,8 @@ public class AutoRole extends Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         DiscordUtil.checkForMissingAutoRoles(plusBot.getSettings(), guild);
 
-        Role autoBotRole = guild.getRoleById(settings.getProfile(guild).getAutoBotRole());
-        Role autoHumanRole = guild.getRoleById(settings.getProfile(guild).getAutoHumanRole());
+        Role autoBotRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.BOT_ROLE));
+        Role autoHumanRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.HUMAN_ROLE));
 
         embedBuilder
                 .setColor(Color.green)
@@ -88,7 +89,7 @@ public class AutoRole extends Command {
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             if (stripped.equals("clear")) {
-                settings.getProfile(guild).removeAutoHumanRole();
+                settings.getProfile(guild).removeProperty(GuildProfile.HUMAN_ROLE);
                 channel.sendMessage("Removed auto human role").queue();
                 return;
             }
@@ -97,7 +98,7 @@ public class AutoRole extends Command {
             if (target == null)
                 return;
 
-            settings.getProfile(guild).setAutoHumanRole(target.getId());
+            settings.getProfile(guild).setProperty(GuildProfile.HUMAN_ROLE, target.getId());
             channel.sendMessage("Updated auto roles").queue();
         }
     }
@@ -110,7 +111,7 @@ public class AutoRole extends Command {
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             if (stripped.equals("clear")) {
-                settings.getProfile(guild).removeAutoBotRole();
+                settings.getProfile(guild).removeProperty(GuildProfile.BOT_ROLE);
                 channel.sendMessage("Removed auto bot role").queue();
                 return;
             }
@@ -119,7 +120,7 @@ public class AutoRole extends Command {
             if (target == null)
                 return;
 
-            settings.getProfile(guild).setAutoBotRole(target.getId());
+            settings.getProfile(guild).setProperty(GuildProfile.BOT_ROLE, target.getId());
             channel.sendMessage("Updated auto roles").queue();
         }
     }

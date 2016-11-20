@@ -9,6 +9,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
+import org.asourcious.plusbot.config.GuildProfile;
 
 public class WelcomeDM extends CommandContainer {
 
@@ -33,7 +34,7 @@ public class WelcomeDM extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            settings.getProfile(guild).removeWelcomeDMMessage();
+            settings.getProfile(guild).removeProperty(GuildProfile.WELCOME_DM_MESSAGE);
             channel.sendMessage("Cleared WelcomeDM.").queue();
         }
     }
@@ -45,7 +46,7 @@ public class WelcomeDM extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            settings.getProfile(guild).setWelcomeDMMessage(stripped);
+            settings.getProfile(guild).setProperty(GuildProfile.WELCOME_DM_MESSAGE, stripped);
             channel.sendMessage("Updated WelcomeDM text.").queue();
         }
     }

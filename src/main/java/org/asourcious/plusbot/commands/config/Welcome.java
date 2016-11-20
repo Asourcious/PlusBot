@@ -9,6 +9,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
+import org.asourcious.plusbot.config.GuildProfile;
 
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class Welcome extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            settings.getProfile(guild).removeWelcomeChannel();
-            settings.getProfile(guild).removeWelcomeMessage();
+            settings.getProfile(guild).removeProperty(GuildProfile.WELCOME_CHANNEL);
+            settings.getProfile(guild).removeProperty(GuildProfile.WELCOME_MESSAGE);
             channel.sendMessage("Successfully cleared welcome").queue();
         }
     }
@@ -57,7 +58,7 @@ public class Welcome extends CommandContainer {
                 return;
             }
 
-            settings.getProfile(guild).setWelcomeChannel(mentioned.get(0).getId());
+            settings.getProfile(guild).setProperty(GuildProfile.WELCOME_CHANNEL, mentioned.get(0).getId());
             channel.sendMessage("Successfully updated welcome channel!").queue();
         }
     }
@@ -75,7 +76,7 @@ public class Welcome extends CommandContainer {
                 return;
             }
 
-            settings.getProfile(guild).setWelcomeMessage(stripped);
+            settings.getProfile(guild).setProperty(GuildProfile.WELCOME_MESSAGE, stripped);
             channel.sendMessage("Updated Welcome message!").queue();
         }
     }

@@ -1,26 +1,26 @@
 package org.asourcious.plusbot.config;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.asourcious.plusbot.Constants;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
 public class GuildProfile {
+
+    public static int BOT_ROLE = 0;
+    public static int HUMAN_ROLE = 1;
+    //public static int MOD_LOG_CHANNEL = 2;
+    public static int WELCOME_CHANNEL = 3;
+    public static int WELCOME_MESSAGE = 4;
+    public static int WELCOME_DM_MESSAGE = 5;
 
     private Connection connection;
     private ExecutorService executorService;
 
     private String guild;
-
-    private String autoBotRole;
-    private String autoHumanRole;
-    private String modLogChannel;
-    private String welcomeChannel;
-    private String welcomeMessage;
-    private String welcomeDMMessage;
+    private String[] properties;
 
     public GuildProfile(String guild, Connection connection, ExecutorService executorService) {
         this.guild = guild;
@@ -31,15 +31,13 @@ public class GuildProfile {
     public GuildProfile load() {
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + Constants.GUILD_PROFILES + " WHERE guild_id = '" + guild + "'");
+            properties = new String[resultSet.getMetaData().getColumnCount() - 2];
             if (!resultSet.next())
                 return this;
 
-            autoBotRole = resultSet.getString(2);
-            autoHumanRole = resultSet.getString(3);
-            modLogChannel = resultSet.getString(4);
-            welcomeChannel = resultSet.getString(5);
-            welcomeMessage = resultSet.getString(6);
-            welcomeDMMessage = resultSet.getString(7);
+            for (int i = 0; i < properties.length; i++) {
+                properties[i] = resultSet.getString(i + 2);
+            }
         } catch (SQLException e) {
             DataSource.LOG.log(e);
         }
@@ -49,94 +47,45 @@ public class GuildProfile {
     public void update() {
         try (Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM " + Constants.GUILD_PROFILES + " WHERE guild_id = '" + guild + "'");
-            statement.execute("INSERT INTO " + Constants.GUILD_PROFILES
-                    + " (guild_id, bot_role, human_role, mod_log_channel, welcome_channel, welcome_message, welcome_dm_message) VALUES ('"
-                    + guild + "', '" + autoBotRole + "', '" + autoHumanRole + "', '" + modLogChannel + "', '" + welcomeChannel + "', '" + welcomeMessage  + "', '" + welcomeDMMessage + "')");
+            System.out.println(Arrays.toString(ArrayUtils.addAll(new String[]{guild}, properties)));
+            run(connection.prepareStatement("INSERT INTO " + Constants.GUILD_PROFILES + " VALUES " + toArgs()), ArrayUtils.addAll(new String[] {null, guild}, properties));
         } catch (SQLException e) {
             DataSource.LOG.log(e);
         }
     }
 
-    public String getAutoBotRole() {
-        return autoBotRole;
+    public String getProperty(int property) {
+        return properties[property];
     }
 
-    public void setAutoBotRole(String autoBotRole) {
-        this.autoBotRole = autoBotRole;
+    public boolean hasProperty(int property) {
+        return getProperty(property) != null;
+    }
+
+    public void setProperty(int property, String value) {
+        properties[property] = value;
         executorService.execute(this::update);
     }
 
-    public void removeAutoBotRole() {
-        autoBotRole = null;
+    public void removeProperty(int property) {
+        properties[property] = null;
         executorService.execute(this::update);
     }
 
-    public String getAutoHumanRole() {
-        return autoHumanRole;
+    private void run(PreparedStatement statement, String... args) {
+        try {
+            for (int i = 0; i < args.length; i++) {
+                statement.setString(i + 1, args[i]);
+            }
+            statement.execute();
+        } catch (SQLException ex) {
+            DataSource.LOG.log(ex);
+        }
     }
 
-    public void setAutoHumanRole(String autoHumanRole) {
-        this.autoHumanRole = autoHumanRole;
-        executorService.execute(this::update);
-    }
-
-    public void removeAutoHumanRole() {
-        autoHumanRole = null;
-        executorService.execute(this::update);
-    }
-
-    public String getModLogChannel() {
-        return modLogChannel;
-    }
-
-    public void setModLogChannel(String modLogChannel) {
-        this.modLogChannel = modLogChannel;
-        executorService.execute(this::update);
-    }
-
-    public void removeModLogChannel() {
-        modLogChannel = null;
-        executorService.execute(this::update);
-    }
-
-    public String getWelcomeChannel() {
-        return welcomeChannel;
-    }
-
-    public void setWelcomeChannel(String welcomeChannel) {
-        this.welcomeChannel = welcomeChannel;
-        executorService.execute(this::update);
-    }
-
-    public void removeWelcomeChannel() {
-        welcomeChannel = null;
-        executorService.execute(this::update);
-    }
-
-    public String getWelcomeMessage() {
-        return welcomeMessage;
-    }
-
-    public void setWelcomeMessage(String welcomeMessage) {
-        this.welcomeMessage = welcomeMessage;
-        executorService.execute(this::update);
-    }
-
-    public void removeWelcomeMessage() {
-        welcomeChannel = null;
-        executorService.execute(this::update);
-    }
-
-    public String getWelcomeDMMessage() {
-        return welcomeDMMessage;
-    }
-
-    public void setWelcomeDMMessage(String welcomeDMMessage) {
-        this.welcomeDMMessage = welcomeDMMessage;
-        executorService.execute(this::update);
-    }
-
-    public void removeWelcomeDMMessage() {
-        this.welcomeDMMessage = null;
+    private String toArgs() {
+        String args = "(?, ";
+        for (int i = 0; i < properties.length; i++) args += "?, ";
+        return args + "?);";
     }
 }
