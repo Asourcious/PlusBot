@@ -1,6 +1,8 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.asourcious.plusbot.commands.admin.Ban;
+import org.asourcious.plusbot.commands.admin.Kick;
 import org.asourcious.plusbot.commands.config.*;
 import org.asourcious.plusbot.commands.fun.Google;
 import org.asourcious.plusbot.commands.fun.RIP;
@@ -36,6 +38,9 @@ public class PlusBot {
         this.shardHandler = new ShardHandler(this, commandHandler, 1);
         this.googleSearchHandler = new GoogleSearchHandler();
         this.cacheCleaner = Executors.newSingleThreadScheduledExecutor();
+
+        commandHandler.registerCommand(new Ban(this));
+        commandHandler.registerCommand(new Kick(this));
 
         commandHandler.registerCommand(new AutoRole(this));
         commandHandler.registerCommand(new Blacklist(this));
