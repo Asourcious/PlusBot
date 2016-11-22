@@ -4,7 +4,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.asourcious.plusbot.Constants;
 
 import java.sql.*;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
 public class GuildProfile {
@@ -84,7 +83,7 @@ public class GuildProfile {
 
     private String toArgs() {
         String args = "(?, ";
-        for (int i = 0; i < properties.length; i++) args += "?, ";
+        for (String ignored : properties) args += "?, ";
         return args + "?);";
     }
 }
