@@ -1,7 +1,7 @@
 package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.asourcious.plusbot.Constants;
+import org.apache.commons.math3.util.Pair;
 
 import java.sql.*;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-public class DataSource {
+public abstract class DataSource<T> {
 
     public static final SimpleLog LOG = SimpleLog.getLog("Database");
 
@@ -18,64 +18,60 @@ public class DataSource {
     private ExecutorService executorService;
 
     protected String table;
-    protected Map<String, Set<String>> cache;
+    protected Map<String, Set<T>> cache;
 
     protected PreparedStatement add;
     protected PreparedStatement remove;
     protected PreparedStatement clear;
 
-    public DataSource(Connection connection, String table, ExecutorService executorService) throws SQLException {
+    public DataSource(Connection connection, ExecutorService executorService, String table) throws SQLException {
         this.connection = connection;
         this.executorService = executorService;
         this.table = table;
-
-        this.add = connection.prepareStatement("INSERT INTO " + table + " (container, entry) VALUES (?, ?);");
-        this.remove = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ? AND entry = ?;");
-        this.clear = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ?;");
     }
 
-    public DataSource load() {
+    public void load() {
         cache = new ConcurrentHashMap<>();
 
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table);
 
             while (resultSet.next()) {
-                if (!cache.containsKey(resultSet.getString(2)))
-                    cache.put(resultSet.getString(2), ConcurrentHashMap.newKeySet());
+                Pair<String, T> entry = parseRow(toArray(resultSet));
 
-                cache.get(resultSet.getString(2)).add(resultSet.getString(3));
+                if (!cache.containsKey(entry.getKey()))
+                    cache.put(entry.getKey(), ConcurrentHashMap.newKeySet());
+
+                cache.get(entry.getKey()).add(entry.getValue());
             }
         } catch (SQLException ex) {
             LOG.log(ex);
-            System.exit(Constants.DATABASE_ERROR);
+            System.exit(1);
         }
-
-        return this;
     }
 
-    public boolean has(String container, String entry) {
+    public boolean has(String container, T entry) {
         return cache.containsKey(container) && cache.get(container).contains(entry);
     }
 
-    public Set<String> get(String container) {
+    public Set<T> get(String container) {
         if (!cache.containsKey(container))
             return Collections.emptySet();
 
         return Collections.unmodifiableSet(cache.get(container));
     }
 
-    public void add(String container, String entry) {
+    public void add(String container, T entry) {
         if (!cache.containsKey(container))
             cache.put(container, ConcurrentHashMap.newKeySet());
 
         cache.get(container).add(entry);
-        executeStatement(add, container, entry);
+        executeStatement(add, toArgs(container, entry));
     }
 
-    public void remove(String container, String entry) {
+    public void remove(String container, T entry) {
         cache.get(container).remove(entry);
-        executeStatement(remove, container, entry);
+        executeStatement(remove, toArgs(container, entry));
     }
 
     public void clear(String container) {
@@ -83,7 +79,10 @@ public class DataSource {
         executeStatement(clear, container);
     }
 
-    protected void executeStatement(PreparedStatement statement, String... args) {
+    protected abstract Pair<String, T> parseRow(String[] columns);
+    protected abstract String[] toArgs(String container, T entry);
+
+    private void executeStatement(PreparedStatement statement, String... args) {
         executorService.execute(() -> {
             try {
                 for (int i = 0; i < args.length; i++) {
@@ -94,5 +93,15 @@ public class DataSource {
                 LOG.log(ex);
             }
         });
+    }
+
+    private String[] toArray(ResultSet results) throws SQLException {
+        String[] result = new String[results.getMetaData().getColumnCount()];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = results.getString(i + 1);
+        }
+
+        return result;
     }
 }

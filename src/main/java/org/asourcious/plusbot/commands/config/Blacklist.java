@@ -9,7 +9,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.commands.SubCommand;
-import org.asourcious.plusbot.config.DataSource;
+import org.asourcious.plusbot.config.source.Blacklists;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            DataSource blacklist = settings.getBlacklist();
+            Blacklists blacklist = settings.getBlacklists();
             List<User> targets = DiscordUtil.getTrimmedMentions(message);
             int numUpdated = 0;
 
@@ -69,7 +69,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            DataSource blacklist = settings.getBlacklist();
+            Blacklists blacklist = settings.getBlacklists();
             List<User> targets = DiscordUtil.getTrimmedMentions(message);
             int numUpdated = 0;
 
@@ -90,7 +90,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            settings.getBlacklist().clear(guild.getId());
+            settings.getBlacklists().clear(guild.getId());
             channel.sendMessage("Successfully cleared blacklist.").queue();
         }
     }

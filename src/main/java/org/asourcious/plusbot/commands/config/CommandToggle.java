@@ -50,7 +50,7 @@ public class CommandToggle extends CommandContainer {
             boolean isChannel = args.length == 2;
 
             String containerId = isChannel ? channel.getId() : guild.getId();
-            DataSource disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
+            DataSource<String> disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
             if (args[0].equals("all")) {
                 disabledCommands.clear(containerId);
                 channel.sendMessage("Enabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
@@ -76,7 +76,7 @@ public class CommandToggle extends CommandContainer {
             boolean isChannel = args.length == 2;
 
             String containerId = isChannel ? channel.getId() : guild.getId();
-            DataSource disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
+            DataSource<String> disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
             if (args[0].equals("all")) {
                 channel.sendMessage("Disabling all commands is not allowed!").queue();
             } else {

@@ -47,7 +47,6 @@ public class GuildProfile {
     public void update() {
         try (Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM " + Constants.GUILD_PROFILES + " WHERE guild_id = '" + guild + "'");
-            System.out.println(Arrays.toString(ArrayUtils.addAll(new String[]{guild}, properties)));
             run(connection.prepareStatement("INSERT INTO " + Constants.GUILD_PROFILES + " VALUES " + toArgs()), ArrayUtils.addAll(new String[] {null, guild}, properties));
         } catch (SQLException e) {
             DataSource.LOG.log(e);

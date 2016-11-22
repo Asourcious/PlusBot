@@ -1,7 +1,10 @@
 package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.entities.Guild;
-import org.asourcious.plusbot.Constants;
+import org.asourcious.plusbot.config.source.Blacklists;
+import org.asourcious.plusbot.config.source.ChannelDisabledCommands;
+import org.asourcious.plusbot.config.source.GuildDisabledCommands;
+import org.asourcious.plusbot.config.source.Prefixes;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -23,10 +26,10 @@ public class Settings {
     private ExecutorService executorService;
 
     private Map<String, GuildProfile> guildProfiles;
-    private DataSource blacklist;
-    private DataSource channelDisabledCommands;
-    private DataSource guildDisabledCommands;
-    private DataSource prefixes;
+    private Blacklists blacklists;
+    private ChannelDisabledCommands channelDisabledCommands;
+    private GuildDisabledCommands guildDisabledCommands;
+    private Prefixes prefixes;
 
     public Settings() throws IOException {
         this.credentials = new JSONObject(new String(Files.readAllBytes(Paths.get("credentials.json"))));
@@ -36,13 +39,22 @@ public class Settings {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
 
-            blacklist = new DataSource(connection, Constants.BLACKLIST, executorService).load();
-            channelDisabledCommands = new DataSource(connection, Constants.CHANNEL_DISABLED_COMMANDS, executorService).load();
-            guildDisabledCommands = new DataSource(connection, Constants.GUILD_DISABLED_COMMANDS, executorService).load();
-            prefixes = new DataSource(connection, Constants.PREFIXES, executorService).load();
+            blacklists = new Blacklists(connection, executorService);
+            channelDisabledCommands = new ChannelDisabledCommands(connection, executorService);
+            guildDisabledCommands = new GuildDisabledCommands(connection, executorService);
+            prefixes = new Prefixes(connection, executorService);
+
+            executorService.execute(() -> {
+                DataSource.LOG.info("Loading persistent data...");
+                blacklists.load();
+                channelDisabledCommands.load();
+                guildDisabledCommands.load();
+                prefixes.load();
+                DataSource.LOG.info("Loading complete.");
+            });
         } catch (SQLException e) {
             DataSource.LOG.log(e);
-            System.exit(Constants.DATABASE_ERROR);
+            System.exit(1);
         }
     }
 
@@ -57,19 +69,19 @@ public class Settings {
         return guildProfiles.get(guild.getId());
     }
 
-    public DataSource getBlacklist() {
-        return blacklist;
+    public Blacklists getBlacklists() {
+        return blacklists;
     }
 
-    public DataSource getChannelDisabledCommands() {
+    public ChannelDisabledCommands getChannelDisabledCommands() {
         return channelDisabledCommands;
     }
 
-    public DataSource getGuildDisabledCommands() {
+    public GuildDisabledCommands getGuildDisabledCommands() {
         return guildDisabledCommands;
     }
 
-    public DataSource getPrefixes() {
+    public Prefixes getPrefixes() {
         return prefixes;
     }
 
