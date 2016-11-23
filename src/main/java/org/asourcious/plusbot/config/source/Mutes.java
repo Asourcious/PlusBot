@@ -1,6 +1,6 @@
 package org.asourcious.plusbot.config.source;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.Constants;
@@ -45,6 +45,9 @@ public class Mutes extends DataSource<Pair<String, ZonedDateTime>> {
 
     public void checkMutes(ShardHandler shardHandler) {
         for (String guild : cache.keySet()) {
+            if (!shardHandler.getGuildById(guild).getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+                continue;
+
             for (Pair<String, ZonedDateTime> pair : cache.get(guild)) {
                 if (pair.getValue().isAfter(ZonedDateTime.now()))
                     return;
