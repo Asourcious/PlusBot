@@ -16,7 +16,7 @@ import org.asourcious.plusbot.utils.FormatUtil;
 import org.asourcious.plusbot.utils.SystemUtil;
 
 import java.awt.Color;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public class Status extends NoArgumentCommand {
 
@@ -35,7 +35,7 @@ public class Status extends NoArgumentCommand {
                 .setColor(Color.CYAN)
                 .addField("Name", Constants.NAME, true)
                 .addField("Version", Constants.VERSION, true)
-                .addField("Uptime", FormatUtil.getFormattedDuration(Statistics.startTime, OffsetDateTime.now()), true)
+                .addField("Uptime", FormatUtil.getFormattedDuration(Statistics.startTime, ZonedDateTime.now()), true)
                 .addField("Threads", String.valueOf(Thread.activeCount()), true)
                 .addField("CPU Usage", SystemUtil.getCPUUsage() + "%", true)
                 .addField("RAM Usage", SystemUtil.getUsedMemory() + "/" + SystemUtil.getTotalMemory() + "MB", true)

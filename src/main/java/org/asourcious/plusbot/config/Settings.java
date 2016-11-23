@@ -1,10 +1,7 @@
 package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.entities.Guild;
-import org.asourcious.plusbot.config.source.Blacklists;
-import org.asourcious.plusbot.config.source.ChannelDisabledCommands;
-import org.asourcious.plusbot.config.source.GuildDisabledCommands;
-import org.asourcious.plusbot.config.source.Prefixes;
+import org.asourcious.plusbot.config.source.*;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -29,6 +26,7 @@ public class Settings {
     private Blacklists blacklists;
     private ChannelDisabledCommands channelDisabledCommands;
     private GuildDisabledCommands guildDisabledCommands;
+    private Mutes mutes;
     private Prefixes prefixes;
 
     public Settings() throws IOException {
@@ -42,6 +40,7 @@ public class Settings {
             blacklists = new Blacklists(connection, executorService);
             channelDisabledCommands = new ChannelDisabledCommands(connection, executorService);
             guildDisabledCommands = new GuildDisabledCommands(connection, executorService);
+            mutes = new Mutes(connection, executorService);
             prefixes = new Prefixes(connection, executorService);
 
             executorService.execute(() -> {
@@ -49,6 +48,7 @@ public class Settings {
                 blacklists.load();
                 channelDisabledCommands.load();
                 guildDisabledCommands.load();
+                mutes.load();
                 prefixes.load();
                 DataSource.LOG.info("Loading complete.");
             });
@@ -79,6 +79,10 @@ public class Settings {
 
     public GuildDisabledCommands getGuildDisabledCommands() {
         return guildDisabledCommands;
+    }
+
+    public Mutes getMutes() {
+        return mutes;
     }
 
     public Prefixes getPrefixes() {

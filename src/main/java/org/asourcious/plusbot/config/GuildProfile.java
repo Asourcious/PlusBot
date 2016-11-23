@@ -14,6 +14,7 @@ public class GuildProfile {
     public static int WELCOME_CHANNEL = 3;
     public static int WELCOME_MESSAGE = 4;
     public static int WELCOME_DM_MESSAGE = 5;
+    public static int MUTE_ROLE = 6;
 
     private Connection connection;
     private ExecutorService executorService;

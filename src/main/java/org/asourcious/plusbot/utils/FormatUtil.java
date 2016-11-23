@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +36,7 @@ public final class FormatUtil {
         return time.format(DateTimeFormatter.RFC_1123_DATE_TIME);
     }
 
-    public static String getFormattedDuration(OffsetDateTime startTime, OffsetDateTime endTime) {
+    public static String getFormattedDuration(ZonedDateTime startTime, ZonedDateTime endTime) {
         return DurationFormatUtils.formatDurationWords(Duration.between(startTime, endTime).toMillis(), true, true);
     }
 }

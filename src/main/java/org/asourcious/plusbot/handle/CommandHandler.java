@@ -12,7 +12,7 @@ import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.utils.DiscordUtil;
 import org.asourcious.plusbot.utils.FormatUtil;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,11 +74,11 @@ public class CommandHandler {
         }
 
         Statistics.numCommands++;
-        OffsetDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
+        ZonedDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
 
         if (nextAvailable != null) {
             channel.sendMessage("You have used this command too frequently. Try again in "
-                    + FormatUtil.getFormattedDuration(OffsetDateTime.now(), nextAvailable) + ".").queue();
+                    + FormatUtil.getFormattedDuration(ZonedDateTime.now(), nextAvailable) + ".").queue();
             return;
         }
 

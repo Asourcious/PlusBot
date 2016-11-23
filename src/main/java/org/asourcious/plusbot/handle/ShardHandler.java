@@ -3,6 +3,7 @@ package org.asourcious.plusbot.handle;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
@@ -10,6 +11,7 @@ import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
 import javax.security.auth.login.LoginException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,16 +20,14 @@ public class ShardHandler {
 
     private Set<JDA> shards;
 
-    public ShardHandler(PlusBot plusBot, CommandHandler commandHandler, int numShards) throws LoginException {
+    public ShardHandler(PlusBot plusBot, PlusBotEventListener listener, int numShards) throws LoginException {
         this.shards = ConcurrentHashMap.newKeySet();
-        AutoRoleHandler roleHandler = new AutoRoleHandler(plusBot);
-        WelcomeHandler welcomeHandler = new WelcomeHandler(plusBot);
 
         if (numShards == 1) {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler, roleHandler, welcomeHandler))
+                        .addListener(listener)
                         .setBulkDeleteSplittingEnabled(false)
                         .buildAsync()
                 );
@@ -42,7 +42,7 @@ public class ShardHandler {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
                         .setToken(plusBot.getSettings().getToken())
-                        .addListener(new PlusBotEventListener(commandHandler, roleHandler, welcomeHandler))
+                        .addListener(listener)
                         .setBulkDeleteSplittingEnabled(false)
                         .useSharding(i, numShards)
                         .buildAsync());
@@ -62,6 +62,11 @@ public class ShardHandler {
                 + "TC's: " + shard.getTextChannels().size() + " "
                 + "VC's: " + shard.getVoiceChannels().size() + " "
                 + "Status: " + shard.getStatus().toString() + " ";
+    }
+
+    public Guild getGuildById(String id) {
+        return shards.stream().filter(shard -> shard.getGuildById(id) != null).findAny().map(shard -> shard.getGuildById(id)).orElse(null);
+
     }
 
     public int getId(JDA shard) {
@@ -85,7 +90,7 @@ public class ShardHandler {
     }
 
     public Set<JDA> getShards() {
-        Set<JDA> copy = new TreeSet<>((o1, o2) -> o1.getShardInfo().getShardId() - o2.getShardInfo().getShardId());
+        Set<JDA> copy = new TreeSet<>(Comparator.comparingInt(o -> o.getShardInfo().getShardId()));
         copy.addAll(shards);
 
         return Collections.unmodifiableSet(copy);

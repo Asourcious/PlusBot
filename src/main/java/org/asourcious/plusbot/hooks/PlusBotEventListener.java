@@ -10,18 +10,21 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.handle.AutoRoleHandler;
 import org.asourcious.plusbot.handle.CommandHandler;
+import org.asourcious.plusbot.handle.MuteHandler;
 import org.asourcious.plusbot.handle.WelcomeHandler;
 
 public class PlusBotEventListener extends ListenerAdapter {
 
     private WelcomeHandler welcomeHandler;
+    private MuteHandler muteHandler;
     private AutoRoleHandler roleHandler;
     private CommandHandler commandHandler;
 
-    public PlusBotEventListener(CommandHandler commandHandler, AutoRoleHandler roleHandler, WelcomeHandler welcomeHandler) {
-        this.commandHandler = commandHandler;
-        this.roleHandler = roleHandler;
-        this.welcomeHandler = welcomeHandler;
+    public PlusBotEventListener(PlusBot plusBot) {
+        this.commandHandler = new CommandHandler(plusBot);
+        this.muteHandler = new MuteHandler(plusBot);
+        this.roleHandler = new AutoRoleHandler(plusBot);
+        this.welcomeHandler = new WelcomeHandler(plusBot);
     }
 
     @Override
@@ -33,6 +36,7 @@ public class PlusBotEventListener extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         welcomeHandler.handleMemberJoin(event.getGuild(), event.getMember());
         roleHandler.handleMemberJoin(event.getGuild(), event.getMember());
+        muteHandler.handleMemberJoin(event.getGuild(), event.getMember());
     }
 
     @Override
@@ -48,5 +52,14 @@ public class PlusBotEventListener extends ListenerAdapter {
             return;
 
         commandHandler.handleMessage(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
+    }
+
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
+    }
+
+    public void shutdown() {
+        commandHandler.shutdown();
+        muteHandler.shutdown();
     }
 }

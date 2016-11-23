@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GoogleSearchHandler {
-    private Map<String, Pair<String, OffsetDateTime>> cache;
+    private Map<String, Pair<String, ZonedDateTime>> cache;
 
     public GoogleSearchHandler() {
         cache = new ConcurrentHashMap<>();
@@ -59,13 +59,13 @@ public class GoogleSearchHandler {
         if (results.isEmpty())
             results.add("No results found!");
 
-        cache.put(query.toLowerCase(), new Pair<>(results.get(0), OffsetDateTime.now()));
+        cache.put(query.toLowerCase(), new Pair<>(results.get(0), ZonedDateTime.now()));
         return results.get(0);
     }
 
     public void cleanCache() {
         cache.keySet().parallelStream()
-                .filter(query -> OffsetDateTime.now().isAfter(cache.get(query).getValue().plusHours(4)))
+                .filter(query -> ZonedDateTime.now().isAfter(cache.get(query).getValue().plusHours(4)))
                 .forEach(query -> cache.remove(query));
     }
 }

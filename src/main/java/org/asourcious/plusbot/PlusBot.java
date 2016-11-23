@@ -3,6 +3,7 @@ package org.asourcious.plusbot;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.commands.admin.Ban;
 import org.asourcious.plusbot.commands.admin.Kick;
+import org.asourcious.plusbot.commands.admin.Mute;
 import org.asourcious.plusbot.commands.config.*;
 import org.asourcious.plusbot.commands.fun.Google;
 import org.asourcious.plusbot.commands.fun.RIP;
@@ -13,6 +14,7 @@ import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.handle.CommandHandler;
 import org.asourcious.plusbot.handle.ShardHandler;
 import org.asourcious.plusbot.handle.web.GoogleSearchHandler;
+import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class PlusBot {
 
     private Settings settings;
     private ShardHandler shardHandler;
-    private CommandHandler commandHandler;
+    private PlusBotEventListener eventListener;
 
     private GoogleSearchHandler googleSearchHandler;
 
@@ -34,13 +36,15 @@ public class PlusBot {
 
     public PlusBot() throws LoginException, IOException {
         this.settings = new Settings();
-        this.commandHandler = new CommandHandler(this);
-        this.shardHandler = new ShardHandler(this, commandHandler, 1);
+        this.eventListener = new PlusBotEventListener(this);
+        this.shardHandler = new ShardHandler(this, eventListener, 1);
         this.googleSearchHandler = new GoogleSearchHandler();
         this.cacheCleaner = Executors.newSingleThreadScheduledExecutor();
+        CommandHandler commandHandler = eventListener.getCommandHandler();
 
         commandHandler.registerCommand(new Ban(this));
         commandHandler.registerCommand(new Kick(this));
+        commandHandler.registerCommand(new Mute(this));
 
         commandHandler.registerCommand(new AutoRole(this));
         commandHandler.registerCommand(new Blacklist(this));
@@ -76,7 +80,7 @@ public class PlusBot {
         settings.shutdown();
         cacheCleaner.shutdown();
         shardHandler.shutdown(free);
-        commandHandler.shutdown();
+        eventListener.shutdown();
     }
 
     public Settings getSettings() {
@@ -84,7 +88,7 @@ public class PlusBot {
     }
 
     public CommandHandler getCommandHandler() {
-        return commandHandler;
+        return eventListener.getCommandHandler();
     }
 
     public ShardHandler getShardHandler() {

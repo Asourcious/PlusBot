@@ -2,7 +2,7 @@ package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public class BootLoader {
 
@@ -13,7 +13,7 @@ public class BootLoader {
 
     public static void main(String[] args) {
         createInstance();
-        Statistics.startTime = OffsetDateTime.now();
+        Statistics.startTime = ZonedDateTime.now();
     }
 
     public static void restart() {
