@@ -1,10 +1,10 @@
 package org.asourcious.plusbot.handle;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.config.source.Mutes;
 
 import java.util.List;
@@ -33,7 +33,8 @@ public class MuteHandler {
         if (roles.size() > 1 || roles.isEmpty())
             return;
 
-        guild.getController().modifyMemberRoles(member, roles.get(0)).queue();
+        if (guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            guild.getController().modifyMemberRoles(member, roles.get(0)).queue();
     }
 
     public void shutdown() {
