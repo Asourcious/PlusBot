@@ -28,9 +28,6 @@ public final class DiscordUtil {
         if (message.getRawContent().startsWith(message.getJDA().getSelfUser().getAsMention()))
             return message.getJDA().getSelfUser().getAsMention();
 
-        if (message.getGuild() == null)
-            return null;
-
         Set<String> prefixes = plusBot.getSettings().getPrefixes().get(message.getGuild().getId());
 
         return prefixes.parallelStream().filter(prefix -> message.getContent().startsWith(prefix))
