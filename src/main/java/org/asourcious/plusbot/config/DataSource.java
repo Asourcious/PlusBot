@@ -2,6 +2,7 @@ package org.asourcious.plusbot.config;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.math3.util.Pair;
+import org.asourcious.plusbot.Constants;
 
 import java.sql.*;
 import java.util.Collections;
@@ -46,7 +47,7 @@ public abstract class DataSource<T> {
             }
         } catch (SQLException ex) {
             LOG.log(ex);
-            System.exit(1);
+            System.exit(Constants.DATABASE_ERROR);
         }
     }
 
