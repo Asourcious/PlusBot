@@ -72,6 +72,7 @@ public class Mute extends Command {
             if (time != null && !settings.getMutes().has(guild.getId(), user.getId()))
                 settings.getMutes().add(guild.getId(), new Pair<>(user.getId(), time));
         }
+        channel.sendMessage("Updated mutes").queue();
     }
 
     private class Setup extends SubCommand {
@@ -81,13 +82,11 @@ public class Mute extends Command {
 
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            guild.getController().createRole().queue(role -> {
-                role.getManagerUpdatable()
-                        .getNameField().setValue("Muted")
-                        .getColorField().setValue(Color.GRAY)
-                        .getPermissionField().setValue(1024L)
-                        .update().queue();
-            });
+            guild.getController().createRole().queue(role -> role.getManagerUpdatable()
+                    .getNameField().setValue("Muted")
+                    .getColorField().setValue(Color.GRAY)
+                    .getPermissionField().setValue(1024L)
+                    .update().queue());
         }
     }
 
