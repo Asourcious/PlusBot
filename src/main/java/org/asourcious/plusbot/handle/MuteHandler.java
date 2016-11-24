@@ -21,7 +21,7 @@ public class MuteHandler {
         this.plusBot = plusBot;
         executorService = Executors.newSingleThreadScheduledExecutor();
 
-        executorService.scheduleWithFixedDelay(() -> plusBot.getSettings().getMutes().checkMutes(plusBot.getShardHandler()), 10, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(() -> plusBot.getSettings().getMutes().checkMutes(plusBot.getShardHandler()), 10, 1, TimeUnit.SECONDS);
     }
 
     public void handleMemberJoin(Guild guild, Member member) {
