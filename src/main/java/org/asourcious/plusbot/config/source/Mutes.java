@@ -23,12 +23,12 @@ public class Mutes extends DataSource<Pair<String, ZonedDateTime>> {
     }
 
     @Override
-    protected Pair<String, Pair<String, ZonedDateTime>> parseRow(String[] columns) {
+    protected Pair<String, Pair<String, ZonedDateTime>> deserializeRow(String[] columns) {
         return new Pair<>(columns[1], new Pair<>(columns[2], ZonedDateTime.parse(columns[3])));
     }
 
     @Override
-    protected String[] toArgs(String container, Pair<String, ZonedDateTime> entry) {
+    protected String[] serializeRow(String container, Pair<String, ZonedDateTime> entry) {
         return new String[] { container, entry.getKey(), entry.getValue().format(DateTimeFormatter.ISO_ZONED_DATE_TIME) };
     }
 

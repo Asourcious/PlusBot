@@ -18,12 +18,12 @@ public class ChannelDisabledCommands extends DataSource<String> {
     }
 
     @Override
-    protected Pair<String, String> parseRow(String[] columns) {
+    protected Pair<String, String> deserializeRow(String[] columns) {
         return new Pair<>(columns[1], columns[2]);
     }
 
     @Override
-    protected String[] toArgs(String container, String entry) {
+    protected String[] serializeRow(String container, String entry) {
         return new String[] { container, entry };
     }
 }

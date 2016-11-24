@@ -38,7 +38,7 @@ public abstract class DataSource<T> {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table);
 
             while (resultSet.next()) {
-                Pair<String, T> entry = parseRow(toArray(resultSet));
+                Pair<String, T> entry = deserializeRow(toArray(resultSet));
 
                 if (!cache.containsKey(entry.getKey()))
                     cache.put(entry.getKey(), ConcurrentHashMap.newKeySet());
@@ -67,12 +67,12 @@ public abstract class DataSource<T> {
             cache.put(container, ConcurrentHashMap.newKeySet());
 
         cache.get(container).add(entry);
-        executeStatement(add, toArgs(container, entry));
+        executeStatement(add, serializeRow(container, entry));
     }
 
     public void remove(String container, T entry) {
         cache.get(container).remove(entry);
-        executeStatement(remove, toArgs(container, entry));
+        executeStatement(remove, serializeRow(container, entry));
     }
 
     public void clear(String container) {
@@ -80,8 +80,8 @@ public abstract class DataSource<T> {
         executeStatement(clear, container);
     }
 
-    protected abstract Pair<String, T> parseRow(String[] columns);
-    protected abstract String[] toArgs(String container, T entry);
+    protected abstract Pair<String, T> deserializeRow(String[] columns);
+    protected abstract String[] serializeRow(String container, T entry);
 
     private void executeStatement(PreparedStatement statement, String... args) {
         executorService.execute(() -> {
