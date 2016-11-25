@@ -2,6 +2,8 @@ package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 
 public class BootLoader {
@@ -11,7 +13,11 @@ public class BootLoader {
 
     private BootLoader() {}
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        File log = new File(System.currentTimeMillis() + ".log");
+        log.createNewFile();
+        SimpleLog.addFileLogs(log, log);
+
         createInstance();
         Statistics.startTime = ZonedDateTime.now();
     }
