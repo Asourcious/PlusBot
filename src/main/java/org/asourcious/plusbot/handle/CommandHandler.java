@@ -116,7 +116,7 @@ public class CommandHandler {
         return getCommand(name) != null;
     }
 
-    public RateLimitHandler getRateLimitHandler(String name) {
+    private RateLimitHandler getRateLimitHandler(String name) {
         if (aliases.containsKey(name.toLowerCase()))
             return rateLimitHandlers.get(aliases.get(name.toLowerCase()));
 
