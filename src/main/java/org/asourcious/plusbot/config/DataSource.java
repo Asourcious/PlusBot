@@ -15,7 +15,7 @@ public abstract class DataSource<T> {
 
     public static final SimpleLog LOG = SimpleLog.getLog("Database");
 
-    protected Connection connection;
+    private Connection connection;
     private ExecutorService executorService;
 
     protected String table;

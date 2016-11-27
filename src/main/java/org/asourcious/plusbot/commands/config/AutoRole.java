@@ -82,7 +82,7 @@ public class AutoRole extends Command {
     }
 
     private class Human extends SubCommand {
-        public Human(PlusBot plusBot) {
+        Human(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -104,7 +104,7 @@ public class AutoRole extends Command {
     }
 
     private class Bot extends SubCommand {
-        public Bot(PlusBot plusBot) {
+        Bot(PlusBot plusBot) {
             super(plusBot);
         }
 

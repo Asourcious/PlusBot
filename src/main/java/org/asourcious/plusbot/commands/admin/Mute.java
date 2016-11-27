@@ -76,7 +76,7 @@ public class Mute extends Command {
     }
 
     private class Setup extends SubCommand {
-        public Setup(PlusBot plusBot) {
+        Setup(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -91,7 +91,7 @@ public class Mute extends Command {
     }
 
     private class Clear extends SubCommand {
-        public Clear(PlusBot plusBot) {
+        Clear(PlusBot plusBot) {
             super(plusBot);
         }
 

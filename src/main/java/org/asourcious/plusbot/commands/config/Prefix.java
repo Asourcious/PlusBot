@@ -46,7 +46,7 @@ public class Prefix extends CommandContainer {
     }
 
     private class Add extends SubCommand {
-        public Add(PlusBot plusBot) {
+        Add(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -68,7 +68,7 @@ public class Prefix extends CommandContainer {
     }
 
     private class Remove extends SubCommand {
-        public Remove(PlusBot plusBot) {
+        Remove(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -85,7 +85,7 @@ public class Prefix extends CommandContainer {
     }
 
     private class Clear extends SubCommand {
-        public Clear(PlusBot plusBot) {
+        Clear(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -97,7 +97,7 @@ public class Prefix extends CommandContainer {
     }
 
     private class List extends SubCommand {
-        public List(PlusBot plusBot) {
+        List(PlusBot plusBot) {
             super(plusBot);
         }
 

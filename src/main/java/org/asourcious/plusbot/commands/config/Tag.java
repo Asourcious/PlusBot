@@ -35,7 +35,7 @@ public class Tag extends Command {
     }
 
     private class Create extends SubCommand {
-        public Create(PlusBot plusBot) {
+        Create(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -60,7 +60,7 @@ public class Tag extends Command {
     }
 
     private class Delete extends SubCommand {
-        public Delete(PlusBot plusBot) {
+        Delete(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -79,7 +79,7 @@ public class Tag extends Command {
     }
 
     private class Edit extends SubCommand {
-        public Edit(PlusBot plusBot) {
+        Edit(PlusBot plusBot) {
             super(plusBot);
         }
 

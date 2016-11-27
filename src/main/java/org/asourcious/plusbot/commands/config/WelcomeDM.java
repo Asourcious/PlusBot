@@ -37,7 +37,7 @@ public class WelcomeDM extends CommandContainer {
     }
 
     private class Clear extends SubCommand {
-        public Clear(PlusBot plusBot) {
+        Clear(PlusBot plusBot) {
             super(plusBot);
         }
 
@@ -49,7 +49,7 @@ public class WelcomeDM extends CommandContainer {
     }
 
     private class Text extends SubCommand {
-        public Text(PlusBot plusBot) {
+        Text(PlusBot plusBot) {
             super(plusBot);
         }
 
