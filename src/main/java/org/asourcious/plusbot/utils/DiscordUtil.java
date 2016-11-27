@@ -37,6 +37,18 @@ public final class DiscordUtil {
                 .orElse(null);
     }
 
+    public static String getStripped(PlusBot plusBot, Message message) {
+        String prefix = getPrefix(plusBot, message);
+
+        if (prefix == null)
+            return null;
+
+        return message.getRawContent()
+                .substring(prefix.length())
+                .replaceAll("<(@(!|&)?|#)\\d+>", "")
+                .trim();
+    }
+
     public static List<User> getTrimmedMentions(Message message) {
         List<User> users = new ArrayList<>(message.getMentionedUsers());
 

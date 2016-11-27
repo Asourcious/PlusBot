@@ -19,6 +19,7 @@ public final class Constants {
     public static final String CHANNEL_DISABLED_COMMANDS = "channel_disabled_commands";
     public static final String PREFIXES = "prefixes";
     public static final String MUTES = "mutes";
+    public static final String TAGS = "guild_tags";
 
     // Exit Codes
     public static final int BOT_INITIALIZATION_ERROR = 1;

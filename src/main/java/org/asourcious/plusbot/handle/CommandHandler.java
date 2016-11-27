@@ -39,6 +39,11 @@ public class CommandHandler {
     }
 
     public void handleMessage(Message message, User author, TextChannel channel, Guild guild) {
+        if (author.isBot() || message.isWebhookMessage())
+            return;
+        if (!channel.canTalk())
+            return;
+
         String prefix = DiscordUtil.getPrefix(plusBot, message);
 
         if (prefix == null)

@@ -28,6 +28,7 @@ public class Settings {
     private GuildDisabledCommands guildDisabledCommands;
     private Mutes mutes;
     private Prefixes prefixes;
+    private GuildTags guildTags;
 
     public Settings() throws IOException {
         this.credentials = new JSONObject(new String(Files.readAllBytes(Paths.get("credentials.json"))));
@@ -42,6 +43,7 @@ public class Settings {
             guildDisabledCommands = new GuildDisabledCommands(connection, executorService);
             mutes = new Mutes(connection, executorService);
             prefixes = new Prefixes(connection, executorService);
+            guildTags = new GuildTags(connection, executorService);
 
             executorService.execute(() -> {
                 DataSource.LOG.info("Loading persistent data...");
@@ -50,6 +52,7 @@ public class Settings {
                 guildDisabledCommands.load();
                 mutes.load();
                 prefixes.load();
+                guildTags.load();
                 DataSource.LOG.info("Loading complete.");
             });
         } catch (SQLException e) {
@@ -87,6 +90,10 @@ public class Settings {
 
     public Prefixes getPrefixes() {
         return prefixes;
+    }
+
+    public GuildTags getGuildTags() {
+        return guildTags;
     }
 
     public void shutdown() {

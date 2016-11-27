@@ -50,6 +50,7 @@ public class PlusBot {
         commandHandler.registerCommand(new Blacklist(this));
         commandHandler.registerCommand(new CommandToggle(this));
         commandHandler.registerCommand(new Prefix(this));
+        commandHandler.registerCommand(new Tag(this));
         commandHandler.registerCommand(new Welcome(this));
         commandHandler.registerCommand(new WelcomeDM(this));
 

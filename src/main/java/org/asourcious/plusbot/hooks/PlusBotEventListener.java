@@ -8,10 +8,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
-import org.asourcious.plusbot.handle.AutoRoleHandler;
-import org.asourcious.plusbot.handle.CommandHandler;
-import org.asourcious.plusbot.handle.MuteHandler;
-import org.asourcious.plusbot.handle.WelcomeHandler;
+import org.asourcious.plusbot.handle.*;
 
 public class PlusBotEventListener extends ListenerAdapter {
 
@@ -19,12 +16,14 @@ public class PlusBotEventListener extends ListenerAdapter {
     private MuteHandler muteHandler;
     private AutoRoleHandler roleHandler;
     private CommandHandler commandHandler;
+    private TagHandler tagHandler;
 
     public PlusBotEventListener(PlusBot plusBot) {
         this.commandHandler = new CommandHandler(plusBot);
         this.muteHandler = new MuteHandler(plusBot);
         this.roleHandler = new AutoRoleHandler(plusBot);
         this.welcomeHandler = new WelcomeHandler(plusBot);
+        this.tagHandler = new TagHandler(plusBot);
     }
 
     @Override
@@ -46,12 +45,8 @@ public class PlusBotEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getAuthor().isBot() || event.getMessage().isWebhookMessage())
-            return;
-        if (!event.getChannel().canTalk())
-            return;
-
         commandHandler.handleMessage(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
+        tagHandler.handleMessage(event.getMessage(), event.getAuthor(), event.getChannel(), event.getGuild());
     }
 
     public CommandHandler getCommandHandler() {
