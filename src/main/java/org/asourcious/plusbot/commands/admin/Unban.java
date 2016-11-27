@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.commands.admin;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -14,7 +15,8 @@ public class Unban extends Command {
     public Unban(PlusBot plusBot) {
         super(plusBot);
         this.help = "Unbans the user with the provided ID";
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.requiredPermissions = new Permission[] { Permission.BAN_MEMBERS };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

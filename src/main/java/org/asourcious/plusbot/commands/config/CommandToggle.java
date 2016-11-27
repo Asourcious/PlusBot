@@ -21,7 +21,7 @@ public class CommandToggle extends CommandContainer {
                 new Enable(plusBot),
                 new Disable(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

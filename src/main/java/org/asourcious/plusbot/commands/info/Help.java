@@ -46,7 +46,7 @@ public class Help extends Command {
             embedBuilder.addField("Help", command.getHelp(), true);
             embedBuilder.addField("Ratelimit", command.getRateLimit() != null ? command.getRateLimit().toString() : "None", true);
             embedBuilder.addField("Aliases", FormatUtil.getFormatted(command.getAliases()), true);
-            embedBuilder.addField("Required Permission", command.getRequiredPermission().toString(), true);
+            embedBuilder.addField("Required Permission", command.getPermissionLevel().toString(), true);
         }
 
         channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();

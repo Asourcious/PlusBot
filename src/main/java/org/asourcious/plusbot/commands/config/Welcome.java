@@ -23,7 +23,7 @@ public class Welcome extends CommandContainer {
                 new Channel(plusBot),
                 new Text(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

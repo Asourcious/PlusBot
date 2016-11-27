@@ -16,7 +16,7 @@ public class Eval extends Command {
     public Eval(PlusBot plusBot) {
         super(plusBot);
         this.help = "Evaluates the given code";
-        this.requiredPermission = PermissionLevel.OWNER;
+        this.permissionLevel = PermissionLevel.OWNER;
     }
 
     @Override

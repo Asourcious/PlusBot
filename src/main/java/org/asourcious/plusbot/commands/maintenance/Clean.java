@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.commands.maintenance;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -18,7 +19,8 @@ public class Clean extends NoArgumentCommand {
     public Clean(PlusBot plusBot) {
         super(plusBot);
         this.help = "Removes all commands and responses in the last 100 messages.";
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.requiredPermissions = new Permission[] { Permission.MESSAGE_MANAGE };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

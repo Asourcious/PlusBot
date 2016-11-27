@@ -12,7 +12,8 @@ public class Kick extends Command {
     public Kick(PlusBot plusBot) {
         super(plusBot);
         this.help = "Kicks the mentioned user from the server.";
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.requiredPermissions = new Permission[] { Permission.KICK_MEMBERS };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
@@ -27,10 +28,6 @@ public class Kick extends Command {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         Member target = guild.getMember(DiscordUtil.getTrimmedMentions(message).get(0));
-        if (!guild.getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
-            channel.sendMessage("I don't have the permissions to do that!").queue();
-            return;
-        }
 
         if (!guild.getSelfMember().canInteract(target)) {
             channel.sendMessage("I can't kick that person, they are higher-ranked than me!").queue();

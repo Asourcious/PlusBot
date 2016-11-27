@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.commands;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -19,7 +20,8 @@ public abstract class Command {
     protected RateLimit rateLimit;
     protected String[] aliases = new String[0];
     protected Command[] children = new Command[0];
-    protected PermissionLevel requiredPermission = PermissionLevel.EVERYONE;
+    protected Permission[] requiredPermissions = new Permission[0];
+    protected PermissionLevel permissionLevel = PermissionLevel.EVERYONE;
 
     public Command(PlusBot plusBot) {
         this.plusBot = plusBot;
@@ -49,8 +51,12 @@ public abstract class Command {
         return children;
     }
 
-    public PermissionLevel getRequiredPermission() {
-        return requiredPermission;
+    public Permission[] getRequiredPermissions() {
+        return requiredPermissions;
+    }
+
+    public PermissionLevel getPermissionLevel() {
+        return permissionLevel;
     }
 
     public class RateLimit {

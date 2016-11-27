@@ -15,7 +15,7 @@ public class Restart extends NoArgumentCommand {
     public Restart(PlusBot plusBot) {
         super(plusBot);
         this.help = "Restarts " + Constants.NAME + ". Only available to the bot owner.";
-        this.requiredPermission = PermissionLevel.OWNER;
+        this.permissionLevel = PermissionLevel.OWNER;
     }
 
     @Override

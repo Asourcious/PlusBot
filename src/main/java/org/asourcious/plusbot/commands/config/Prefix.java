@@ -21,7 +21,7 @@ public class Prefix extends CommandContainer {
                 new Clear(plusBot),
                 new List(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

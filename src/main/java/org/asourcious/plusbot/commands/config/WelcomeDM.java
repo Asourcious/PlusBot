@@ -20,7 +20,7 @@ public class WelcomeDM extends CommandContainer {
                 new Clear(plusBot),
                 new Text(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

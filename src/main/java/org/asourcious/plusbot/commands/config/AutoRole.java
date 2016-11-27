@@ -22,7 +22,7 @@ public class AutoRole extends Command {
                 new Human(plusBot),
                 new Bot(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

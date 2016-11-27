@@ -21,7 +21,7 @@ public class Tag extends Command {
                 new Delete(plusBot),
                 new Edit(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

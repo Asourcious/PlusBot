@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.handle;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -13,10 +14,7 @@ import org.asourcious.plusbot.utils.DiscordUtil;
 import org.asourcious.plusbot.utils.FormatUtil;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,8 +58,16 @@ public class CommandHandler {
             return;
         Command command = getCommand(name);
 
-        if (!PermissionLevel.hasPermission(guild.getMember(author), command.getRequiredPermission())) {
+        if (!PermissionLevel.hasPermission(guild.getMember(author), command.getPermissionLevel())) {
             channel.sendMessage(Constants.NOT_ENOUGH_PERMISSIONS).queue();
+            return;
+        }
+
+        if (!guild.getSelfMember().hasPermission(channel, command.getRequiredPermissions())) {
+            List<Permission> missing = new ArrayList<>(guild.getSelfMember().getPermissions(channel));
+            missing.removeAll(Arrays.asList(command.getRequiredPermissions()));
+
+            channel.sendMessage("I don't have enough permissions for that command! Missing permissions: " + FormatUtil.getFormatted(missing)).queue();
             return;
         }
 

@@ -11,7 +11,8 @@ public class Ban extends Command {
     public Ban(PlusBot plusBot) {
         super(plusBot);
         this.help = "Bans the mentioned user from the server.";
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.requiredPermissions = new Permission[] { Permission.BAN_MEMBERS };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
@@ -24,10 +25,6 @@ public class Ban extends Command {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         Member target = guild.getMember(DiscordUtil.getTrimmedMentions(message).get(0));
-        if (!guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            channel.sendMessage("I don't have the permissions to do that!").queue();
-            return;
-        }
 
         if (!guild.getSelfMember().canInteract(target)) {
             channel.sendMessage("I can't ban that person, they are higher-ranked than me!").queue();

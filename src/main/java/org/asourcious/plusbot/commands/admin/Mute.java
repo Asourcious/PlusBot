@@ -23,7 +23,7 @@ public class Mute extends Command {
                 new Setup(plusBot),
                 new Clear(plusBot)
         };
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override

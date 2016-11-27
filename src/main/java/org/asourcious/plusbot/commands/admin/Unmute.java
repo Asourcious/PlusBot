@@ -14,7 +14,7 @@ public class Unmute extends Command {
     public Unmute(PlusBot plusBot) {
         super(plusBot);
         this.help = "";
-        this.requiredPermission = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
