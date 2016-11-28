@@ -28,6 +28,8 @@ public class WelcomeHandler {
             if (profile.hasProperty(GuildProfile.WELCOME_DM_MESSAGE)) {
                 member.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(profile.getProperty(GuildProfile.WELCOME_DM_MESSAGE)).queue());
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            PlusBot.LOG.log(ex);
+        }
     }
 }

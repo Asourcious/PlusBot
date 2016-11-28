@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.handle;
 
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import org.asourcious.plusbot.PlusBot;
@@ -22,6 +23,8 @@ public class AutoRoleHandler {
         if (id == null)
             return;
 
-        guild.getController().addRolesToMember(member, guild.getRoleById(id)).queue();
+        Member self = guild.getSelfMember();
+        if (self.hasPermission(Permission.MANAGE_ROLES) && self.canInteract(guild.getRoleById(id)))
+            guild.getController().addRolesToMember(member, guild.getRoleById(id)).queue();
     }
 }

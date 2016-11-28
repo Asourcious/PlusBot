@@ -53,6 +53,9 @@ public class GuildProfile {
     }
 
     public String getProperty(int property) {
+        if (properties == null)
+            return null;
+
         return properties[property];
     }
 
@@ -61,11 +64,17 @@ public class GuildProfile {
     }
 
     public void setProperty(int property, String value) {
+        if (properties == null)
+            return;
+
         properties[property] = value;
         executorService.execute(this::update);
     }
 
     public void removeProperty(int property) {
+        if (properties == null)
+            return;
+
         properties[property] = null;
         executorService.execute(this::update);
     }
