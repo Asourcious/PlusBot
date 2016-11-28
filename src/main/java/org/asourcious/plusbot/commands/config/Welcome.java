@@ -7,8 +7,8 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.GuildProfile;
 
 import java.util.List;
@@ -26,20 +26,7 @@ public class Welcome extends CommandContainer {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        String[] args = stripped.toLowerCase().split("\\s+", 2);
-        if ((args[0].equals("clear") || args[0].equals("channel")) && !args[2].isEmpty())
-            return args[0] + " doesn't take any arguments!";
-        if (args[0].equals("text") && stripped.isEmpty())
-            return "You must supply a message with Text!";
-        if (args[0].equals("clear") && !args[0].equals("channel") && !args[0].equals("text"))
-            return "The only accepted arguments are clear, channel, and text!";
-
-        return null;
-    }
-
-    private class Clear extends SubCommand {
+    private class Clear extends NoArgumentCommand {
         Clear(PlusBot plusBot) {
             super(plusBot);
             this.name = "Clear";
@@ -53,7 +40,7 @@ public class Welcome extends CommandContainer {
         }
     }
 
-    private class Channel extends SubCommand {
+    private class Channel extends NoArgumentCommand {
         Channel(PlusBot plusBot) {
             super(plusBot);
         }
@@ -71,18 +58,22 @@ public class Welcome extends CommandContainer {
         }
     }
 
-    private class Text extends SubCommand {
+    private class Text extends Command {
         Text(PlusBot plusBot) {
             super(plusBot);
         }
 
         @Override
-        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-            if (stripped.length() > 500) {
-                channel.sendMessage("Maximum supported length is 500 characters!").queue();
-                return;
-            }
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply a message!";
+            if (stripped.length() > 500)
+                return "Maximum supported length is 500 characters!";
+            return null;
+        }
 
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             settings.getProfile(guild).setProperty(GuildProfile.WELCOME_MESSAGE, stripped);
             channel.sendMessage("Updated Welcome message!").queue();
         }

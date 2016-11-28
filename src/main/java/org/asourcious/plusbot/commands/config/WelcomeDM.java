@@ -7,8 +7,8 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.GuildProfile;
 
 public class WelcomeDM extends CommandContainer {
@@ -23,20 +23,7 @@ public class WelcomeDM extends CommandContainer {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        String[] args = stripped.toLowerCase().split("\\s+", 2);
-        if (args[0].equals("clear") && !args[1].isEmpty())
-            return "Clear doesn't take any arguments!";
-        if (args[0].equals("text") && args[1].isEmpty())
-            return "You must supply a message for text!";
-        if (!args[0].equals("text") && !args[0].equals("clear"))
-            return "Text and Clear are the only allowed commands!";
-
-        return null;
-    }
-
-    private class Clear extends SubCommand {
+    private class Clear extends NoArgumentCommand {
         Clear(PlusBot plusBot) {
             super(plusBot);
         }
@@ -48,9 +35,16 @@ public class WelcomeDM extends CommandContainer {
         }
     }
 
-    private class Text extends SubCommand {
+    private class Text extends Command {
         Text(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply a message!";
+            return null;
         }
 
         @Override

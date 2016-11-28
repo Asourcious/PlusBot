@@ -78,13 +78,6 @@ public class CommandHandler {
         if (plusBot.getSettings().getBlacklists().has(guild.getId(), author.getId()))
             return;
 
-        String response = command.isValid(message, stripped);
-        if (response != null) {
-            channel.sendMessage(response).queue();
-            return;
-        }
-
-        Statistics.numCommands++;
         ZonedDateTime nextAvailable = getRateLimitHandler(name).execute(channel.getId());
 
         if (nextAvailable != null) {
@@ -108,6 +101,13 @@ public class CommandHandler {
         final Command fToRun = toRun;
         final String fStripped = stripped;
 
+        String response = toRun.isValid(message, stripped);
+        if (response != null) {
+            channel.sendMessage(response).queue();
+            return;
+        }
+
+        Statistics.numCommands++;
         executorService.execute(() -> fToRun.execute(fStripped, message, author, channel, guild));
     }
 

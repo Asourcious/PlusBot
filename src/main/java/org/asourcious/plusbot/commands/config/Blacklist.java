@@ -7,8 +7,8 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.source.Blacklists;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
@@ -27,19 +27,16 @@ public class Blacklist extends CommandContainer {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        if (!stripped.equalsIgnoreCase("add") && !stripped.equalsIgnoreCase("remove") && !stripped.equalsIgnoreCase("clear"))
-            return "You must use \"add\" or \"remove\" as an argument!";
-        if (message.getMentionedUsers().isEmpty() && !stripped.equalsIgnoreCase("clear"))
-            return "You must mention at least one user!";
-
-        return null;
-    }
-
-    private class Add extends SubCommand {
+    private class Add extends Command {
         Add(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (message.getMentionedUsers().isEmpty())
+                return "You must mention at least one user!";
+            return null;
         }
 
         @Override
@@ -62,9 +59,16 @@ public class Blacklist extends CommandContainer {
         }
     }
 
-    private class Remove extends SubCommand {
+    private class Remove extends Command {
         Remove(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (message.getMentionedUsers().isEmpty())
+                return "You must mention at least one user!";
+            return null;
         }
 
         @Override
@@ -83,7 +87,7 @@ public class Blacklist extends CommandContainer {
         }
     }
 
-    private class Clear extends SubCommand {
+    private class Clear extends NoArgumentCommand {
         Clear(PlusBot plusBot) {
             super(plusBot);
         }

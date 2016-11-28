@@ -7,8 +7,8 @@ import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 
 public class Prefix extends CommandContainer {
 
@@ -24,30 +24,18 @@ public class Prefix extends CommandContainer {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        String[] args = stripped.split("\\s+", 2);
-
-        if (args.length == 0)
-            return "You must supply arguments!";
-
-        if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("clear"))
-                return null;
-            return "If only one argument is supplied, it must be either `clear` or `list`.";
-        }
-
-        if (!args[0].equalsIgnoreCase("add") && !args[0].equalsIgnoreCase("remove"))
-            return "If two args are supplied you must supply add or remove as your first argument!";
-        if (args[1].length() > 15)
-            return "The maximum supported prefix length is 15.";
-
-        return null;
-    }
-
-    private class Add extends SubCommand {
+    private class Add extends Command {
         Add(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply at least one character!";
+            if (stripped.length() > 15)
+                return "The maximum supported prefix length is 15.";
+            return null;
         }
 
         @Override
@@ -67,9 +55,18 @@ public class Prefix extends CommandContainer {
         }
     }
 
-    private class Remove extends SubCommand {
+    private class Remove extends Command {
         Remove(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply at least one character!";
+            if (stripped.length() > 15)
+                return "The maximum supported prefix length is 15.";
+            return null;
         }
 
         @Override
@@ -84,7 +81,7 @@ public class Prefix extends CommandContainer {
         }
     }
 
-    private class Clear extends SubCommand {
+    private class Clear extends NoArgumentCommand {
         Clear(PlusBot plusBot) {
             super(plusBot);
         }
@@ -96,7 +93,7 @@ public class Prefix extends CommandContainer {
         }
     }
 
-    private class List extends SubCommand {
+    private class List extends NoArgumentCommand {
         List(PlusBot plusBot) {
             super(plusBot);
         }

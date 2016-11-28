@@ -7,11 +7,11 @@ import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.source.GuildTags;
 
-public class Tag extends Command {
+public class Tag extends CommandContainer {
 
     public Tag(PlusBot plusBot) {
         super(plusBot);
@@ -24,19 +24,18 @@ public class Tag extends Command {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        return null;
-    }
-
-    @Override
-    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-
-    }
-
-    private class Create extends SubCommand {
+    private class Create extends Command {
         Create(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            String[] args = stripped.split("\\s+", 2);
+            if (args.length != 2)
+                return "You must supply a name and text!";
+
+            return null;
         }
 
         @Override
@@ -59,9 +58,16 @@ public class Tag extends Command {
         }
     }
 
-    private class Delete extends SubCommand {
+    private class Delete extends Command {
         Delete(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply a tag name!";
+            return null;
         }
 
         @Override
@@ -78,9 +84,16 @@ public class Tag extends Command {
         }
     }
 
-    private class Edit extends SubCommand {
+    private class Edit extends Command {
         Edit(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (stripped.isEmpty())
+                return "You must supply a tag name!";
+            return null;
         }
 
         @Override

@@ -6,8 +6,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
 import java.awt.Color;
@@ -29,8 +29,6 @@ public class Mute extends Command {
     @Override
     public String isValid(Message message, String stripped) {
         if (stripped.isEmpty())
-            return null;
-        if (stripped.equalsIgnoreCase("setup") || stripped.equalsIgnoreCase("clear"))
             return null;
         if (!NumberUtils.isParsable(stripped))
             return "\"" + stripped + "\" is not a valid number!";
@@ -75,7 +73,7 @@ public class Mute extends Command {
         channel.sendMessage("Updated mutes").queue();
     }
 
-    private class Setup extends SubCommand {
+    private class Setup extends NoArgumentCommand {
         Setup(PlusBot plusBot) {
             super(plusBot);
         }
@@ -90,7 +88,7 @@ public class Mute extends Command {
         }
     }
 
-    private class Clear extends SubCommand {
+    private class Clear extends NoArgumentCommand {
         Clear(PlusBot plusBot) {
             super(plusBot);
         }

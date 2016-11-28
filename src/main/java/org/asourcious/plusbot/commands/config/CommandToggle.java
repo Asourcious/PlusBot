@@ -8,7 +8,6 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.DataSource;
 
 public class CommandToggle extends CommandContainer {
@@ -24,24 +23,14 @@ public class CommandToggle extends CommandContainer {
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public String isValid(Message message, String stripped) {
-        String[] args = stripped.toLowerCase().split("\\s+");
-        if (args.length < 2 || args.length > 3)
-            return "You must supply between 2 and 3 arguments!";
-        if (!args[0].equals("enable") && !args[0].equals("disable"))
-            return "The first argument mus be \"enable\" or \"disable\"!";
-        if (!args[1].equals("all") && !plusBot.getCommandHandler().hasCommand(args[1]))
-            return "There is no command with the name \"" + args[1] + "\"!";
-        if (args.length == 3 && !args[2].equals("server"))
-            return "The only valid third argument is \"server\"!";
-
-        return null;
-    }
-
-    private class Enable extends SubCommand {
+    private class Enable extends Command {
         Enable(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return checkArguments(stripped);
         }
 
         @Override
@@ -65,9 +54,14 @@ public class CommandToggle extends CommandContainer {
         }
     }
 
-    private class Disable extends SubCommand {
+    private class Disable extends Command {
         Disable(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return checkArguments(stripped);
         }
 
         @Override
@@ -88,5 +82,17 @@ public class CommandToggle extends CommandContainer {
                 channel.sendMessage("Successfully disabled command.").queue();
             }
         }
+    }
+
+    private String checkArguments(String stripped) {
+        String[] args = stripped.toLowerCase().split("\\s+");
+        if (args.length == 0 || args.length > 2)
+            return "You must provide at between one and two arguments for this command";
+        if (args.length == 2 && !args[1].equals("server"))
+            return "The only accepted second argument is server";
+        if (!args[0].equals("all") && !plusBot.getCommandHandler().hasCommand(args[0]))
+            return "There is no command with the name \"" + args[1] + "\"!";
+
+        return null;
     }
 }

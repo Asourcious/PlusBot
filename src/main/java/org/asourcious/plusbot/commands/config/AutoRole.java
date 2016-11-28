@@ -6,7 +6,6 @@ import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.commands.SubCommand;
 import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.utils.DiscordUtil;
 
@@ -27,13 +26,8 @@ public class AutoRole extends Command {
 
     @Override
     public String isValid(Message message, String stripped) {
-        if (stripped.isEmpty())
-            return null;
-
-        String[] args = stripped.toLowerCase().split("\\s+", 2);
-
-        if (args.length != 2)
-            return "You must use two arguments!";
+        if (!stripped.isEmpty())
+            return "Those are not acceptable arguments! Use `help " + name + "` instead!";
 
         return null;
     }
@@ -81,9 +75,14 @@ public class AutoRole extends Command {
         }
     }
 
-    private class Human extends SubCommand {
+    private class Human extends Command {
         Human(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return null;
         }
 
         @Override
@@ -103,9 +102,14 @@ public class AutoRole extends Command {
         }
     }
 
-    private class Bot extends SubCommand {
+    private class Bot extends Command {
         Bot(PlusBot plusBot) {
             super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return null;
         }
 
         @Override
