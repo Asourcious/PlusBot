@@ -9,5 +9,4 @@ META-INF/
 
 #Other stuff
 credentials.json
-out.log
-err.log
+*.log
