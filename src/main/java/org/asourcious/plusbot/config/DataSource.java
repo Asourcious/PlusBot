@@ -6,6 +6,7 @@ import org.asourcious.plusbot.Constants;
 
 import java.sql.*;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,7 +60,7 @@ public abstract class DataSource<T> {
         if (!cache.containsKey(container))
             return Collections.emptySet();
 
-        return Collections.unmodifiableSet(cache.get(container));
+        return Collections.unmodifiableSet(new HashSet<>(cache.get(container)));
     }
 
     public void add(String container, T entry) {
