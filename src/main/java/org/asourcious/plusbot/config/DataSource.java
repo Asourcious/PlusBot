@@ -1,12 +1,12 @@
 package org.asourcious.plusbot.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.Constants;
 
 import java.sql.*;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,18 +16,18 @@ public abstract class DataSource<T> {
 
     public static final SimpleLog LOG = SimpleLog.getLog("Database");
 
-    private Connection connection;
+    protected HikariDataSource connectionPool;
     private ExecutorService executorService;
 
     protected String table;
     protected Map<String, Set<T>> cache;
 
-    protected PreparedStatement add;
-    protected PreparedStatement remove;
-    protected PreparedStatement clear;
+    protected String add;
+    protected String remove;
+    protected String clear;
 
-    public DataSource(Connection connection, ExecutorService executorService, String table) throws SQLException {
-        this.connection = connection;
+    public DataSource(HikariDataSource connectionPool, ExecutorService executorService, String table) throws SQLException {
+        this.connectionPool = connectionPool;
         this.executorService = executorService;
         this.table = table;
     }
@@ -35,7 +35,8 @@ public abstract class DataSource<T> {
     public void load() {
         cache = new ConcurrentHashMap<>();
 
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = connectionPool.getConnection()) {
+            Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table);
 
             while (resultSet.next()) {
@@ -60,7 +61,7 @@ public abstract class DataSource<T> {
         if (!cache.containsKey(container))
             return Collections.emptySet();
 
-        return Collections.unmodifiableSet(new HashSet<>(cache.get(container)));
+        return Collections.unmodifiableSet(cache.get(container));
     }
 
     public void add(String container, T entry) {
@@ -84,9 +85,11 @@ public abstract class DataSource<T> {
     protected abstract Pair<String, T> deserializeRow(String[] columns);
     protected abstract String[] serializeRow(String container, T entry);
 
-    private void executeStatement(PreparedStatement statement, String... args) {
+    private void executeStatement(String query, String... args) {
         executorService.execute(() -> {
-            try {
+            try (Connection connection = connectionPool.getConnection()) {
+                PreparedStatement statement = connection.prepareStatement(query);
+
                 for (int i = 0; i < args.length; i++) {
                     statement.setString(i + 1, args[i]);
                 }

@@ -1,20 +1,20 @@
 package org.asourcious.plusbot.config.source;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.config.DataSource;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 
 public class Blacklists extends DataSource<String> {
 
-    public Blacklists(Connection connection, ExecutorService executorService) throws SQLException {
-        super(connection, executorService, Constants.BLACKLIST);
-        this.add    = connection.prepareStatement("INSERT INTO " + table + " (container, entry) VALUES (?, ?);");
-        this.remove = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ? AND entry = ?;");
-        this.clear  = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ?;");
+    public Blacklists(HikariDataSource connectionPool, ExecutorService executorService) throws SQLException {
+        super(connectionPool, executorService, Constants.BLACKLIST);
+        this.add    = "INSERT INTO " + table + " (container, entry) VALUES (?, ?);";
+        this.remove = "DELETE FROM " + table + " WHERE container = ? AND entry = ?;";
+        this.clear  = "DELETE FROM " + table + " WHERE container = ?;";
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.config.source;
 
+import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import org.apache.commons.math3.util.Pair;
@@ -7,7 +8,6 @@ import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.config.DataSource;
 import org.asourcious.plusbot.handle.ShardHandler;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,11 +15,11 @@ import java.util.concurrent.ExecutorService;
 
 public class Mutes extends DataSource<Pair<String, ZonedDateTime>> {
 
-    public Mutes(Connection connection, ExecutorService executorService) throws SQLException {
-        super(connection, executorService, Constants.MUTES);
-        this.add    = connection.prepareStatement("INSERT INTO " + table + " (container, entry, time) VALUES (?, ?, ?);");
-        this.remove = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ? AND entry = ? AND time = ?;");
-        this.clear  = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ?;");
+    public Mutes(HikariDataSource connectionPool, ExecutorService executorService) throws SQLException {
+        super(connectionPool, executorService, Constants.MUTES);
+        this.add    = "INSERT INTO " + table + " (container, entry, time) VALUES (?, ?, ?);";
+        this.remove = "DELETE FROM " + table + " WHERE container = ? AND entry = ? AND time = ?;";
+        this.clear  = "DELETE FROM " + table + " WHERE container = ?;";
     }
 
     @Override

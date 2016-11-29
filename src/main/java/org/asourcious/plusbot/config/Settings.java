@@ -1,5 +1,7 @@
 package org.asourcious.plusbot.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.entities.Guild;
 import org.asourcious.plusbot.config.source.*;
 import org.json.JSONObject;
@@ -7,8 +9,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +19,7 @@ public class Settings {
 
     private JSONObject credentials;
 
-    private Connection connection;
+    private HikariDataSource connectionPool;
     private ExecutorService executorService;
 
     private Map<String, GuildProfile> guildProfiles;
@@ -35,15 +35,24 @@ public class Settings {
         this.guildProfiles = new ConcurrentHashMap<>();
         this.executorService = Executors.newSingleThreadExecutor();
 
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/plusbot?autoReconnect=true&useSSL=false&serverTimezone=UTC", credentials.getString("user"), credentials.getString("pass"));
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:mysql://localhost/plusbot");
+        config.setPoolName("Connection Pool");
+        config.setUsername(credentials.getString("user"));
+        config.setPassword(credentials.getString("pass"));
+        config.addDataSourceProperty("useSSL", "false");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-            blacklists = new Blacklists(connection, executorService);
-            channelDisabledCommands = new ChannelDisabledCommands(connection, executorService);
-            guildDisabledCommands = new GuildDisabledCommands(connection, executorService);
-            mutes = new Mutes(connection, executorService);
-            prefixes = new Prefixes(connection, executorService);
-            guildTags = new GuildTags(connection, executorService);
+        this.connectionPool = new HikariDataSource(config);
+        try {
+            blacklists = new Blacklists(connectionPool, executorService);
+            channelDisabledCommands = new ChannelDisabledCommands(connectionPool, executorService);
+            guildDisabledCommands = new GuildDisabledCommands(connectionPool, executorService);
+            mutes = new Mutes(connectionPool, executorService);
+            prefixes = new Prefixes(connectionPool, executorService);
+            guildTags = new GuildTags(connectionPool, executorService);
 
             executorService.execute(() -> {
                 DataSource.LOG.info("Loading persistent data...");
@@ -67,7 +76,7 @@ public class Settings {
 
     public GuildProfile getProfile(Guild guild) {
         if (!guildProfiles.containsKey(guild.getId()))
-            guildProfiles.put(guild.getId(), new GuildProfile(guild.getId(), connection, executorService).load());
+            guildProfiles.put(guild.getId(), new GuildProfile(guild.getId(), connectionPool, executorService).load());
 
         return guildProfiles.get(guild.getId());
     }

@@ -1,19 +1,19 @@
 package org.asourcious.plusbot.config.source;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.config.DataSource;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 
 public class GuildTags extends DataSource<Pair<String, String>> {
-    public GuildTags(Connection connection, ExecutorService executorService) throws SQLException {
-        super(connection, executorService, Constants.TAGS);
-        this.add    = connection.prepareStatement("INSERT INTO " + table + " (container, tag_name, tag_text) VALUES (?, ?, ?);");
-        this.remove = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ? AND tag_name = ? AND tag_text = ?;");
-        this.clear  = connection.prepareStatement("DELETE FROM " + table + " WHERE container = ?;");
+    public GuildTags(HikariDataSource connectionPool, ExecutorService executorService) throws SQLException {
+        super(connectionPool, executorService, Constants.TAGS);
+        this.add    = "INSERT INTO " + table + " (container, tag_name, tag_text) VALUES (?, ?, ?);";
+        this.remove = "DELETE FROM " + table + " WHERE container = ? AND tag_name = ? AND tag_text = ?;";
+        this.clear  = "DELETE FROM " + table + " WHERE container = ?;";
     }
 
     @Override
