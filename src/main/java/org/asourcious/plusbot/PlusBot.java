@@ -58,6 +58,8 @@ public class PlusBot {
         commandHandler.registerCommand(new NeedsMoreJPEG(this));
         commandHandler.registerCommand(new RIP(this));
         commandHandler.registerCommand(new Triggered(this));
+        commandHandler.registerCommand(new UrbanDictionary(this));
+        commandHandler.registerCommand(new YodaSpeak(this));
 
         commandHandler.registerCommand(new ChannelInfo(this));
         commandHandler.registerCommand(new GuildInfo(this));

@@ -74,6 +74,10 @@ public class Settings {
         return credentials.getString("token");
     }
 
+    public String getMashapeToken() {
+        return credentials.getString("mashape");
+    }
+
     public GuildProfile getProfile(Guild guild) {
         if (!guildProfiles.containsKey(guild.getId()))
             guildProfiles.put(guild.getId(), new GuildProfile(guild.getId(), connectionPool, executorService).load());
