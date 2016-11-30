@@ -3,10 +3,8 @@ package org.asourcious.plusbot;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.commands.admin.*;
 import org.asourcious.plusbot.commands.config.*;
-import org.asourcious.plusbot.commands.fun.Google;
-import org.asourcious.plusbot.commands.fun.NeedsMoreJPEG;
-import org.asourcious.plusbot.commands.fun.RIP;
-import org.asourcious.plusbot.commands.fun.Triggered;
+import org.asourcious.plusbot.commands.fun.*;
+import org.asourcious.plusbot.commands.fun.Math;
 import org.asourcious.plusbot.commands.info.*;
 import org.asourcious.plusbot.commands.maintenance.*;
 import org.asourcious.plusbot.config.Settings;
@@ -56,6 +54,7 @@ public class PlusBot {
         commandHandler.registerCommand(new WelcomeDM(this));
 
         commandHandler.registerCommand(new Google(this));
+        commandHandler.registerCommand(new Math(this));
         commandHandler.registerCommand(new NeedsMoreJPEG(this));
         commandHandler.registerCommand(new RIP(this));
         commandHandler.registerCommand(new Triggered(this));
