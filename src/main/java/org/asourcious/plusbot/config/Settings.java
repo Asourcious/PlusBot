@@ -3,6 +3,7 @@ package org.asourcious.plusbot.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.entities.Guild;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.config.source.*;
 import org.json.JSONObject;
 
@@ -66,7 +67,7 @@ public class Settings {
             });
         } catch (SQLException e) {
             DataSource.LOG.log(e);
-            System.exit(1);
+            System.exit(Constants.DATABASE_ERROR);
         }
     }
 
