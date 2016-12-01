@@ -71,7 +71,7 @@ public class Settings {
     }
 
     public String getDiscordToken() {
-        return credentials.getString("token");
+        return credentials.getString("discord");
     }
 
     public String getMashapeToken() {
