@@ -3,6 +3,7 @@ package org.asourcious.plusbot.util;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
+import org.apache.commons.lang3.StringUtils;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.config.Settings;
@@ -10,8 +11,6 @@ import org.asourcious.plusbot.config.Settings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class DiscordUtils {
     private DiscordUtils() {}
@@ -52,10 +51,7 @@ public final class DiscordUtils {
     public static List<User> getTrimmedMentions(Message message) {
         List<User> users = new ArrayList<>(message.getMentionedUsers());
 
-        Matcher matcher = Pattern.compile(message.getJDA().getSelfUser().getAsMention()).matcher(message.getRawContent());
-        int count = 0;
-        while(matcher.find())
-            count++;
+        int count = StringUtils.countMatches(message.getRawContent(), message.getJDA().getSelfUser().getAsMention());
 
         if (message.getRawContent().startsWith(message.getJDA().getSelfUser().getAsMention()) && count <= 1)
             users.remove(0);
