@@ -7,6 +7,8 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.util.DiscordUtils;
 
+import java.util.List;
+
 public class Ban extends Command {
     public Ban(PlusBot plusBot) {
         super(plusBot);
@@ -17,7 +19,8 @@ public class Ban extends Command {
 
     @Override
     public String isValid(Message message, String stripped) {
-        if (message.getMentionedUsers().size() > 1 || message.getMentionedUsers().size() < 1)
+        List<User> mentions = DiscordUtils.getTrimmedMentions(message);
+        if (mentions.size() > 1 || mentions.size() < 1)
             return "You must mention one user!";
         return null;
     }
