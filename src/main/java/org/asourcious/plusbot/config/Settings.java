@@ -70,12 +70,16 @@ public class Settings {
         }
     }
 
-    public String getToken() {
+    public String getDiscordToken() {
         return credentials.getString("token");
     }
 
     public String getMashapeToken() {
         return credentials.getString("mashape");
+    }
+
+    public String getWeatherToken() {
+        return credentials.getString("weather");
     }
 
     public GuildProfile getProfile(Guild guild) {

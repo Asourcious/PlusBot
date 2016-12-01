@@ -26,4 +26,12 @@ public final class ConversionUtil {
                 return ChronoUnit.FOREVER;
         }
     }
+
+    public static double kelvinToCelcius(double degrees) {
+        return degrees - 273.15;
+    }
+
+    public static double kelvinToFarenheit(double degrees) {
+        return kelvinToCelcius(degrees) * 9/5 + 32;
+    }
 }

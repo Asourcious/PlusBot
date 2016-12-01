@@ -26,7 +26,7 @@ public class ShardHandler {
         if (numShards == 1) {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
-                        .setToken(plusBot.getSettings().getToken())
+                        .setToken(plusBot.getSettings().getDiscordToken())
                         .addListener(listener)
                         .setBulkDeleteSplittingEnabled(false)
                         .buildAsync()
@@ -41,7 +41,7 @@ public class ShardHandler {
         for (int i = 0; i < numShards; i++) {
             try {
                 shards.add(new JDABuilder(AccountType.BOT)
-                        .setToken(plusBot.getSettings().getToken())
+                        .setToken(plusBot.getSettings().getDiscordToken())
                         .addListener(listener)
                         .setBulkDeleteSplittingEnabled(false)
                         .useSharding(i, numShards)

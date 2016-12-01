@@ -11,6 +11,7 @@ import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.handle.CommandHandler;
 import org.asourcious.plusbot.handle.ShardHandler;
 import org.asourcious.plusbot.handle.web.GoogleSearchHandler;
+import org.asourcious.plusbot.handle.web.WeatherHandler;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
 
 import javax.security.auth.login.LoginException;
@@ -28,6 +29,7 @@ public class PlusBot {
     private PlusBotEventListener eventListener;
 
     private GoogleSearchHandler googleSearchHandler;
+    private WeatherHandler weatherHandler;
 
     private ScheduledExecutorService cacheCleaner;
 
@@ -36,6 +38,7 @@ public class PlusBot {
         this.eventListener = new PlusBotEventListener(this);
         this.shardHandler = new ShardHandler(this, eventListener, 1);
         this.googleSearchHandler = new GoogleSearchHandler();
+        this.weatherHandler = new WeatherHandler(settings);
         this.cacheCleaner = Executors.newSingleThreadScheduledExecutor();
         CommandHandler commandHandler = eventListener.getCommandHandler();
 
@@ -59,6 +62,7 @@ public class PlusBot {
         commandHandler.registerCommand(new RIP(this));
         commandHandler.registerCommand(new Triggered(this));
         commandHandler.registerCommand(new UrbanDictionary(this));
+        commandHandler.registerCommand(new Weather(this));
         commandHandler.registerCommand(new YodaSpeak(this));
 
         commandHandler.registerCommand(new ChannelInfo(this));
@@ -74,10 +78,8 @@ public class PlusBot {
         commandHandler.registerCommand(new Shutdown(this));
         commandHandler.registerCommand(new Status(this));
 
-        cacheCleaner.scheduleAtFixedRate(() -> {
-            LOG.info("Cleaning cache");
-            googleSearchHandler.cleanCache();
-        }, 4, 4, TimeUnit.HOURS);
+        cacheCleaner.scheduleAtFixedRate(() -> googleSearchHandler.cleanCache(), 4, 4, TimeUnit.HOURS);
+        cacheCleaner.scheduleAtFixedRate(() -> weatherHandler.cleanCache(), 10, 10, TimeUnit.MINUTES);
     }
 
     public void shutdown(boolean free) {
@@ -101,5 +103,9 @@ public class PlusBot {
 
     public GoogleSearchHandler getGoogleSearchHandler() {
         return googleSearchHandler;
+    }
+
+    public WeatherHandler getWeatherHandler() {
+        return weatherHandler;
     }
 }
