@@ -7,7 +7,7 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.config.GuildProfile;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.awt.Color;
 import java.util.List;
@@ -35,7 +35,7 @@ public class AutoRole extends Command {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        DiscordUtil.checkForMissingAutoRoles(plusBot.getSettings(), guild);
+        DiscordUtils.checkForMissingAutoRoles(plusBot.getSettings(), guild);
 
         Role autoBotRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.BOT_ROLE));
         Role autoHumanRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.HUMAN_ROLE));

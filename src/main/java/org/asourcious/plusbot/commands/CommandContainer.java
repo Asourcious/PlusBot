@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.utils.FormatUtil;
+import org.asourcious.plusbot.util.FormatUtils;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -32,8 +32,8 @@ public abstract class CommandContainer extends Command {
             .addField("Name", name, true)
             .addField("Help", help, true)
             .addField("Ratelimit", rateLimit != null ? rateLimit.toString() : "None", true)
-            .addField("Aliases", FormatUtil.getFormatted(aliases), true)
-            .addField("Children", FormatUtil.getFormatted(Arrays.stream(children).map(command -> command.name).collect(Collectors.toList())), true)
+            .addField("Aliases", FormatUtils.getFormatted(aliases), true)
+            .addField("Children", FormatUtils.getFormatted(Arrays.stream(children).map(command -> command.name).collect(Collectors.toList())), true)
             .addField("Required Permission", permissionLevel.toString(), true);
 
         channel.sendMessage(embedBuilder.build()).queue();

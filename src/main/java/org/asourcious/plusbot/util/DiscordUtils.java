@@ -1,4 +1,4 @@
-package org.asourcious.plusbot.utils;
+package org.asourcious.plusbot.util;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class DiscordUtil {
-    private DiscordUtil() {}
+public final class DiscordUtils {
+    private DiscordUtils() {}
 
     public static void checkForMissingAutoRoles(Settings settings, Guild guild) {
         String autoBotRole = settings.getProfile(guild).getProperty(GuildProfile.BOT_ROLE);

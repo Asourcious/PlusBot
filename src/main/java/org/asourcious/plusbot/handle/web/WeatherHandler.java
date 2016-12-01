@@ -24,6 +24,9 @@ public class WeatherHandler {
     }
 
     public JSONObject getWeather(String query) {
+        if (cache.containsKey(query.toLowerCase()))
+            return cache.get(query.toLowerCase()).getFirst();
+
         try {
             HttpResponse<String> response = Unirest.get("http://api.openweathermap.org/data/2.5/weather?q=" +
                     URLEncoder.encode(query, "UTF-8") + "&APPID=" + URLEncoder.encode(settings.getWeatherToken(), "UTF-8"))
@@ -32,6 +35,7 @@ public class WeatherHandler {
             if (response.getStatus() != 200)
                 return null;
 
+            cache.put(query.toLowerCase(), new Pair<>(new JSONObject(response.getBody()), ZonedDateTime.now()));
             return new JSONObject(response.getBody());
         } catch (UnirestException | UnsupportedEncodingException e) {
             return null;

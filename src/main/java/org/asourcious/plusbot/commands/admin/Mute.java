@@ -8,7 +8,7 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.awt.Color;
 import java.time.ZonedDateTime;
@@ -45,7 +45,7 @@ public class Mute extends Command {
         }
 
         List<Role> roles = guild.getRolesByName("Muted", true);
-        List<User> mentions = DiscordUtil.getTrimmedMentions(message);
+        List<User> mentions = DiscordUtils.getTrimmedMentions(message);
 
         if (roles.isEmpty()) {
             channel.sendMessage("No muted role found! Use Mute Setup or create a role with the name \"Muted\"!").queue();

@@ -1,4 +1,4 @@
-package org.asourcious.plusbot.utils;
+package org.asourcious.plusbot.util;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
@@ -9,8 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 
-public final class FormatUtil {
-    private FormatUtil() {}
+public final class FormatUtils {
+    private FormatUtils() {}
 
     public static String getFirstArgument(String message) {
         return message.split("\\s+")[0];

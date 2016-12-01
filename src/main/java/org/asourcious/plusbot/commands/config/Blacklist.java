@@ -10,7 +10,7 @@ import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.config.source.Blacklists;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class Blacklist extends CommandContainer {
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             Blacklists blacklist = settings.getBlacklists();
-            List<User> targets = DiscordUtil.getTrimmedMentions(message);
+            List<User> targets = DiscordUtils.getTrimmedMentions(message);
             int numUpdated = 0;
 
             for (User user : targets) {
@@ -74,7 +74,7 @@ public class Blacklist extends CommandContainer {
         @Override
         public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
             Blacklists blacklist = settings.getBlacklists();
-            List<User> targets = DiscordUtil.getTrimmedMentions(message);
+            List<User> targets = DiscordUtils.getTrimmedMentions(message);
             int numUpdated = 0;
 
             for (User user : targets) {

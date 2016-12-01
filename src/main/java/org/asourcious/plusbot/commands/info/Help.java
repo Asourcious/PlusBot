@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.utils.FormatUtil;
+import org.asourcious.plusbot.util.FormatUtils;
 
 import java.awt.Color;
 
@@ -45,7 +45,7 @@ public class Help extends Command {
             embedBuilder.addField("Name", command.getName(), true);
             embedBuilder.addField("Help", command.getHelp(), true);
             embedBuilder.addField("Ratelimit", command.getRateLimit() != null ? command.getRateLimit().toString() : "None", true);
-            embedBuilder.addField("Aliases", FormatUtil.getFormatted(command.getAliases()), true);
+            embedBuilder.addField("Aliases", FormatUtils.getFormatted(command.getAliases()), true);
             embedBuilder.addField("Required Permission", command.getPermissionLevel().toString(), true);
         }
 

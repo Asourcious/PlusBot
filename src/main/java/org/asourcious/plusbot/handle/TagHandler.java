@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.source.GuildTags;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 public class TagHandler {
 
@@ -21,7 +21,7 @@ public class TagHandler {
             return;
 
         GuildTags tags = plusBot.getSettings().getGuildTags();
-        String stripped = DiscordUtil.getStripped(plusBot, message);
+        String stripped = DiscordUtils.getStripped(plusBot, message);
 
         if (tags.existsWithName(guild.getId(), stripped)) {
             String response = tags.getByName(guild.getId(), stripped);

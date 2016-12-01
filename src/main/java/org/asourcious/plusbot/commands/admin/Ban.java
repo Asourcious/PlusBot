@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 public class Ban extends Command {
     public Ban(PlusBot plusBot) {
@@ -24,7 +24,7 @@ public class Ban extends Command {
 
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        Member target = guild.getMember(DiscordUtil.getTrimmedMentions(message).get(0));
+        Member target = guild.getMember(DiscordUtils.getTrimmedMentions(message).get(0));
 
         if (!guild.getSelfMember().canInteract(target)) {
             channel.sendMessage("I can't ban that person, they are higher-ranked than me!").queue();

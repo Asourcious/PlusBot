@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +28,7 @@ public class Clean extends NoArgumentCommand {
         try {
             List<Message> messages = channel.getHistory().retrievePast(100).block()
                     .parallelStream()
-                    .filter(msg -> msg.getAuthor().equals(msg.getJDA().getSelfUser()) || DiscordUtil.isCommand(plusBot, msg))
+                    .filter(msg -> msg.getAuthor().equals(msg.getJDA().getSelfUser()) || DiscordUtils.isCommand(plusBot, msg))
                     .collect(Collectors.toList());
             channel.deleteMessages(messages).queue();
             channel.sendMessage("Deleted **" + messages.size() + "** messages").queue();

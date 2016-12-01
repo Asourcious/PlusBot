@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.math3.util.Precision;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.utils.ConversionUtil;
+import org.asourcious.plusbot.util.ConversionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,12 +34,12 @@ public class Weather extends Command {
         JSONObject main = weatherData.getJSONObject("main");
         JSONArray weather = weatherData.getJSONArray("weather");
 
-        double degreesC = Precision.round(ConversionUtil.kelvinToCelcius(main.getDouble("temp")), 1);
-        double degreesF = Precision.round(ConversionUtil.kelvinToFarenheit(main.getDouble("temp")), 1);
-        double minC = ConversionUtil.kelvinToCelcius(main.getDouble("temp_min"));
-        double minF = ConversionUtil.kelvinToFarenheit(main.getDouble("temp_min"));
-        double maxC = ConversionUtil.kelvinToCelcius(main.getDouble("temp_max"));
-        double maxF = ConversionUtil.kelvinToFarenheit(main.getDouble("temp_max"));
+        double degreesC = Precision.round(ConversionUtils.kelvinToCelcius(main.getDouble("temp")), 1);
+        double degreesF = Precision.round(ConversionUtils.kelvinToFarenheit(main.getDouble("temp")), 1);
+        double minC = ConversionUtils.kelvinToCelcius(main.getDouble("temp_min"));
+        double minF = ConversionUtils.kelvinToFarenheit(main.getDouble("temp_min"));
+        double maxC = ConversionUtils.kelvinToCelcius(main.getDouble("temp_max"));
+        double maxF = ConversionUtils.kelvinToFarenheit(main.getDouble("temp_max"));
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(Color.ORANGE);

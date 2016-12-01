@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.Member;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.config.Settings;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 public class AutoRoleHandler {
 
@@ -17,7 +17,7 @@ public class AutoRoleHandler {
     }
 
     public void handleMemberJoin(Guild guild, Member member) {
-        DiscordUtil.checkForMissingAutoRoles(settings, guild);
+        DiscordUtils.checkForMissingAutoRoles(settings, guild);
 
         String id = settings.getProfile(guild).getProperty(member.getUser().isBot() ? GuildProfile.BOT_ROLE : GuildProfile.HUMAN_ROLE);
         if (id == null)

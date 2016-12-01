@@ -11,7 +11,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.utils.FormatUtil;
+import org.asourcious.plusbot.util.FormatUtils;
 
 public class Math extends Command {
 
@@ -38,7 +38,7 @@ public class Math extends Command {
             embedBuilder.addField("Result: ", String.valueOf(expression.evaluate()), false);
         } else {
             messageBuilder.appendString("Error evaluating");
-            embedBuilder.addField("Errors", FormatUtil.getFormatted(result.getErrors()), false);
+            embedBuilder.addField("Errors", FormatUtils.getFormatted(result.getErrors()), false);
         }
         messageBuilder.setEmbed(embedBuilder.build());
         channel.sendMessage(messageBuilder.build()).queue();

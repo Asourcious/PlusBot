@@ -1,12 +1,12 @@
-package org.asourcious.plusbot.utils;
+package org.asourcious.plusbot.util;
 
 import com.sun.management.OperatingSystemMXBean;
 import org.apache.commons.math3.util.Precision;
 
 import java.lang.management.ManagementFactory;
 
-public final class SystemUtil {
-    private SystemUtil() {}
+public final class SystemUtils {
+    private SystemUtils() {}
 
     private static Runtime runtime = Runtime.getRuntime();
     private static OperatingSystemMXBean systemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();

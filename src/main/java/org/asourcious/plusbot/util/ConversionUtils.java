@@ -1,10 +1,10 @@
-package org.asourcious.plusbot.utils;
+package org.asourcious.plusbot.util;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
-public final class ConversionUtil {
-    private ConversionUtil() {}
+public final class ConversionUtils {
+    private ConversionUtils() {}
 
     public static ChronoUnit convert(TimeUnit unit) {
         switch (unit) {

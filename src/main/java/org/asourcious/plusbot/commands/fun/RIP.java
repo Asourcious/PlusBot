@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,11 +26,11 @@ public class RIP extends Command {
 
     @Override
     public String isValid(Message message, String stripped) {
-        if (DiscordUtil.getTrimmedMentions(message).isEmpty() && stripped.isEmpty())
+        if (DiscordUtils.getTrimmedMentions(message).isEmpty() && stripped.isEmpty())
             return "You must either mention a user or provide text!";
-        if (!DiscordUtil.getTrimmedMentions(message).isEmpty() && !stripped.isEmpty())
+        if (!DiscordUtils.getTrimmedMentions(message).isEmpty() && !stripped.isEmpty())
             return "You can't mention a user and provide text!";
-        if (DiscordUtil.getTrimmedMentions(message).size() > 1)
+        if (DiscordUtils.getTrimmedMentions(message).size() > 1)
             return "You may only mention one user!";
         return null;
     }
@@ -39,7 +39,7 @@ public class RIP extends Command {
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         boolean isMention = stripped.isEmpty();
         String text = isMention
-                ? guild.getMember(DiscordUtil.getTrimmedMentions(message).get(0)).getEffectiveName()
+                ? guild.getMember(DiscordUtils.getTrimmedMentions(message).get(0)).getEffectiveName()
                 : stripped;
 
         try {

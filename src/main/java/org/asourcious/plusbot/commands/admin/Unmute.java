@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.DiscordUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class Unmute extends Command {
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
         List<Role> roles = guild.getRolesByName("Muted", true);
-        List<User> mentions = DiscordUtil.getTrimmedMentions(message);
+        List<User> mentions = DiscordUtils.getTrimmedMentions(message);
 
         if (roles.isEmpty()) {
             channel.sendMessage("No muted role found! Use Mute Setup or create a role with the name \"Muted\"!").queue();

@@ -5,8 +5,8 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.utils.DiscordUtil;
-import org.asourcious.plusbot.utils.FormatUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
+import org.asourcious.plusbot.util.FormatUtils;
 
 import java.awt.Color;
 import java.util.List;
@@ -19,14 +19,14 @@ public class UserInfo extends Command {
 
     @Override
     public String isValid(Message message, String stripped) {
-        if (DiscordUtil.getTrimmedMentions(message).size() > 1)
+        if (DiscordUtils.getTrimmedMentions(message).size() > 1)
             return "You can only mention up to one user!";
         return null;
     }
 
     @Override
     public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
-        List<User> users = DiscordUtil.getTrimmedMentions(message);
+        List<User> users = DiscordUtils.getTrimmedMentions(message);
 
         Member target;
         if (users.isEmpty() && stripped.length() == 0) {
@@ -51,8 +51,8 @@ public class UserInfo extends Command {
                 .addField("Voice Status", target.getVoiceState().inVoiceChannel() ? "Connected" : "Disconnected", true)
                 .addField("Game", target.getGame() != null ? target.getGame().getName() : "None", true)
                 .addField("Account Type", target.getUser().isBot() ? "Bot" : "User", true)
-                .addField("Creation Time", FormatUtil.getFormattedTime(target.getUser().getCreationTime()), true)
-                .addField("Join Date", FormatUtil.getFormattedTime(target.getJoinDate()), true);
+                .addField("Creation Time", FormatUtils.getFormattedTime(target.getUser().getCreationTime()), true)
+                .addField("Join Date", FormatUtils.getFormattedTime(target.getJoinDate()), true);
 
         channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
     }

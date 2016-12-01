@@ -10,8 +10,8 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.DiscordUtil;
-import org.asourcious.plusbot.utils.FormatUtil;
+import org.asourcious.plusbot.util.DiscordUtils;
+import org.asourcious.plusbot.util.FormatUtils;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -42,7 +42,7 @@ public class CommandHandler {
         if (!channel.canTalk())
             return;
 
-        String prefix = DiscordUtil.getPrefix(plusBot, message);
+        String prefix = DiscordUtils.getPrefix(plusBot, message);
 
         if (prefix == null)
             return;
@@ -67,7 +67,7 @@ public class CommandHandler {
             List<Permission> missing = new ArrayList<>(guild.getSelfMember().getPermissions(channel));
             missing.removeAll(Arrays.asList(command.getRequiredPermissions()));
 
-            channel.sendMessage("I don't have enough permissions for that command! Missing permissions: " + FormatUtil.getFormatted(missing)).queue();
+            channel.sendMessage("I don't have enough permissions for that command! Missing permissions: " + FormatUtils.getFormatted(missing)).queue();
             return;
         }
 
@@ -82,7 +82,7 @@ public class CommandHandler {
 
         if (nextAvailable != null) {
             channel.sendMessage("You have used this command too frequently. Try again in "
-                    + FormatUtil.getFormattedDuration(ZonedDateTime.now(), nextAvailable) + ".").queue();
+                    + FormatUtils.getFormattedDuration(ZonedDateTime.now(), nextAvailable) + ".").queue();
             return;
         }
 
@@ -90,7 +90,7 @@ public class CommandHandler {
         boolean complete = false;
         while (toRun.getChildren().length > 0 && !complete) {
             for (Command cmd : toRun.getChildren()) {
-                if (cmd.getName().equalsIgnoreCase(FormatUtil.getFirstArgument(stripped))) {
+                if (cmd.getName().equalsIgnoreCase(FormatUtils.getFirstArgument(stripped))) {
                     toRun = cmd;
                     stripped = stripped.substring(cmd.getName().length()).trim();
                     break;

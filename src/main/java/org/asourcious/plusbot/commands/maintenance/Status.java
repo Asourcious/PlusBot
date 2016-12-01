@@ -12,8 +12,8 @@ import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.handle.ShardHandler;
-import org.asourcious.plusbot.utils.FormatUtil;
-import org.asourcious.plusbot.utils.SystemUtil;
+import org.asourcious.plusbot.util.FormatUtils;
+import org.asourcious.plusbot.util.SystemUtils;
 
 import java.awt.Color;
 import java.time.ZonedDateTime;
@@ -35,10 +35,10 @@ public class Status extends NoArgumentCommand {
                 .setColor(Color.CYAN)
                 .addField("Name", Constants.NAME, true)
                 .addField("Version", Constants.VERSION, true)
-                .addField("Uptime", FormatUtil.getFormattedDuration(Statistics.startTime, ZonedDateTime.now()), true)
+                .addField("Uptime", FormatUtils.getFormattedDuration(Statistics.startTime, ZonedDateTime.now()), true)
                 .addField("Threads", String.valueOf(Thread.activeCount()), true)
-                .addField("CPU Usage", SystemUtil.getCPUUsage() + "%", true)
-                .addField("RAM Usage", SystemUtil.getUsedMemory() + "/" + SystemUtil.getTotalMemory() + "MB", true)
+                .addField("CPU Usage", SystemUtils.getCPUUsage() + "%", true)
+                .addField("RAM Usage", SystemUtils.getUsedMemory() + "/" + SystemUtils.getTotalMemory() + "MB", true)
                 .addField("Messages Received", String.valueOf(Statistics.numMessages), true)
                 .addField("Commands Executed", String.valueOf(Statistics.numCommands), true)
                 .addField("Guilds", String.valueOf(shardHandler.getNumberOfGuilds()), true)
