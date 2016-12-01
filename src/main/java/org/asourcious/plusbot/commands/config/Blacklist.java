@@ -34,7 +34,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public String isValid(Message message, String stripped) {
-            if (message.getMentionedUsers().isEmpty())
+            if (DiscordUtils.getTrimmedMentions(message).isEmpty())
                 return "You must mention at least one user!";
             return null;
         }
@@ -66,7 +66,7 @@ public class Blacklist extends CommandContainer {
 
         @Override
         public String isValid(Message message, String stripped) {
-            if (message.getMentionedUsers().isEmpty())
+            if (DiscordUtils.getTrimmedMentions(message).isEmpty())
                 return "You must mention at least one user!";
             return null;
         }

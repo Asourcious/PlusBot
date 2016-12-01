@@ -20,7 +20,7 @@ public class Ban extends Command {
     @Override
     public String isValid(Message message, String stripped) {
         List<User> mentions = DiscordUtils.getTrimmedMentions(message);
-        if (mentions.size() > 1 || mentions.size() < 1)
+        if (mentions.size() != 1)
             return "You must mention one user!";
         return null;
     }

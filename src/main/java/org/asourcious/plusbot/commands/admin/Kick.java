@@ -7,6 +7,8 @@ import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.util.DiscordUtils;
 
+import java.util.List;
+
 public class Kick extends Command {
 
     public Kick(PlusBot plusBot) {
@@ -18,9 +20,10 @@ public class Kick extends Command {
 
     @Override
     public String isValid(Message message, String stripped) {
+        List<User> mentions = DiscordUtils.getTrimmedMentions(message);
         if (!stripped.isEmpty())
             return "";
-        if (message.getMentionedUsers().size() > 1 || message.getMentionedUsers().size() < 1)
+        if (mentions.size() != 1)
             return "You must mention one user!";
         return null;
     }
