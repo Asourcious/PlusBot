@@ -13,6 +13,7 @@ import org.asourcious.plusbot.commands.Command;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.Color;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,7 @@ public class UrbanDictionary extends Command {
             JSONObject word = json.getJSONArray("list").getJSONObject(0);
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setColor(Color.ORANGE);
             embedBuilder.addField("Word", word.getString("word"), false);
             embedBuilder.addField("Definition", word.getString("definition"), false);
 

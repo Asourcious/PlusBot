@@ -42,7 +42,7 @@ public class Weather extends Command {
         double maxF = ConversionUtil.kelvinToFarenheit(main.getDouble("temp_max"));
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(Color.MAGENTA);
+        embedBuilder.setColor(Color.ORANGE);
         embedBuilder.setThumbnail("https://openweathermap.org/img/w/" + weather.getJSONObject(0).getString("icon") + ".png");
         embedBuilder.setDescription("Weather for " + weatherData.getString("name"));
 
