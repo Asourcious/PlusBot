@@ -6,9 +6,6 @@ plugins {
 
 repositories {
     jcenter()
-    maven {
-        url  "http://dl.bintray.com/jagrosh/maven"
-    }
 }
 
 dependencies {
