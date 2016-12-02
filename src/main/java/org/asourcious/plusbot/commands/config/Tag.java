@@ -15,7 +15,8 @@ public class Tag extends CommandContainer {
 
     public Tag(PlusBot plusBot) {
         super(plusBot);
-        this.help = "";
+        this.help = "Creates, edits, and views \"tags.\" Tags are a way to store information with a name for easy" +
+                "recollection.";
         this.children = new Command[] {
                 new Create(plusBot),
                 new Delete(plusBot),
