@@ -37,26 +37,18 @@ public class CommandHandler {
     }
 
     public void handleMessage(Message message, User author, TextChannel channel, Guild guild) {
-        if (author.isBot() || message.isWebhookMessage())
-            return;
-        if (!channel.canTalk())
+        if (author.isBot() || message.isWebhookMessage() || !channel.canTalk())
             return;
 
-        String prefix = DiscordUtils.getPrefix(plusBot, message);
-
-        if (prefix == null)
+        String filtered = DiscordUtils.getStripped(plusBot, message);
+        if (filtered == null)
             return;
 
-        String formattedMessage = message.getRawContent()
-                .substring(prefix.length())
-                .replaceAll("<(@(!|&)?|#)\\d+>", "")
-                .trim();
-        String name = formattedMessage.split("\\s+")[0];
-        String stripped = formattedMessage.substring(name.length()).trim();
-
-        if (!hasCommand(name))
-            return;
+        String name = filtered.split("\\s+")[0];
+        String stripped = filtered.substring(name.length()).trim();
         Command command = getCommand(name);
+        if (command == null)
+            return;
 
         if (!PermissionLevel.hasPermission(guild.getMember(author), command.getPermissionLevel())) {
             channel.sendMessage(Constants.NOT_ENOUGH_PERMISSIONS).queue();
@@ -64,8 +56,8 @@ public class CommandHandler {
         }
 
         if (!guild.getSelfMember().hasPermission(channel, command.getRequiredPermissions())) {
-            List<Permission> missing = new ArrayList<>(guild.getSelfMember().getPermissions(channel));
-            missing.removeAll(Arrays.asList(command.getRequiredPermissions()));
+            List<Permission> missing = Arrays.asList(command.getRequiredPermissions());
+            missing.removeAll(guild.getSelfMember().getPermissions(channel));
 
             channel.sendMessage("I don't have enough permissions for that command! Missing permissions: " + FormatUtils.getFormatted(missing)).queue();
             return;

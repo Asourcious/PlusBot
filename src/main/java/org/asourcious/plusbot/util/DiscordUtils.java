@@ -5,8 +5,10 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.StringUtils;
 import org.asourcious.plusbot.PlusBot;
+import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.config.Settings;
+import org.asourcious.plusbot.handle.CommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,7 @@ public final class DiscordUtils {
             return null;
 
         return message.getRawContent()
+                .toLowerCase()
                 .substring(prefix.length())
                 .replaceAll("<(@(!|&)?|#)\\d+>", "")
                 .trim();
