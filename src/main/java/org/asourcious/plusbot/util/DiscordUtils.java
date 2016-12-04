@@ -5,10 +5,8 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.StringUtils;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.config.GuildProfile;
 import org.asourcious.plusbot.config.Settings;
-import org.asourcious.plusbot.handle.CommandHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,10 +61,7 @@ public final class DiscordUtils {
     }
 
     public static boolean isCommand(PlusBot plusBot, Message message) {
-        String prefix = getPrefix(plusBot, message);
-
-        return prefix != null && plusBot.getCommandHandler().hasCommand(
-                message.getRawContent().substring(prefix.length()).replaceAll("<(@(!|&)?|#)\\d+>", "").trim().split("\\s+")[0]
-        );
+        String stripped = getStripped(plusBot, message);
+        return stripped != null && plusBot.getCommandHandler().hasCommand(stripped.split("\\s+")[0]);
     }
 }
