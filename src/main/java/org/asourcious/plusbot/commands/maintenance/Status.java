@@ -1,7 +1,6 @@
 package org.asourcious.plusbot.commands.maintenance;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -46,7 +45,7 @@ public class Status extends NoArgumentCommand {
                 .addField("Voice Channels", String.valueOf(shardHandler.getNumberOfVoiceChannels()), true)
                 .addField("Users", String.valueOf(shardHandler.getNumberOfUsers()), true);
 
-        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }
 

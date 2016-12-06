@@ -1,7 +1,6 @@
 package org.asourcious.plusbot.commands.info;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -51,6 +50,6 @@ public class ChannelInfo extends Command {
                 .addField("Position", String.valueOf(target.getPosition()), true)
                 .addField("Creation Time", FormatUtils.getFormattedTime(target.getCreationTime()), false);
 
-        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }

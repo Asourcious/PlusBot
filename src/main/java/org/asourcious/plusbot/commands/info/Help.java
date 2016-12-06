@@ -1,7 +1,6 @@
 package org.asourcious.plusbot.commands.info;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -49,6 +48,6 @@ public class Help extends Command {
             embedBuilder.addField("Required Permission", command.getPermissionLevel().toString(), true);
         }
 
-        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }

@@ -1,7 +1,6 @@
 package org.asourcious.plusbot.commands.info;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
@@ -54,6 +53,6 @@ public class UserInfo extends Command {
                 .addField("Creation Time", FormatUtils.getFormattedTime(target.getUser().getCreationTime()), true)
                 .addField("Join Date", FormatUtils.getFormattedTime(target.getJoinDate()), true);
 
-        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }

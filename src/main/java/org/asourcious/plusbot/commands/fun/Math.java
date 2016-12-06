@@ -34,10 +34,10 @@ public class Math extends Command {
         EmbedBuilder embedBuilder = new EmbedBuilder();
 
         if (result.isValid()) {
-            messageBuilder.appendString("Successfully evaluated");
+            messageBuilder.append("Successfully evaluated");
             embedBuilder.addField("Result: ", String.valueOf(expression.evaluate()), false);
         } else {
-            messageBuilder.appendString("Error evaluating");
+            messageBuilder.append("Error evaluating");
             embedBuilder.addField("Errors", FormatUtils.getFormatted(result.getErrors()), false);
         }
         messageBuilder.setEmbed(embedBuilder.build());

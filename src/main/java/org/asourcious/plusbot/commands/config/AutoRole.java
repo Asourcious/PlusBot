@@ -1,7 +1,6 @@
 package org.asourcious.plusbot.commands.config;
 
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
@@ -46,7 +45,7 @@ public class AutoRole extends Command {
                 .addField("Human", autoHumanRole == null ? "None" : autoHumanRole.getName(), false)
                 .addField("Bots", autoBotRole == null ? "None" : autoBotRole.getName(), false);
 
-        channel.sendMessage(new MessageBuilder().setEmbed(embedBuilder.build()).build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 
     private Role getTargetRole(String stripped, TextChannel channel, Message message, Guild guild) {
