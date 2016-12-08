@@ -5,23 +5,22 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 public class AudioLoader implements AudioLoadResultHandler {
 
     private Player player;
-    private TrackScheduler trackScheduler;
     private TextChannel updateChannel;
 
-    public AudioLoader(Player player, TrackScheduler trackScheduler, TextChannel updateChannel) {
+    public AudioLoader(Player player, TextChannel updateChannel) {
         this.player = player;
-        this.trackScheduler = trackScheduler;
         this.updateChannel = updateChannel;
     }
 
     @Override
     public void trackLoaded(AudioTrack track) {
         updateChannel.sendMessage("Added **" + track.getInfo().title + "** to queue.").queue();
-        trackScheduler.add(track);
+        player.addTrack(track);
 
         if (!player.isPaused())
             player.play();
@@ -31,7 +30,7 @@ public class AudioLoader implements AudioLoadResultHandler {
     public void playlistLoaded(AudioPlaylist playlist) {
         updateChannel.sendMessage("Found Playlist **" + playlist.getName() + "** with **" + playlist.getTracks().size() + "** entries.").queue();
         for (AudioTrack track : playlist.getTracks()) {
-            trackScheduler.add(track);
+            player.addTrack(track);
             if (!player.isPaused())
                 player.play();
         }
@@ -45,6 +44,10 @@ public class AudioLoader implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException exception) {
-        exception.printStackTrace();
+        if (exception.severity == FriendlyException.Severity.COMMON) {
+            updateChannel.sendMessage("Encountered a problem: " + exception.getMessage()).queue();
+        } else {
+            SimpleLog.getLog("Player").log(exception);
+        }
     }
 }

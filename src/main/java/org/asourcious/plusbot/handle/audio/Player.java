@@ -13,22 +13,35 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.asourcious.plusbot.Constants;
 
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class Player extends AudioEventAdapter implements AudioSendHandler {
 
     private TextChannel updateChannel;
 
     private AudioPlayer player;
     private AudioPlayerManager playerManager;
-    private TrackScheduler trackScheduler;
     private AudioFrame lastFrame;
     private AudioManager audioManager;
 
-    public Player(Guild guild, AudioPlayer player, AudioPlayerManager playerManager) {
-        this.updateChannel = guild.getPublicChannel();
-        this.player = player;
+    private Queue<AudioTrack> tracks;
+    private AudioTrack lastTrack = null;
+
+    private Random random;
+
+    private boolean isRepeat = false;
+    private boolean isShuffle = false;
+
+    public Player(Guild guild, AudioPlayerManager playerManager) {
+        this.player = playerManager.createPlayer();
         this.playerManager = playerManager;
-        this.trackScheduler = new TrackScheduler();
         this.audioManager = guild.getAudioManager();
+        this.updateChannel = guild.getPublicChannel();
+        this.tracks = new ConcurrentLinkedQueue<>();
+        this.random = new Random();
 
         player.addListener(this);
         player.setVolume(Constants.DEFAULT_VOLUME);
@@ -50,8 +63,10 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
     }
 
     public void queue(String url) {
-        playerManager.loadItem(url, new AudioLoader(this, trackScheduler, updateChannel));
+        playerManager.loadItem(url, new AudioLoader(this, updateChannel));
     }
+
+
 
     public void play() {
         if (player.isPaused())
@@ -71,7 +86,7 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
     }
 
     public void clear() {
-        trackScheduler.clear();
+        tracks.clear();
         skip();
     }
 
@@ -80,24 +95,26 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         play0(true);
     }
 
+
+
     public boolean isPaused() {
         return player.isPaused();
     }
 
     public boolean isShuffle() {
-        return trackScheduler.isShuffle();
+        return isShuffle;
     }
 
     public void setShuffle(boolean shuffle) {
-        trackScheduler.setShuffle(shuffle);
+        this.isShuffle = shuffle;
     }
 
     public boolean isRepeat() {
-        return trackScheduler.isRepeat();
+        return isRepeat;
     }
 
     public void setRepeat(boolean repeat) {
-        trackScheduler.setRepeat(repeat);
+        this.isRepeat = repeat;
     }
 
     public int getVolume() {
@@ -148,7 +165,27 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         return true;
     }
 
+    protected void addTrack(AudioTrack track) {
+        tracks.add(track);
+    }
+
     private void play0(boolean skipped) {
-        player.playTrack(trackScheduler.provideTrack(skipped));
+        if (isRepeat && !skipped && lastTrack != null) {
+            player.playTrack(lastTrack.makeClone());
+            return;
+        }
+
+        if (isShuffle) {
+            if (tracks.isEmpty())
+                return;
+
+            lastTrack = new ArrayList<>(tracks).get(random.nextInt(tracks.size()));
+            tracks.remove(lastTrack);
+
+            player.playTrack(lastTrack);
+        } else {
+            lastTrack = tracks.poll();
+            player.playTrack(lastTrack);
+        }
     }
 }

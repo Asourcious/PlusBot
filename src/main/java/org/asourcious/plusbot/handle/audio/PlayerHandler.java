@@ -26,7 +26,7 @@ public class PlayerHandler {
 
     public Player getPlayer(Guild guild) {
         if (!players.containsKey(guild.getId()))
-            players.put(guild.getId(), new Player(guild, playerManager.createPlayer(), playerManager));
+            players.put(guild.getId(), new Player(guild, playerManager));
 
         return players.get(guild.getId());
     }
