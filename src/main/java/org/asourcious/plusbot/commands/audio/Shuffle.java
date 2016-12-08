@@ -14,7 +14,7 @@ public class Shuffle extends NoArgumentCommand {
     public Shuffle(PlusBot plusBot) {
         super(plusBot);
         this.help = "Toggles shuffling for the audio queue.";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

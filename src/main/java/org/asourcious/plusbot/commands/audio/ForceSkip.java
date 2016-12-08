@@ -14,7 +14,7 @@ public class ForceSkip extends NoArgumentCommand {
     public ForceSkip(PlusBot plusBot) {
         super(plusBot);
         this.help = "Skips the current song, bypassing the vote-skip system";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

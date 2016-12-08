@@ -14,7 +14,7 @@ public class Repeat extends NoArgumentCommand {
     public Repeat(PlusBot plusBot) {
         super(plusBot);
         this.help = "Toggles repeating for the audio queue";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

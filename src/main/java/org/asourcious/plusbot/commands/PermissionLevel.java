@@ -7,10 +7,11 @@ import org.asourcious.plusbot.Constants;
 public enum PermissionLevel {
 
     EVERYONE(0, "Everyone"),
-    SERVER_MODERATOR(1, "Server Moderator"),
-    SERVER_ADMIN(2, "Server Administrator"),
-    SERVER_OWNER(3, "Server Owner"),
-    OWNER(4, "Bot Owner");
+    DJ(1, "DJ"),
+    SERVER_MODERATOR(2, "Server Moderator"),
+    SERVER_ADMIN(3, "Server Administrator"),
+    SERVER_OWNER(4, "Server Owner"),
+    OWNER(5, "Bot Owner");
 
     private final int value;
     private final String name;
@@ -29,6 +30,8 @@ public enum PermissionLevel {
             return PermissionLevel.SERVER_ADMIN;
         if (member.hasPermission(Permission.MANAGE_SERVER))
             return PermissionLevel.SERVER_MODERATOR;
+        if (member.getGuild().getRolesByName("DJ", false).size() == 1 && member.getRoles().contains(member.getGuild().getRolesByName("DJ", false).get(0)))
+            return PermissionLevel.DJ;
 
         return PermissionLevel.EVERYONE;
     }

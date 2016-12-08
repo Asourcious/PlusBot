@@ -13,7 +13,7 @@ public class Pause extends NoArgumentCommand {
     public Pause(PlusBot plusBot) {
         super(plusBot);
         this.help = "Pauses playback of the queue.";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

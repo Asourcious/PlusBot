@@ -13,7 +13,7 @@ public class Stop extends NoArgumentCommand {
     public Stop(PlusBot plusBot) {
         super(plusBot);
         this.help = "Stops the audio queue.";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class Clear extends NoArgumentCommand {
     public Clear(PlusBot plusBot) {
         super(plusBot);
         this.help = "Clears the audio queue";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

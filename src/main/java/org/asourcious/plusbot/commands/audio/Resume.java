@@ -6,12 +6,14 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.NoArgumentCommand;
+import org.asourcious.plusbot.commands.PermissionLevel;
 
 public class Resume extends NoArgumentCommand {
 
     public Resume(PlusBot plusBot) {
         super(plusBot);
         this.help = "Resumes playback of the audio queue";
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override

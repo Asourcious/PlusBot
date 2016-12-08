@@ -15,7 +15,7 @@ public class Volume extends Command {
     public Volume(PlusBot plusBot) {
         super(plusBot);
         this.help = "Updates the volume of the audio playback";
-        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override
