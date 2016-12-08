@@ -8,10 +8,15 @@ import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.handle.audio.Player;
 
+import java.util.regex.Pattern;
+
 public class Play extends Command {
+
+    private static final Pattern URL = Pattern.compile("^(http(s)?://)?(www\\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)");
 
     public Play(PlusBot plusBot) {
         super(plusBot);
+        this.help = "Adds audio from the provided url to the queue.";
     }
 
     @Override
@@ -24,6 +29,10 @@ public class Play extends Command {
         Player player = plusBot.getPlayerHandler().getPlayer(guild);
         player.setUpdateChannel(channel);
 
-        player.queue(stripped);
+        if (URL.matcher(stripped).matches()) {
+            player.queue(stripped);
+        } else {
+            player.queue("ytsearch:" + stripped);
+        }
     }
 }

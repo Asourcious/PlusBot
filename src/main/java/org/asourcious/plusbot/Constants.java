@@ -8,6 +8,8 @@ public final class Constants {
     public static final String VERSION = "2.0 DEV";
     public static final String OWNER_ID = "142843635057164288";
 
+    public static final int DEFAULT_VOLUME = 30;
+
     // Responses
     public static final String READY_MESSAGE = NAME + " now online.";
     public static final String NOT_ENOUGH_PERMISSIONS = "You don't have the necessary permissions for this command";

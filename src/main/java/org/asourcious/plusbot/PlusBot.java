@@ -2,9 +2,7 @@ package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.commands.admin.*;
-import org.asourcious.plusbot.commands.audio.Join;
-import org.asourcious.plusbot.commands.audio.Leave;
-import org.asourcious.plusbot.commands.audio.Play;
+import org.asourcious.plusbot.commands.audio.*;
 import org.asourcious.plusbot.commands.config.*;
 import org.asourcious.plusbot.commands.fun.*;
 import org.asourcious.plusbot.commands.fun.Math;
@@ -54,9 +52,18 @@ public class PlusBot {
         commandHandler.registerCommand(new Unban(this));
         commandHandler.registerCommand(new Unmute(this));
 
+        commandHandler.registerCommand(new Clear(this));
+        commandHandler.registerCommand(new ForceSkip(this));
         commandHandler.registerCommand(new Join(this));
         commandHandler.registerCommand(new Leave(this));
+        commandHandler.registerCommand(new NowPlaying(this));
+        commandHandler.registerCommand(new Pause(this));
         commandHandler.registerCommand(new Play(this));
+        commandHandler.registerCommand(new Repeat(this));
+        commandHandler.registerCommand(new Resume(this));
+        commandHandler.registerCommand(new Shuffle(this));
+        commandHandler.registerCommand(new Stop(this));
+        commandHandler.registerCommand(new Volume(this));
 
         commandHandler.registerCommand(new AutoRole(this));
         commandHandler.registerCommand(new Blacklist(this));
