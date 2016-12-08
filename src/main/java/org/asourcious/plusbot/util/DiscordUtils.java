@@ -43,7 +43,6 @@ public final class DiscordUtils {
             return null;
 
         return message.getRawContent()
-                .toLowerCase()
                 .substring(prefix.length())
                 .replaceAll("<(@(!|&)?|#)\\d+>", "")
                 .trim();

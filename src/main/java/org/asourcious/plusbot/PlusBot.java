@@ -2,6 +2,9 @@ package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.commands.admin.*;
+import org.asourcious.plusbot.commands.audio.Join;
+import org.asourcious.plusbot.commands.audio.Leave;
+import org.asourcious.plusbot.commands.audio.Play;
 import org.asourcious.plusbot.commands.config.*;
 import org.asourcious.plusbot.commands.fun.*;
 import org.asourcious.plusbot.commands.fun.Math;
@@ -10,6 +13,7 @@ import org.asourcious.plusbot.commands.maintenance.*;
 import org.asourcious.plusbot.config.Settings;
 import org.asourcious.plusbot.handle.CommandHandler;
 import org.asourcious.plusbot.handle.ShardHandler;
+import org.asourcious.plusbot.handle.audio.PlayerHandler;
 import org.asourcious.plusbot.handle.web.GoogleSearchHandler;
 import org.asourcious.plusbot.handle.web.WeatherHandler;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
@@ -29,6 +33,7 @@ public class PlusBot {
     private PlusBotEventListener eventListener;
 
     private GoogleSearchHandler googleSearchHandler;
+    private PlayerHandler playerHandler;
     private WeatherHandler weatherHandler;
 
     private ScheduledExecutorService cacheCleaner;
@@ -38,6 +43,7 @@ public class PlusBot {
         this.eventListener = new PlusBotEventListener(this);
         this.shardHandler = new ShardHandler(this, eventListener, 1);
         this.googleSearchHandler = new GoogleSearchHandler();
+        this.playerHandler = new PlayerHandler();
         this.weatherHandler = new WeatherHandler(settings);
         this.cacheCleaner = Executors.newSingleThreadScheduledExecutor();
         CommandHandler commandHandler = eventListener.getCommandHandler();
@@ -47,6 +53,10 @@ public class PlusBot {
         commandHandler.registerCommand(new Mute(this));
         commandHandler.registerCommand(new Unban(this));
         commandHandler.registerCommand(new Unmute(this));
+
+        commandHandler.registerCommand(new Join(this));
+        commandHandler.registerCommand(new Leave(this));
+        commandHandler.registerCommand(new Play(this));
 
         commandHandler.registerCommand(new AutoRole(this));
         commandHandler.registerCommand(new Blacklist(this));
@@ -103,6 +113,10 @@ public class PlusBot {
 
     public GoogleSearchHandler getGoogleSearchHandler() {
         return googleSearchHandler;
+    }
+
+    public PlayerHandler getPlayerHandler() {
+        return playerHandler;
     }
 
     public WeatherHandler getWeatherHandler() {
