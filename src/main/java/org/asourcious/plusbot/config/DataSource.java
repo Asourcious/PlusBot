@@ -1,9 +1,10 @@
 package org.asourcious.plusbot.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.Collections;
@@ -14,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 
 public abstract class DataSource<T> {
 
-    public static final SimpleLog LOG = SimpleLog.getLog("Database");
+    public static final Logger LOG = LoggerFactory.getLogger("Database");
 
     protected HikariDataSource connectionPool;
     private ExecutorService executorService;
@@ -48,7 +49,7 @@ public abstract class DataSource<T> {
                 cache.get(entry.getKey()).add(entry.getValue());
             }
         } catch (SQLException ex) {
-            LOG.log(ex);
+            LOG.error("An exception occurred", ex);
             System.exit(Constants.DATABASE_ERROR);
         }
     }
@@ -95,7 +96,7 @@ public abstract class DataSource<T> {
                 }
                 statement.execute();
             } catch (SQLException ex) {
-                LOG.log(ex);
+                LOG.error("An exception occurred", ex);
             }
         });
     }

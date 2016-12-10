@@ -54,7 +54,7 @@ public class UrbanDictionary extends Command {
 
             channel.sendMessage(embedBuilder.build()).queue();
         } catch (UnirestException | UnsupportedEncodingException | JSONException ex) {
-            PlusBot.LOG.log(ex);
+            PlusBot.LOG.error("An exception occurred", ex);
         }
     }
 }

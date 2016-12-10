@@ -1,22 +1,23 @@
 package org.asourcious.plusbot;
 
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.asourcious.plusbot.hooks.SimpleLogAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
 public class BootLoader {
 
     private static PlusBot instance;
-    private static final SimpleLog LOG = SimpleLog.getLog("BootLoader");
+    private static final Logger LOG = LoggerFactory.getLogger(BootLoader.class);
 
     private BootLoader() {}
 
     public static void main(String[] args) throws IOException {
-        File log = new File(System.currentTimeMillis() + ".log");
-        log.createNewFile();
-        SimpleLog.addFileLogs(log, log);
+        SimpleLog.addListener(new SimpleLogAdapter());
+        SimpleLog.LEVEL = SimpleLog.Level.OFF;
 
         createInstance();
         Statistics.startTime = ZonedDateTime.now();
@@ -38,7 +39,7 @@ public class BootLoader {
         try {
             instance = new PlusBot();
         } catch (Exception ex) {
-            LOG.log(ex);
+            LOG.error("Error Creating instance", ex);
             System.exit(Constants.BOT_INITIALIZATION_ERROR);
         }
     }

@@ -5,7 +5,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.LoggerFactory;
 
 public class AudioLoader implements AudioLoadResultHandler {
 
@@ -47,7 +47,7 @@ public class AudioLoader implements AudioLoadResultHandler {
         if (exception.severity == FriendlyException.Severity.COMMON) {
             updateChannel.sendMessage("Encountered a problem: " + exception.getMessage()).queue();
         } else {
-            SimpleLog.getLog("Player").log(exception);
+            LoggerFactory.getLogger("Player").warn("An exception occurred", exception);
         }
     }
 }

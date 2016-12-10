@@ -65,8 +65,8 @@ public class Settings {
                 guildTags.load();
                 DataSource.LOG.info("Loading complete.");
             });
-        } catch (SQLException e) {
-            DataSource.LOG.log(e);
+        } catch (SQLException ex) {
+            DataSource.LOG.error("An exception occurred", ex);
             System.exit(Constants.DATABASE_ERROR);
         }
     }

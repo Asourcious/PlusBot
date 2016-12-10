@@ -29,7 +29,7 @@ public class WelcomeHandler {
                 member.getUser().openPrivateChannel().queue(channel -> channel.sendMessage(profile.getProperty(GuildProfile.WELCOME_DM_MESSAGE)).queue());
             }
         } catch (Exception ex) {
-            PlusBot.LOG.log(ex);
+            PlusBot.LOG.error("An exception occurred", ex);
         }
     }
 }

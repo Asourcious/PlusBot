@@ -60,9 +60,9 @@ public class NeedsMoreJPEG extends NoArgumentCommand {
 
             jpgWriter.dispose();
             channel.sendFile(out.toByteArray(), "needsmorejpeg.png", null).queue();
-        } catch (IOException e) {
+        } catch (IOException ex) {
             channel.sendMessage("Error generating image!").queue();
-            PlusBot.LOG.log(e);
+            PlusBot.LOG.error("An exception occurred", ex);
         }
     }
 }

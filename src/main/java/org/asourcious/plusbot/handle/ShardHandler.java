@@ -31,8 +31,8 @@ public class ShardHandler {
                         .setBulkDeleteSplittingEnabled(false)
                         .buildAsync()
                 );
-            } catch (RateLimitedException e) {
-                PlusBot.LOG.log(e);
+            } catch (RateLimitedException ex) {
+                PlusBot.LOG.error("An exception occurred", ex);
                 System.exit(Constants.BOT_LOGIN_ERROR);
             }
             return;
@@ -46,8 +46,8 @@ public class ShardHandler {
                         .setBulkDeleteSplittingEnabled(false)
                         .useSharding(i, numShards)
                         .buildAsync());
-            } catch (RateLimitedException e) {
-                PlusBot.LOG.log(e);
+            } catch (RateLimitedException ex) {
+                PlusBot.LOG.error("An exception occurred", ex);
                 System.exit(Constants.BOT_LOGIN_ERROR);
             }
         }

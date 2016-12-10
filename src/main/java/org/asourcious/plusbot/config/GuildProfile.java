@@ -38,8 +38,8 @@ public class GuildProfile {
             for (int i = 0; i < properties.length; i++) {
                 properties[i] = resultSet.getString(i + 3);
             }
-        } catch (SQLException e) {
-            DataSource.LOG.log(e);
+        } catch (SQLException ex) {
+            DataSource.LOG.error("An exception occurred", ex);
         }
 
         return this;
@@ -51,8 +51,8 @@ public class GuildProfile {
             remove.execute("DELETE FROM " + Constants.GUILD_PROFILES + " WHERE guild_id = '" + guild + "'");
             PreparedStatement insert = getUpdateStatement(connection);
             insert.execute();
-        } catch (SQLException e) {
-            DataSource.LOG.log(e);
+        } catch (SQLException ex) {
+            DataSource.LOG.error("An exception occurred", ex);
         }
     }
 

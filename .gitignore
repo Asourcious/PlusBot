@@ -1,12 +1,9 @@
 #IntelliJ
 .idea/
-.gradle/
 build/
 out/
 META-INF/
-*.ipr
-*.iws
 
 #Other stuff
 credentials.json
-*.log
+PlusBot.log

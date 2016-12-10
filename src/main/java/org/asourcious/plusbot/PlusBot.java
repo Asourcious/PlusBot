@@ -1,6 +1,5 @@
 package org.asourcious.plusbot;
 
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.commands.admin.*;
 import org.asourcious.plusbot.commands.audio.*;
 import org.asourcious.plusbot.commands.config.*;
@@ -15,6 +14,8 @@ import org.asourcious.plusbot.handle.audio.PlayerHandler;
 import org.asourcious.plusbot.handle.web.GoogleSearchHandler;
 import org.asourcious.plusbot.handle.web.WeatherHandler;
 import org.asourcious.plusbot.hooks.PlusBotEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlusBot {
 
-    public static final SimpleLog LOG = SimpleLog.getLog("PlusBot");
+    public static final Logger LOG = LoggerFactory.getLogger(PlusBot.class);
 
     private Settings settings;
     private ShardHandler shardHandler;

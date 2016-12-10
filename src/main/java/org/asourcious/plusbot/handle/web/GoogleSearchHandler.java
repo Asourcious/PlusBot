@@ -31,7 +31,7 @@ public class GoogleSearchHandler {
         try {
             request = "https://www.google.com/search?q=" + URLEncoder.encode(query, "UTF-8") + "&num=10";
         } catch (UnsupportedEncodingException ex) {
-            PlusBot.LOG.log(ex);
+            PlusBot.LOG.error("An exception occurred", ex);
             return null;
         }
 
@@ -52,7 +52,7 @@ public class GoogleSearchHandler {
                 } catch (UnsupportedEncodingException ignored) {}
             });
         } catch (IOException e) {
-            PlusBot.LOG.log(e);
+            PlusBot.LOG.error("An exception occurred", e);
             return null;
         }
 

@@ -41,7 +41,7 @@ public class YodaSpeak extends Command {
 
             channel.sendMessage(response.getBody()).queue();
         } catch (UnirestException | UnsupportedEncodingException ex) {
-            PlusBot.LOG.log(ex);
+            PlusBot.LOG.error("An exception occurred", ex);
         }
     }
 }
