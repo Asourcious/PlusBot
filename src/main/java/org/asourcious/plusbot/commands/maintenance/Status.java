@@ -40,6 +40,7 @@ public class Status extends NoArgumentCommand {
                 .addField("RAM Usage", SystemUtils.getUsedMemory() + "/" + SystemUtils.getTotalMemory() + "MB", true)
                 .addField("Messages Received", String.valueOf(Statistics.numMessages), true)
                 .addField("Commands Executed", String.valueOf(Statistics.numCommands), true)
+                .addField("Audio Connections", String.valueOf(shardHandler.getNumberOfOpenAudioConnections()), true)
                 .addField("Guilds", String.valueOf(shardHandler.getNumberOfGuilds()), true)
                 .addField("Text Channels", String.valueOf(shardHandler.getNumberOfTextChannels()), true)
                 .addField("Voice Channels", String.valueOf(shardHandler.getNumberOfVoiceChannels()), true)

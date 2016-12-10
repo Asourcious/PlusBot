@@ -89,6 +89,10 @@ public class ShardHandler {
         return shards.parallelStream().mapToInt(jda -> jda.getUsers().size()).sum();
     }
 
+    public int getNumberOfOpenAudioConnections() {
+        return (int) shards.stream().mapToLong(jda -> jda.getGuilds().stream().filter(guild -> guild.getAudioManager().isConnected()).count()).sum();
+    }
+
     public Set<JDA> getShards() {
         Set<JDA> copy = new TreeSet<>(Comparator.comparingInt(o -> o.getShardInfo().getShardId()));
         copy.addAll(shards);

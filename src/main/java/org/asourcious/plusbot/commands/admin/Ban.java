@@ -34,6 +34,11 @@ public class Ban extends Command {
             return;
         }
 
-        guild.getController().kick(target).queue(n -> channel.sendMessage("Successfully banned " + target.getUser().getName() + ".").queue());
+        if (!PermissionLevel.canInteract(guild.getMember(author), target)) {
+            channel.sendMessage("You can't ban that person, they have higher permissions than you!").queue();
+            return;
+        }
+
+        guild.getController().ban(target, 0).queue(n -> channel.sendMessage("Successfully banned " + target.getUser().getName() + ".").queue());
     }
 }

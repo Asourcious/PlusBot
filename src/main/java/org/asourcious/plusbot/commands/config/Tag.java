@@ -4,12 +4,15 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.CommandContainer;
 import org.asourcious.plusbot.commands.PermissionLevel;
 import org.asourcious.plusbot.config.source.GuildTags;
+
+import java.util.stream.Collectors;
 
 public class Tag extends CommandContainer {
 
@@ -51,6 +54,11 @@ public class Tag extends CommandContainer {
 
             if (plusBot.getCommandHandler().hasCommand(args[0])) {
                 channel.sendMessage("A command exists with that name, that isn't allowed!").queue();
+                return;
+            }
+
+            if (tags.get(guild.getId()).size() >= 40) {
+                channel.sendMessage("Only up to 20 tags are allowed currently!").queue();
                 return;
             }
 

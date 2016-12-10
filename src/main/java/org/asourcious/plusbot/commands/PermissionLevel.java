@@ -37,7 +37,7 @@ public enum PermissionLevel {
     }
 
     public static boolean canInteract(Member issuer, Member target) {
-        return getPermissionLevel(issuer).value >= getPermissionLevel(target).value;
+        return getPermissionLevel(issuer).value > getPermissionLevel(target).value;
     }
 
     public static boolean hasPermission(Member member, PermissionLevel level) {
