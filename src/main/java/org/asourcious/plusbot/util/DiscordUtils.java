@@ -26,8 +26,13 @@ public final class DiscordUtils {
     }
 
     public static String getPrefix(PlusBot plusBot, Message message) {
-        if (message.getRawContent().startsWith(message.getJDA().getSelfUser().getAsMention()))
-            return message.getJDA().getSelfUser().getAsMention();
+        String mention = message.getJDA().getSelfUser().getAsMention();
+        String nicknameMention = "<@!" + message.getJDA().getSelfUser().getId() + ">";
+
+        if (message.getRawContent().startsWith(mention))
+            return mention;
+        if (message.getRawContent().startsWith(nicknameMention))
+            return nicknameMention;
 
         Set<String> prefixes = plusBot.getSettings().getPrefixes().get(message.getGuild().getId());
 
