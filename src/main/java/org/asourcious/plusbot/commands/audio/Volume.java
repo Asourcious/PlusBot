@@ -25,7 +25,7 @@ public class Volume extends Command {
         if (!NumberUtils.isParsable(stripped))
             return "That is not a valid number!";
 
-        int volume = Integer.parseInt(stripped);
+        int volume = NumberUtils.toInt(stripped);
         if (volume < 1 || volume > 100)
             return "You must enter a value between 1 and 100";
 
