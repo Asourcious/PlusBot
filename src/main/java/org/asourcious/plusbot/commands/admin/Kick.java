@@ -21,8 +21,6 @@ public class Kick extends Command {
     @Override
     public String isValid(Message message, String stripped) {
         List<User> mentions = DiscordUtils.getTrimmedMentions(message);
-        if (!stripped.isEmpty())
-            return "";
         if (mentions.size() != 1)
             return "You must mention one user!";
         return null;
@@ -34,6 +32,16 @@ public class Kick extends Command {
 
         if (!guild.getSelfMember().canInteract(target)) {
             channel.sendMessage("I can't kick that person, they are higher-ranked than me!").queue();
+            return;
+        }
+
+        if (!PermissionLevel.canInteract(guild.getMember(author), target)) {
+            channel.sendMessage("You can't kick that person, they have higher permissions than you!").queue();
+            return;
+        }
+
+        if (!guild.getMember(author).hasPermission(Permission.KICK_MEMBERS)) {
+            channel.sendMessage("You can't kick that person, you don't have the permission to kick members!").queue();
             return;
         }
 

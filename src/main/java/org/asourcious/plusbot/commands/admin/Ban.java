@@ -10,6 +10,7 @@ import org.asourcious.plusbot.util.DiscordUtils;
 import java.util.List;
 
 public class Ban extends Command {
+
     public Ban(PlusBot plusBot) {
         super(plusBot);
         this.help = "Bans the mentioned user from the server.";
@@ -36,6 +37,11 @@ public class Ban extends Command {
 
         if (!PermissionLevel.canInteract(guild.getMember(author), target)) {
             channel.sendMessage("You can't ban that person, they have higher permissions than you!").queue();
+            return;
+        }
+
+        if (!guild.getMember(author).hasPermission(Permission.BAN_MEMBERS)) {
+            channel.sendMessage("You can't ban that person, you don't have the permission to ban members!").queue();
             return;
         }
 
