@@ -1,5 +1,6 @@
 package org.asourcious.plusbot;
 
+import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.asourcious.plusbot.hooks.SimpleLogAdapter;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class BootLoader {
         SimpleLog.addListener(new SimpleLogAdapter());
         SimpleLog.LEVEL = SimpleLog.Level.OFF;
 
+        LOG.info("JDA Version: " + JDAInfo.VERSION);
         createInstance();
         Statistics.startTime = ZonedDateTime.now();
     }
