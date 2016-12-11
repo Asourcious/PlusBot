@@ -21,7 +21,7 @@ public class RateLimitHandler {
     private ScheduledExecutorService timer;
 
     public RateLimitHandler(Command command) {
-        ThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern(command.getName() + "ratelimit thread %d").build();
+        ThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern(command.getName() + " Ratelimit-pool thread %d").build();
 
         this.rateLimit = command.getRateLimit();
         this.useMap = new ConcurrentHashMap<>();

@@ -19,7 +19,7 @@ public class MuteHandler {
     private ScheduledExecutorService executorService;
 
     public MuteHandler(PlusBot plusBot) {
-        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("MuteHandler Thread %d").build();
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("MuteHandler-Pool Thread %d").build();
         this.plusBot = plusBot;
         executorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
 

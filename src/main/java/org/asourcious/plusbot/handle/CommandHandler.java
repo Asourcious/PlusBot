@@ -30,7 +30,7 @@ public class CommandHandler {
     private final Map<String, RateLimitHandler> rateLimitHandlers;
 
     public CommandHandler(PlusBot plusBot) {
-        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Command Thread %d").build();
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Command-Pool Thread %d").build();
 
         this.plusBot = plusBot;
         this.executorService = Executors.newCachedThreadPool(threadFactory);
