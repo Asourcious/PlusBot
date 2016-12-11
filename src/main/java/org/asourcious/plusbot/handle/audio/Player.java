@@ -46,7 +46,6 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
         player.addListener(this);
         player.setVolume(Constants.DEFAULT_VOLUME);
-        audioManager.setSendingHandler(this);
     }
 
     public boolean isConnected() {
@@ -55,11 +54,13 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
     public void join(VoiceChannel channel) {
         updateChannel.sendMessage("Joining **" + channel.getName()+ "**").queue();
+        audioManager.setSendingHandler(this);
         audioManager.openAudioConnection(channel);
     }
 
     public void leave() {
         updateChannel.sendMessage("Leaving **" + audioManager.getConnectedChannel().getName() + "**").queue();
+        audioManager.setSendingHandler(null);
         audioManager.closeAudioConnection();
     }
 
@@ -144,10 +145,6 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
     public void registerVoteSkip(String userId) {
         voteSkips.add(userId);
-    }
-
-    public void clearVoteSkips() {
-        voteSkips.clear();
     }
 
     // AudioEventAdapter methods
