@@ -13,9 +13,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.asourcious.plusbot.Constants;
 
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Player extends AudioEventAdapter implements AudioSendHandler {
@@ -35,6 +33,8 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
     private boolean isRepeat = false;
     private boolean isShuffle = false;
 
+    private Set<String> voteSkips;
+
     public Player(Guild guild, AudioPlayerManager playerManager) {
         this.player = playerManager.createPlayer();
         this.playerManager = playerManager;
@@ -42,6 +42,7 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         this.updateChannel = guild.getPublicChannel();
         this.tracks = new ConcurrentLinkedQueue<>();
         this.random = new Random();
+        this.voteSkips = new HashSet<>();
 
         player.addListener(this);
         player.setVolume(Constants.DEFAULT_VOLUME);
@@ -133,6 +134,22 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         updateChannel = newChannel;
     }
 
+    public int getNumberOfVoteSkips() {
+        return voteSkips.size();
+    }
+
+    public boolean hasVoteSkipped(String userId) {
+        return voteSkips.contains(userId);
+    }
+
+    public void registerVoteSkip(String userId) {
+        voteSkips.add(userId);
+    }
+
+    public void clearVoteSkips() {
+        voteSkips.clear();
+    }
+
     // AudioEventAdapter methods
 
     @Override
@@ -142,6 +159,7 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        voteSkips.clear();
         if (endReason == AudioTrackEndReason.FINISHED) {
             play0(false);
         }
