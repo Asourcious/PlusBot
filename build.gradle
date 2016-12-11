@@ -6,16 +6,11 @@ plugins {
 
 repositories {
     jcenter()
-    maven {
-        url 'https://jitpack.io'
-    }
-    maven {
-        url 'http://maven.sedmelluq.com'
-    }
+    maven { url 'http://maven.sedmelluq.com' }
 }
 
 dependencies {
-    compile "com.github.DV8FromTheWorld:JDA:audio-SNAPSHOT"
+    compile "net.dv8tion:JDA:3.0.BETA_104"
     compile "com.sedmelluq:lavaplayer:1.1.25"
     compile "mysql:mysql-connector-java:6.0.3"
     compile "com.zaxxer:HikariCP:2.5.1"
