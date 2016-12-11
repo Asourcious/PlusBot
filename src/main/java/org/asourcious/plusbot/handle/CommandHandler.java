@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
@@ -29,8 +30,10 @@ public class CommandHandler {
     private final Map<String, RateLimitHandler> rateLimitHandlers;
 
     public CommandHandler(PlusBot plusBot) {
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Command Thread %d").build();
+
         this.plusBot = plusBot;
-        this.executorService = Executors.newCachedThreadPool();
+        this.executorService = Executors.newCachedThreadPool(threadFactory);
         this.commands = new ConcurrentHashMap<>();
         this.aliases = new ConcurrentHashMap<>();
         this.rateLimitHandlers = new ConcurrentHashMap<>();

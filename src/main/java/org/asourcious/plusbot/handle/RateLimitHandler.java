@@ -1,5 +1,6 @@
 package org.asourcious.plusbot.handle;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.math3.util.Pair;
 import org.asourcious.plusbot.commands.Command;
 import org.asourcious.plusbot.commands.Command.RateLimit;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 public class RateLimitHandler {
 
@@ -19,9 +21,11 @@ public class RateLimitHandler {
     private ScheduledExecutorService timer;
 
     public RateLimitHandler(Command command) {
+        ThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern(command.getName() + "ratelimit thread %d").build();
+
         this.rateLimit = command.getRateLimit();
         this.useMap = new ConcurrentHashMap<>();
-        this.timer = Executors.newSingleThreadScheduledExecutor();
+        this.timer = Executors.newSingleThreadScheduledExecutor(threadFactory);
     }
 
     public ZonedDateTime execute(String id) {

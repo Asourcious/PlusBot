@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.config.source.Mutes;
 
@@ -18,8 +19,9 @@ public class MuteHandler {
     private ScheduledExecutorService executorService;
 
     public MuteHandler(PlusBot plusBot) {
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("MuteHandler Thread %d").build();
         this.plusBot = plusBot;
-        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
 
         executorService.scheduleAtFixedRate(() -> plusBot.getSettings().getMutes().checkMutes(plusBot.getShardHandler()), 10, 1, TimeUnit.SECONDS);
     }

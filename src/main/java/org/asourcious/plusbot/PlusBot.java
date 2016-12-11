@@ -1,5 +1,7 @@
 package org.asourcious.plusbot;
 
+import net.dv8tion.jda.core.JDAInfo;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.asourcious.plusbot.commands.admin.*;
 import org.asourcious.plusbot.commands.audio.*;
 import org.asourcious.plusbot.commands.config.*;
@@ -38,13 +40,15 @@ public class PlusBot {
     private ScheduledExecutorService cacheCleaner;
 
     public PlusBot() throws LoginException, IOException {
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Cleaner-Pool Thread %d").build();
+
         this.settings = new Settings();
         this.eventListener = new PlusBotEventListener(this);
         this.shardHandler = new ShardHandler(this, eventListener, 1);
         this.googleSearchHandler = new GoogleSearchHandler();
         this.playerHandler = new PlayerHandler();
         this.weatherHandler = new WeatherHandler(settings);
-        this.cacheCleaner = Executors.newSingleThreadScheduledExecutor();
+        this.cacheCleaner = Executors.newSingleThreadScheduledExecutor(threadFactory);
         CommandHandler commandHandler = eventListener.getCommandHandler();
 
         commandHandler.registerCommand(new Ban(this));

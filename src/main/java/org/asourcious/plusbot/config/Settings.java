@@ -3,6 +3,7 @@ package org.asourcious.plusbot.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.entities.Guild;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.config.source.*;
 import org.json.JSONObject;
@@ -32,9 +33,11 @@ public class Settings {
     private GuildTags guildTags;
 
     public Settings() throws IOException {
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Database Thread %d").build();
+
         this.credentials = new JSONObject(new String(Files.readAllBytes(Paths.get("credentials.json"))));
         this.guildProfiles = new ConcurrentHashMap<>();
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorService = Executors.newSingleThreadExecutor(threadFactory);
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://localhost/plusbot");
