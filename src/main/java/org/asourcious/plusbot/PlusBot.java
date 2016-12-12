@@ -1,6 +1,5 @@
 package org.asourcious.plusbot;
 
-import net.dv8tion.jda.core.JDAInfo;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.asourcious.plusbot.commands.admin.*;
 import org.asourcious.plusbot.commands.audio.*;
