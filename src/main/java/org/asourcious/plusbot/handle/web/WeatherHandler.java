@@ -32,7 +32,7 @@ public class WeatherHandler {
                     URLEncoder.encode(query, "UTF-8") + "&APPID=" + URLEncoder.encode(settings.getWeatherToken(), "UTF-8"))
                     .asString();
 
-            if (response.getStatus() != 200)
+            if (response.getStatus() < 200 || response.getStatus() >= 300)
                 return null;
 
             cache.put(query.toLowerCase(), new Pair<>(new JSONObject(response.getBody()), ZonedDateTime.now()));

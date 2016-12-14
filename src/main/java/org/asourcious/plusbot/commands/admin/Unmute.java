@@ -13,7 +13,7 @@ public class Unmute extends Command {
 
     public Unmute(PlusBot plusBot) {
         super(plusBot);
-        this.help = "";
+        this.help = "Unmutes the specified user(s)";
         this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 

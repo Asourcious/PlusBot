@@ -18,7 +18,7 @@ public class YodaSpeak extends Command {
     public YodaSpeak(PlusBot plusBot) {
         super(plusBot);
         this.help = "Converts a sentence to YodaSpeak";
-        this.rateLimit = new RateLimit(1, 10, TimeUnit.SECONDS);
+        this.rateLimit = new RateLimit(2, 10, TimeUnit.SECONDS);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class YodaSpeak extends Command {
                     .header("Accept", "text/plain")
                     .asString();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
                 channel.sendMessage("Error contacting Yoda API!").queue();
                 return;
             }

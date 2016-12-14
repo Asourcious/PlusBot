@@ -39,7 +39,7 @@ public class UrbanDictionary extends Command {
                     .header("Accept", "text/plain")
                     .asString();
 
-            if (response.getStatus() != 200) {
+            if (response.getStatus() < 200 || response.getStatus() >= 300) {
                 channel.sendMessage("Error contacting UrbanDictionary!").queue();
                 return;
             }
