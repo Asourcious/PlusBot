@@ -34,6 +34,7 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
     private boolean isShuffle = false;
 
     private Set<String> voteSkips;
+    private List<AudioTrack> searchResults;
 
     public Player(Guild guild, AudioPlayerManager playerManager) {
         this.player = playerManager.createPlayer();
@@ -65,10 +66,12 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
     }
 
     public void queue(String url) {
-        playerManager.loadItem(url, new AudioLoader(this, updateChannel));
+        playerManager.loadItem(url, new AudioLoader(this, updateChannel, false));
     }
 
-
+    public void search(String query) {
+        playerManager.loadItem("ytsearch:" + query, new AudioLoader(this, updateChannel, true));
+    }
 
     public void play() {
         if (player.isPaused())
@@ -147,6 +150,22 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         voteSkips.add(userId);
     }
 
+    public List<AudioTrack> getSearchResults() {
+        if (searchResults == null)
+            return Collections.emptyList();
+
+        return Collections.unmodifiableList(new ArrayList<>(searchResults));
+    }
+
+    public void chooseTrack(int index) {
+        updateChannel.sendMessage("Selected song **" + searchResults.get(index).getInfo().title + "**").queue();
+        tracks.add(searchResults.get(index));
+        searchResults = null;
+
+        if (!player.isPaused())
+            play();
+    }
+
     // AudioEventAdapter methods
 
     @Override
@@ -182,6 +201,10 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
     protected void addTrack(AudioTrack track) {
         tracks.add(track);
+    }
+
+    protected void setSearchResults(List<AudioTrack> results) {
+        this.searchResults = results;
     }
 
     private void play0(boolean skipped) {

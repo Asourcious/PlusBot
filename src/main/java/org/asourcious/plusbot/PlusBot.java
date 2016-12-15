@@ -65,6 +65,7 @@ public class PlusBot {
         commandHandler.registerCommand(new Play(this));
         commandHandler.registerCommand(new Repeat(this));
         commandHandler.registerCommand(new Resume(this));
+        commandHandler.registerCommand(new Select(this));
         commandHandler.registerCommand(new Shuffle(this));
         commandHandler.registerCommand(new Skip(this));
         commandHandler.registerCommand(new Stop(this));
