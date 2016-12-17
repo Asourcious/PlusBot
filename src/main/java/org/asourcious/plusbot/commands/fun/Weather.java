@@ -20,11 +20,13 @@ public class Weather extends Command {
     public Weather(PlusBot plusBot) {
         super(plusBot);
         this.help = "Gives the weather for the supplied location.";
-        this.rateLimit = new RateLimit(2, 60, TimeUnit.SECONDS);
+        this.rateLimit = new RateLimit(6, 60, TimeUnit.SECONDS);
     }
 
     @Override
     public String isValid(Message message, String stripped) {
+        if (stripped.isEmpty())
+            return "You must supply a location!";
         return null;
     }
 
