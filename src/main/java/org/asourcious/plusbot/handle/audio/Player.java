@@ -16,7 +16,7 @@ import org.asourcious.plusbot.Constants;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Player extends AudioEventAdapter implements AudioSendHandler {
+public class Player implements AudioSendHandler {
 
     private TextChannel updateChannel;
 
@@ -45,8 +45,21 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
         this.random = new Random();
         this.voteSkips = new HashSet<>();
 
-        player.addListener(this);
         player.setVolume(Constants.DEFAULT_VOLUME);
+        player.addListener(new AudioEventAdapter() {
+            @Override
+            public void onTrackStart(AudioPlayer player, AudioTrack track) {
+                updateChannel.sendMessage("Now playing: **" + track.getInfo().title + "**").queue();
+            }
+
+            @Override
+            public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+                voteSkips.clear();
+                if (endReason.mayStartNext) {
+                    play0(false);
+                }
+            }
+        });
     }
 
     public boolean isConnected() {
@@ -164,21 +177,6 @@ public class Player extends AudioEventAdapter implements AudioSendHandler {
 
         if (!player.isPaused())
             play();
-    }
-
-    // AudioEventAdapter methods
-
-    @Override
-    public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        updateChannel.sendMessage("Now playing: **" + track.getInfo().title + "**").queue();
-    }
-
-    @Override
-    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        voteSkips.clear();
-        if (endReason == AudioTrackEndReason.FINISHED) {
-            play0(false);
-        }
     }
 
     // AudioSendHandler methods
