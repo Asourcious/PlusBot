@@ -1,43 +1,28 @@
 package org.asourcious.plusbot.commands.maintenance;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
-public class Ping implements Command {
+public class Ping extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Ping",
-            "Checks the response time of " + PlusBot.NAME,
-            "ping",
-            null,
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Ping command doesn't take any args!";
-
-        return null;
+    public Ping(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Measures the response time of " + Constants.NAME;
+        this.rateLimit = new RateLimit(2, 30, TimeUnit.SECONDS);
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        channel.sendMessageAsync("Ping: ...", msg -> {
-            if(msg != null) {
-                msg.updateMessageAsync("Ping: " + message.getTime().until(msg.getTime(), ChronoUnit.MILLIS) + "ms", null);
-            }
-        });
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        channel.sendMessage("Ping: ...").queue(msg ->
+                msg.editMessage("Ping: " + message.getCreationTime().until(msg.getCreationTime(), ChronoUnit.MILLIS) + "ms").queue()
+        );
     }
 }

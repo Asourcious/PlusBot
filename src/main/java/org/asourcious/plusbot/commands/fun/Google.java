@@ -1,52 +1,34 @@
 package org.asourcious.plusbot.commands.fun;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
-import org.asourcious.plusbot.web.GoogleSearcher;
 
-public class Google implements Command {
+public class Google extends Command {
 
-    private GoogleSearcher searcher;
-    private CommandDescription description = new CommandDescription(
-            "Google",
-            "Returns the result of a google search.",
-            "google discord",
-            new Argument[] { new Argument("Search term", true) },
-            PermissionLevel.EVERYONE
-    );
-
-    public Google(GoogleSearcher searcher) {
-        this.searcher = searcher;
+    public Google(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Searches google for the specified query.";
+        this.aliases = new String[] { "g" };
     }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 1)
-            return "The Google command takes one argument!";
-
+    public String isValid(Message message, String stripped) {
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        String result = searcher.search(args[0]);
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        String result = plusBot.getGoogleSearchHandler().search(stripped);
 
         if (result == null) {
-            channel.sendMessageAsync(FormatUtils.error("Error searching google!"), null);
+            channel.sendMessage("Error searching!").queue();
             return;
         }
 
-        channel.sendMessageAsync(result, null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        channel.sendMessage(result).queue();
     }
 }

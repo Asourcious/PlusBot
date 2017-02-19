@@ -1,38 +1,26 @@
 package org.asourcious.plusbot.commands.maintenance;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import org.asourcious.plusbot.BootLoader;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
 
-public class Shutdown implements Command {
+public class Shutdown extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Shutdown",
-            "Turns off " + PlusBot.NAME + ". Only usable by Asourcious",
-            "shutdown",
-            null,
-            PermissionLevel.OWNER
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Shutdown command doesn't take any args!";
-
-        return null;
+    public Shutdown(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Shuts down " + Constants.NAME + ". Only available to the bot owner";
+        this.permissionLevel = PermissionLevel.OWNER;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        channel.sendMessage("Shutting down...");
-        plusBot.shutdown();
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        channel.sendMessage("Shutting down...").queue();
+        BootLoader.shutdown();
     }
 }

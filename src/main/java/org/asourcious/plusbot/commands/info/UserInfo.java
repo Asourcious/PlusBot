@@ -1,58 +1,58 @@
 package org.asourcious.plusbot.commands.info;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.utils.MiscUtil;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.CommandUtils;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.util.DiscordUtils;
+import org.asourcious.plusbot.util.FormatUtils;
 
+import java.awt.Color;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class UserInfo implements Command {
-
-    private CommandDescription description = new CommandDescription(
-            "UserInfo",
-            "Reports information about the specified user",
-            "userinfo @" + PlusBot.NAME,
-            null,
-            PermissionLevel.EVERYONE
-    );
+public class UserInfo extends Command {
+    public UserInfo(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Gives information about you, a mentioned user, or the user whose id you provide (As long as they are in this server)";
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The UserInfo command doesn't take any arguments";
+    public String isValid(Message message, String stripped) {
+        if (DiscordUtils.getTrimmedMentions(message).size() > 1)
+            return "You can only mention up to one user!";
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        User target = CommandUtils.getTrimmedMentions(message).get(0);
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        List<User> users = DiscordUtils.getTrimmedMentions(message);
 
-        List<String> roles = channel.getGuild().getRolesForUser(target).parallelStream().map(Role::getName).collect(Collectors.toList());
+        Member target;
+        if (users.isEmpty() && stripped.length() == 0) {
+            target = guild.getMember(author);
+        } else if (users.isEmpty()) {
+            target = guild.getMemberById(stripped);
+            if (target == null) {
+                channel.sendMessage("No member with id \"" + stripped + "\" exists!").queue();
+                return;
+            }
+        } else {
+            target = guild.getMember(users.get(0));
+        }
 
-        String msg = "";
-        msg += "Username: **" + target.getUsername() + "#" + target.getDiscriminator() + "**\n";
-        msg += "ID: **" + target.getId() + "**\n";
-        if (roles.size() < 20)
-            msg += "Roles: **" + roles.toString() + "**\n";
-        msg += "Status: **" + target.getOnlineStatus().toString() + "**\n";
-        msg += "Game: **" + (target.getCurrentGame() != null ? target.getCurrentGame() : "None") + "**\n";
-        msg += "Creation Time: **" + FormatUtils.getFormattedTime(MiscUtil.getCreationTime(target.getId())) + "**\n";
-        msg += "Avatar: " + target.getAvatarUrl();
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(target.getUser().getAvatarUrl())
+                .addField("Name", target.getEffectiveName(), true)
+                .addField("ID", target.getUser().getId(), true)
+                .addField("Online Status", target.getOnlineStatus().toString(), true)
+                .addField("Voice Status", target.getVoiceState().inVoiceChannel() ? "Connected" : "Disconnected", true)
+                .addField("Game", target.getGame() != null ? target.getGame().getName() : "None", true)
+                .addField("Account Type", target.getUser().isBot() ? "Bot" : "User", true)
+                .addField("Creation Time", FormatUtils.getFormattedTime(target.getUser().getCreationTime()), true)
+                .addField("Join Date", FormatUtils.getFormattedTime(target.getJoinDate()), true);
 
-        channel.sendMessageAsync(msg, null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }

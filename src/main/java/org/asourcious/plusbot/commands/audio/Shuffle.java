@@ -1,48 +1,28 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.player.MusicPlayer;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.handle.audio.Player;
 
-public class Shuffle implements Command {
+public class Shuffle extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Shuffle",
-            "",
-            "shuffle on",
-            new Argument[] {new Argument("On/Off", false)},
-            PermissionLevel.EVERYONE
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length > 1)
-            return "The Shuffle command only takes up to one argument";
-        if (args.length == 1 && !args[0].equalsIgnoreCase("on") && !args[0].equalsIgnoreCase("off"))
-            return "The only accepted arguments are on and off";
-
-        return null;
+    public Shuffle(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Toggles shuffling for the audio queue.";
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        MusicPlayer player = plusBot.getMusicPlayer(channel.getGuild());
-        if (args.length == 0) {
-            channel.sendMessageAsync("Shuffling is set to **" + player.isShuffle() + "**", null);
-            return;
-        }
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
+        player.setUpdateChannel(channel);
 
-        player.setShuffle(args[0].equalsIgnoreCase("on"));
-        channel.sendMessageAsync("Shuffling set to **" + player.isShuffle() + "**", null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        player.setShuffle(!player.isShuffle());
+        channel.sendMessage("Shuffling is now " + (player.isShuffle() ? "enabled." : "disabled.")).queue();
     }
 }

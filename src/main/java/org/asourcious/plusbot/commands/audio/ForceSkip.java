@@ -1,47 +1,28 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.player.MusicPlayer;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.handle.audio.Player;
 
-public class ForceSkip implements Command {
+public class ForceSkip extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "ForceSkip",
-            "Skips the current audio source in the queue",
-            "skip",
-            null,
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The skip command doesn't take any args!";
-
-        return null;
+    public ForceSkip(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Skips the current song, bypassing the vote-skip system";
+        this.permissionLevel = PermissionLevel.DJ;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        MusicPlayer musicPlayer = plusBot.getMusicPlayer(channel.getGuild());
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
+        player.setUpdateChannel(channel);
 
-        if (musicPlayer.getCurrentAudioSource() == null) {
-            channel.sendMessageAsync("There is nothing in the queue!", null);
-            return;
-        }
-
-        channel.sendMessageAsync("Skipping " + FormatUtils.getFormattedSongName(musicPlayer), null);
-        musicPlayer.skipToNext();
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        channel.sendMessage("Skipping **" + player.getPlayingTrack().getInfo().title + "**").queue();
+        plusBot.getPlayerHandler().getPlayer(guild).skip();
     }
 }

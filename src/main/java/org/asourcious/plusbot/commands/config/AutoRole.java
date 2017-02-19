@@ -1,72 +1,130 @@
 package org.asourcious.plusbot.commands.config;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
 import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.config.GuildProfile;
+import org.asourcious.plusbot.util.DiscordUtils;
 
+import java.awt.Color;
 import java.util.List;
 
-public class AutoRole implements Command {
+public class AutoRole extends Command {
 
-    private CommandDescription description = new CommandDescription(
-            "AutoRole",
-            "Adds and removes roles from this server's roles that are assigned when users/bots join (You must mention the role to specify which role to use)"
-                    + "\nYou can make the role mentionable under Server Settings -> Roles -> Your role -> Allow anyone to @mention this role",
-            "autorole human add @Role",
-            null,
-            PermissionLevel.SERVER_MODERATOR
-    );
+    public AutoRole(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Modifies roles to be automatically assigned to members when they join the server";
+        this.children = new Command[] {
+                new Human(plusBot),
+                new Bot(plusBot)
+        };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 2)
-            return "The AutoRole command takes two arguments!";
-        if (!args[0].equalsIgnoreCase("human") && !args[0].equalsIgnoreCase("bot"))
-            return "The first argument must be either \"Human\" or \"Bot\"";
-        if (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("remove"))
-            return "The first argument must be either \"Add\" or \"Remove\"";
+    public String isValid(Message message, String stripped) {
+        if (!stripped.isEmpty())
+            return "Those are not acceptable arguments! Use `help " + name + "` instead!";
 
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        List<Role> roles = message.getMentionedRoles();
-        if (roles.size() > 5) {
-            channel.sendMessageAsync("Only 5 auto roles are allowed to be modified at once", null);
-            return;
-        }
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        DiscordUtils.checkForMissingAutoRoles(plusBot.getSettings(), guild);
 
-        if (args[0].equalsIgnoreCase("human")) {
-            if (args[1].equalsIgnoreCase("add")) {
-                roles.parallelStream()
-                        .filter(role -> !plusBot.getConfiguration().getAutoHumanRoles(channel.getGuild()).contains(role.getId()))
-                        .forEach(role -> plusBot.getConfiguration().addAutoHumanRole(channel.getGuild(), role));
-            } else {
-                roles.parallelStream()
-                        .filter(role -> plusBot.getConfiguration().getAutoHumanRoles(channel.getGuild()).contains(role.getId()))
-                        .forEach(role -> plusBot.getConfiguration().removeAutoHumanRole(channel.getGuild(), role.getId()));
-            }
-        } else {
-            if (args[1].equalsIgnoreCase("add")) {
-                roles.parallelStream()
-                        .filter(role -> !plusBot.getConfiguration().getAutoBotRoles(channel.getGuild()).contains(role.getId()))
-                        .forEach(role -> plusBot.getConfiguration().addAutoBotRole(channel.getGuild(), role));
-            } else {
-                roles.parallelStream()
-                        .filter(role -> plusBot.getConfiguration().getAutoBotRoles(channel.getGuild()).contains(role.getId()))
-                        .forEach(role -> plusBot.getConfiguration().removeAutoBotRole(channel.getGuild(), role.getId()));
-            }
-        }
-        channel.sendMessageAsync("Successfully updated auto roles", null);
+        Role autoBotRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.BOT_ROLE));
+        Role autoHumanRole = guild.getRoleById(settings.getProfile(guild).getProperty(GuildProfile.HUMAN_ROLE));
+
+        embedBuilder
+                .setColor(Color.green)
+                .setDescription("Auto Roles for " + guild.getName())
+                .addField("Human", autoHumanRole == null ? "None" : autoHumanRole.getName(), false)
+                .addField("Bots", autoBotRole == null ? "None" : autoBotRole.getName(), false);
+
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    private Role getTargetRole(String stripped, TextChannel channel, Message message, Guild guild) {
+        if (stripped.isEmpty()) {
+            List<Role> roles = message.getMentionedRoles();
+            if (roles.size() > 1) {
+                channel.sendMessage("Multiple roles mentioned. Only one role can be modified at a time!").queue();
+                return null;
+            }
+            if (roles.isEmpty()) {
+                channel.sendMessage("No roles mentioned!").queue();
+                return null;
+            }
+            return roles.get(0);
+        } else {
+            List<Role> roles = guild.getRolesByName(stripped, true);
+            if (roles.size() > 1) {
+                channel.sendMessage("Multiple roles found with that name. mention the role instead!").queue();
+                return null;
+            }
+            if (roles.isEmpty()) {
+                channel.sendMessage("No roles found with name \"" + stripped + "\"").queue();
+                return null;
+            }
+            return roles.get(0);
+        }
+    }
+
+    private class Human extends Command {
+        Human(PlusBot plusBot) {
+            super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return null;
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            if (stripped.equals("clear")) {
+                settings.getProfile(guild).removeProperty(GuildProfile.HUMAN_ROLE);
+                channel.sendMessage("Removed auto human role").queue();
+                return;
+            }
+
+            Role target = getTargetRole(stripped, channel, message, guild);
+            if (target == null)
+                return;
+
+            settings.getProfile(guild).setProperty(GuildProfile.HUMAN_ROLE, target.getId());
+            channel.sendMessage("Updated auto roles").queue();
+        }
+    }
+
+    private class Bot extends Command {
+        Bot(PlusBot plusBot) {
+            super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return null;
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            if (stripped.equals("clear")) {
+                settings.getProfile(guild).removeProperty(GuildProfile.BOT_ROLE);
+                channel.sendMessage("Removed auto bot role").queue();
+                return;
+            }
+
+            Role target = getTargetRole(stripped, channel, message, guild);
+            if (target == null)
+                return;
+
+            settings.getProfile(guild).setProperty(GuildProfile.BOT_ROLE, target.getId());
+            channel.sendMessage("Updated auto roles").queue();
+        }
     }
 }

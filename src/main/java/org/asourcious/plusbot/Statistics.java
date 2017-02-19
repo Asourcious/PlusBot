@@ -1,11 +1,10 @@
 package org.asourcious.plusbot;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
-public final class Statistics {
-    private Statistics() {}
-
-    public static OffsetDateTime startTime;
+public class Statistics {
+    public static int numMessages = 0;
     public static int numCommands = 0;
-    public static int numConnections = 0;
+
+    public static ZonedDateTime startTime;
 }

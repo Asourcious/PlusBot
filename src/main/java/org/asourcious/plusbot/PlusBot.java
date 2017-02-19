@@ -1,201 +1,138 @@
 package org.asourcious.plusbot;
 
-import net.dv8tion.jda.JDAInfo;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.player.JDAPlayerInfo;
-import net.dv8tion.jda.player.MusicPlayer;
-import net.dv8tion.jda.utils.SimpleLog;
-import org.asourcious.plusbot.commands.CommandRegistry;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.asourcious.plusbot.commands.admin.*;
 import org.asourcious.plusbot.commands.audio.*;
-import org.asourcious.plusbot.commands.config.AutoRole;
-import org.asourcious.plusbot.commands.config.Blacklist;
-import org.asourcious.plusbot.commands.config.CommandToggle;
-import org.asourcious.plusbot.commands.config.Prefix;
-import org.asourcious.plusbot.commands.fun.Google;
-import org.asourcious.plusbot.commands.fun.RIP;
-import org.asourcious.plusbot.commands.fun.Triggered;
-import org.asourcious.plusbot.commands.info.ChannelInfo;
-import org.asourcious.plusbot.commands.info.RoleInfo;
-import org.asourcious.plusbot.commands.info.ServerInfo;
-import org.asourcious.plusbot.commands.info.UserInfo;
-import org.asourcious.plusbot.commands.help.CommandInfo;
-import org.asourcious.plusbot.commands.help.Help;
-import org.asourcious.plusbot.commands.help.Invite;
+import org.asourcious.plusbot.commands.config.*;
+import org.asourcious.plusbot.commands.fun.*;
+import org.asourcious.plusbot.commands.fun.Math;
+import org.asourcious.plusbot.commands.info.*;
 import org.asourcious.plusbot.commands.maintenance.*;
-import org.asourcious.plusbot.commands.maintenance.Shutdown;
-import org.asourcious.plusbot.events.MusicPlayerEventListener;
-import org.asourcious.plusbot.managers.ShardManager;
-import org.asourcious.plusbot.web.GoogleSearcher;
+import org.asourcious.plusbot.config.Settings;
+import org.asourcious.plusbot.handle.CommandHandler;
+import org.asourcious.plusbot.handle.ShardHandler;
+import org.asourcious.plusbot.handle.audio.PlayerHandler;
+import org.asourcious.plusbot.handle.web.GoogleSearchHandler;
+import org.asourcious.plusbot.handle.web.WeatherHandler;
+import org.asourcious.plusbot.hooks.PlusBotEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PlusBot {
 
-    public static final String NAME = "PlusBot";
-    public static final String VERSION = "1.2";
-    public static final String OWNER_ID = "142843635057164288";
+    public static final Logger LOG = LoggerFactory.getLogger(PlusBot.class);
 
-    public static final SimpleLog LOG = SimpleLog.getLog("PlusBot");
-    public static final File LOG_OUT_FILE = new File("out.log");
-    public static final File LOG_ERR_FILE = new File("err.log");
+    private Settings settings;
+    private ShardHandler shardHandler;
+    private PlusBotEventListener eventListener;
 
-    private GoogleSearcher googleSearcher;
-
-    private ShardManager shardManager;
-    private Configuration configuration;
-    private Map<String, MusicPlayer> guildMusicPlayers;
-    private Map<String, List<User>> guildVoteSkips;
+    private GoogleSearchHandler googleSearchHandler;
+    private PlayerHandler playerHandler;
+    private WeatherHandler weatherHandler;
 
     private ScheduledExecutorService cacheCleaner;
 
-    public void init() throws LoginException {
-        Statistics.startTime = OffsetDateTime.now();
-        configuration = new Configuration();
-        shardManager = new ShardManager(this, 1);
-        guildMusicPlayers = new ConcurrentHashMap<>();
-        guildVoteSkips = new ConcurrentHashMap<>();
-        googleSearcher = new GoogleSearcher();
+    public PlusBot() throws LoginException, IOException {
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Cleaner-Pool Thread %d").build();
 
-        cacheCleaner = Executors.newSingleThreadScheduledExecutor();
+        this.settings = new Settings();
+        this.eventListener = new PlusBotEventListener(this);
+        this.shardHandler = new ShardHandler(this, eventListener, 1);
+        this.googleSearchHandler = new GoogleSearchHandler();
+        this.playerHandler = new PlayerHandler();
+        this.weatherHandler = new WeatherHandler(settings);
+        this.cacheCleaner = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        CommandHandler commandHandler = eventListener.getCommandHandler();
 
-        cacheCleaner.scheduleAtFixedRate(() -> {
-            LOG.info("Cleaning cache");
-            googleSearcher.cleanCache();
-        }, 4, 4, TimeUnit.HOURS);
+        commandHandler.registerCommand(new Ban(this));
+        commandHandler.registerCommand(new Kick(this));
+        commandHandler.registerCommand(new Mute(this));
+        commandHandler.registerCommand(new Unban(this));
+        commandHandler.registerCommand(new Unmute(this));
+
+        commandHandler.registerCommand(new Clear(this));
+        commandHandler.registerCommand(new ForceSkip(this));
+        commandHandler.registerCommand(new Join(this));
+        commandHandler.registerCommand(new Leave(this));
+        commandHandler.registerCommand(new NowPlaying(this));
+        commandHandler.registerCommand(new Pause(this));
+        commandHandler.registerCommand(new Play(this));
+        commandHandler.registerCommand(new Repeat(this));
+        commandHandler.registerCommand(new Resume(this));
+        commandHandler.registerCommand(new Select(this));
+        commandHandler.registerCommand(new Shuffle(this));
+        commandHandler.registerCommand(new Skip(this));
+        commandHandler.registerCommand(new Stop(this));
+        commandHandler.registerCommand(new Volume(this));
+
+        commandHandler.registerCommand(new AutoRole(this));
+        commandHandler.registerCommand(new Blacklist(this));
+        commandHandler.registerCommand(new CommandToggle(this));
+        commandHandler.registerCommand(new Prefix(this));
+        commandHandler.registerCommand(new Tag(this));
+        commandHandler.registerCommand(new Welcome(this));
+        commandHandler.registerCommand(new WelcomeDM(this));
+
+        commandHandler.registerCommand(new Google(this));
+        commandHandler.registerCommand(new Math(this));
+        commandHandler.registerCommand(new NeedsMoreJPEG(this));
+        commandHandler.registerCommand(new RIP(this));
+        commandHandler.registerCommand(new Triggered(this));
+        commandHandler.registerCommand(new UrbanDictionary(this));
+        commandHandler.registerCommand(new Weather(this));
+        commandHandler.registerCommand(new YodaSpeak(this));
+
+        commandHandler.registerCommand(new ChannelInfo(this));
+        commandHandler.registerCommand(new GuildInfo(this));
+        commandHandler.registerCommand(new Help(this));
+        commandHandler.registerCommand(new RoleInfo(this));
+        commandHandler.registerCommand(new UserInfo(this));
+
+        commandHandler.registerCommand(new Clean(this));
+        commandHandler.registerCommand(new Eval(this));
+        commandHandler.registerCommand(new Ping(this));
+        commandHandler.registerCommand(new Restart(this));
+        commandHandler.registerCommand(new Shutdown(this));
+        commandHandler.registerCommand(new Status(this));
+
+        cacheCleaner.scheduleAtFixedRate(() -> googleSearchHandler.cleanCache(), 4, 4, TimeUnit.HOURS);
+        cacheCleaner.scheduleAtFixedRate(() -> weatherHandler.cleanCache(), 10, 10, TimeUnit.MINUTES);
     }
 
-    public static void main(String[] args) throws IOException, LoginException {
-        setupLogFile(LOG_OUT_FILE);
-        setupLogFile(LOG_ERR_FILE);
-        SimpleLog.addFileLogs(LOG_OUT_FILE, LOG_ERR_FILE);
-
-        LOG.info("Starting up...");
-        LOG.info("JDA Version: " + JDAInfo.VERSION);
-        LOG.info("JDA-Player Version: " + JDAPlayerInfo.VERSION);
-
-        PlusBot plusBot = new PlusBot();
-        plusBot.init();
-
-        CommandRegistry.registerCommand("Clear", new Clear());
-        CommandRegistry.registerCommand("ForceSkip", new ForceSkip());
-        CommandRegistry.registerCommand("Join", new Join());
-        CommandRegistry.registerCommand("Leave", new Leave());
-        CommandRegistry.registerCommand("Move", new Move());
-        CommandRegistry.registerCommand("Pause", new Pause());
-        CommandRegistry.registerCommand("Play", new Play());
-        CommandRegistry.registerCommand("Playlist", new PlaylistCommand());
-        CommandRegistry.registerCommand("Queue", new Queue());
-        CommandRegistry.registerCommand("Reset", new Reset());
-        CommandRegistry.registerCommand("Resume", new Resume());
-        CommandRegistry.registerCommand("Shuffle", new Shuffle());
-        CommandRegistry.registerCommand("Skip", new Skip());
-        CommandRegistry.registerCommand("Volume", new Volume());
-        CommandRegistry.registerAlias("Join", "Summon");
-        CommandRegistry.registerAlias("Leave", "Unsummon");
-
-        CommandRegistry.registerCommand("AutoRole", new AutoRole());
-        CommandRegistry.registerCommand("Blacklist", new Blacklist());
-        CommandRegistry.registerCommand("Command", new CommandToggle());
-        CommandRegistry.registerCommand("Prefix", new Prefix());
-
-        CommandRegistry.registerCommand("Google", new Google(plusBot.googleSearcher));
-        CommandRegistry.registerCommand("RIP", new RIP());
-        CommandRegistry.registerCommand("Triggered", new Triggered());
-        CommandRegistry.registerAlias("Google", "g");
-
-        CommandRegistry.registerCommand("CommandInfo", new CommandInfo());
-        CommandRegistry.registerCommand("Help", new Help());
-        CommandRegistry.registerCommand("Invite", new Invite());
-        CommandRegistry.registerAlias("Help", "Commands");
-        CommandRegistry.registerAlias("Help", "CommandList");
-
-        CommandRegistry.registerCommand("ChannelInfo", new ChannelInfo());
-        CommandRegistry.registerCommand("RoleInfo", new RoleInfo());
-        CommandRegistry.registerCommand("ServerInfo", new ServerInfo());
-        CommandRegistry.registerCommand("UserInfo", new UserInfo());
-        CommandRegistry.registerAlias("ServerInfo", "GuildInfo");
-
-        CommandRegistry.registerCommand("Clean", new Clean());
-        CommandRegistry.registerCommand("Eval", new Eval());
-        CommandRegistry.registerCommand("Ping", new Ping());
-        CommandRegistry.registerCommand("Shard", new Shard());
-        CommandRegistry.registerCommand("Shards", new Shards());
-        CommandRegistry.registerCommand("Shutdown", new Shutdown());
-        CommandRegistry.registerCommand("Status", new Status());
-    }
-
-    public void shutdown() {
+    public void shutdown(boolean free) {
+        settings.shutdown();
         cacheCleaner.shutdown();
-        shardManager.shutdown();
-        configuration.shutdown();
+        shardHandler.shutdown(free);
+        eventListener.shutdown();
     }
 
-    public ShardManager getShardManager() {
-        return shardManager;
+    public Settings getSettings() {
+        return settings;
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public CommandHandler getCommandHandler() {
+        return eventListener.getCommandHandler();
     }
 
-    public MusicPlayer getMusicPlayer(Guild guild) {
-        if (!guildMusicPlayers.containsKey(guild.getId())) {
-            guildMusicPlayers.put(guild.getId(), new MusicPlayer());
-            guildMusicPlayers.get(guild.getId()).addEventListener(new MusicPlayerEventListener(this, guild.getPublicChannel()));
-        }
-
-        return guildMusicPlayers.get(guild.getId());
+    public ShardHandler getShardHandler() {
+        return shardHandler;
     }
 
-    public void resetMusicPlayer(Guild guild) {
-        guildMusicPlayers.remove(guild.getId());
-        guild.getAudioManager().setSendingHandler(null);
+    public GoogleSearchHandler getGoogleSearchHandler() {
+        return googleSearchHandler;
     }
 
-    public Guild getGuildForPlayer(MusicPlayer player) {
-        return guildMusicPlayers.entrySet().parallelStream().filter(entry -> entry.getValue().equals(player)).map(entry -> shardManager.getGuildById(entry.getKey())).findAny().orElse(null);
+    public PlayerHandler getPlayerHandler() {
+        return playerHandler;
     }
 
-    public List<User> getVoteSkips(Guild guild) {
-        if (!guildVoteSkips.containsKey(guild.getId()))
-            return Collections.emptyList();
-        return guildVoteSkips.get(guild.getId());
-    }
-
-    public void addVoteSkip(Guild guild, User user) {
-        guildVoteSkips.putIfAbsent(guild.getId(), new ArrayList<>());
-
-        if (!guildVoteSkips.get(guild.getId()).contains(user))
-            guildVoteSkips.get(guild.getId()).add(user);
-    }
-
-    public void clearVoteSkips(Guild guild) {
-        if (guildVoteSkips.containsKey(guild.getId())) {
-            guildVoteSkips.get(guild.getId()).clear();
-        }
-    }
-
-    private static void setupLogFile(File file) throws IOException {
-        if (!file.createNewFile()) {
-            try {
-                file.delete();
-                file.createNewFile();
-            } catch (IOException ex) {
-                LOG.fatal("Could not set up log file!");
-                LOG.log(ex);
-            }
-        }
+    public WeatherHandler getWeatherHandler() {
+        return weatherHandler;
     }
 }

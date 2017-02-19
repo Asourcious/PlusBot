@@ -1,61 +1,46 @@
 package org.asourcious.plusbot.commands.fun;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.CommandUtils;
-import org.asourcious.plusbot.utils.FormatUtils;
-import org.asourcious.plusbot.utils.MiscUtils;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class RIP implements Command {
+public class RIP extends Command {
 
-    private CommandDescription description = new CommandDescription(
-            "RIP",
-            "Generates an image of a tombstone with the specified text or user on it.",
-            "rip me, rip @person",
-            new Argument[] { new Argument("Text", false) },
-            PermissionLevel.EVERYONE
-    );
+    public RIP(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Generates an image of a tombstone with the provided text or the name of the mentioned user on it.";
+        this.rateLimit = new RateLimit(4, 1, TimeUnit.MINUTES);
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length > 1)
-            return "The RIP command takes up to 1 argument";
-
+    public String isValid(Message message, String stripped) {
+        if (DiscordUtils.getTrimmedMentions(message).isEmpty() && stripped.isEmpty())
+            return "You must either mention a user or provide text!";
+        if (!DiscordUtils.getTrimmedMentions(message).isEmpty() && !stripped.isEmpty())
+            return "You can't mention a user and provide text!";
+        if (DiscordUtils.getTrimmedMentions(message).size() > 1)
+            return "You may only mention one user!";
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        List<User> mentionedUsers = CommandUtils.getTrimmedMentions(message);
-
-        if (args.length == 0 && mentionedUsers.isEmpty()) {
-            channel.sendMessageAsync(FormatUtils.error("If no arguments are supplied, you must mention a user!"), null);
-            return;
-        }
-
-        if (mentionedUsers.size() > 1) {
-            channel.sendMessageAsync("You can only mention one user!", null);
-            return;
-        }
-
-        String text = args.length == 0
-                ? channel.getGuild().getEffectiveNameForUser(mentionedUsers.get(0))
-                : args[0];
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        boolean isMention = stripped.isEmpty();
+        String text = isMention
+                ? guild.getMember(DiscordUtils.getTrimmedMentions(message).get(0)).getEffectiveName()
+                : stripped;
 
         try {
             BufferedImage image = ImageIO.read(new File("media/tombstone.png"));
@@ -66,40 +51,13 @@ public class RIP implements Command {
             g2d.setColor(Color.BLACK);
             g2d.drawString(text, 70, 470);
 
-            File file = new File("media/tempGrave.png");
-            for (int i = 0; !file.createNewFile(); i++) {
-                file = new File("media/tempGrave" + i + ".png");
-                if (i > 1000)
-                    PlusBot.LOG.warn("More than 1000 tmp grave images!");
-            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", out);
 
-            try {
-                BufferedImage avatar = null;
-                if (!mentionedUsers.isEmpty()) {
-                    InputStream stream = MiscUtils.getDataStream(channel.getJDA(), mentionedUsers.get(0).getAvatarUrl());
-                    if(stream != null) {
-                        avatar = ImageIO.read(stream);
-                    }
-
-                    g2d.drawImage(avatar, 225, 510, 125, 125, Color.white, null);
-                }
-            } catch (IOException ex) {
-                PlusBot.LOG.warn(mentionedUsers.get(0).getAvatarUrl());
-                PlusBot.LOG.log(ex);
-            }
-
-            ImageIO.write(image, "png", file);
-
-            final File toDelete = file;
-            channel.sendFileAsync(file, null, msg -> toDelete.delete());
+            channel.sendFile(out.toByteArray(), "rip.png", null).queue();
         } catch (IOException e) {
-            channel.sendMessageAsync(FormatUtils.error("Error generating tombstone!"), null);
+            channel.sendMessage("Error creating tombstone!").queue();
         }
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
     }
 
     private Font scaleFont(String text, Rectangle rect, Graphics g) {

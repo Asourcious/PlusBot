@@ -1,49 +1,55 @@
 package org.asourcious.plusbot.commands.info;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.utils.MiscUtil;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.util.FormatUtils;
 
-public class ChannelInfo implements Command {
+import java.awt.Color;
 
-    private CommandDescription description = new CommandDescription(
-            "ChannelInfo",
-            "Gathers information about the specified channel",
-            "channelinfo #somechannel",
-            null,
-            PermissionLevel.EVERYONE
-    );
+public class ChannelInfo extends Command {
+
+    public ChannelInfo(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Gives information about the current or specified channel";
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The ChannelInfo command doesn't take any arguments!";
+    public String isValid(Message message, String stripped) {
+        if (message.getMentionedChannels().size() > 1)
+            return "You may only mention up to one channel!";
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        TextChannel target = message.getMentionedChannels().size() == 1
-                ? message.getMentionedChannels().get(0)
-                : channel;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        TextChannel target;
+        if (stripped.isEmpty() && message.getMentionedChannels().isEmpty()) {
+            target = channel;
+        } else if (stripped.isEmpty()) {
+            target = message.getMentionedChannels().get(0);
+        } else {
+            target = guild.getTextChannelById(stripped);
+            if (target == null) {
+                channel.sendMessage("No channel exists with the provided id!").queue();
+                return;
+            }
+        }
 
-        String msg = "";
-        msg += "Name: **" + target.getName() + "**\n";
-        msg += "ID: **" + target.getId() + "**\n";
-        msg += "Topic: **" + (target.getTopic() == null ? target.getTopic() :"None") + "**\n";
-        msg += "Position: **" + target.getPosition() + "**\n";
-        msg += "Creation Time: **" + FormatUtils.getFormattedTime(MiscUtil.getCreationTime(target.getId())) + "**";
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder
+                .setColor(Color.GREEN)
+                .setThumbnail(guild.getIconUrl())
+                .addField("Name", target.getName(), true)
+                .addField("ID", target.getId(), true)
+                .addField("Topic", target.getTopic() == null ? target.getTopic() : "None", true)
+                .addField("Position", String.valueOf(target.getPosition()), true)
+                .addField("Creation Time", FormatUtils.getFormattedTime(target.getCreationTime()), false);
 
-        channel.sendMessageAsync(msg, null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }

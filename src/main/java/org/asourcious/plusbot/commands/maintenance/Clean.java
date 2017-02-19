@@ -1,52 +1,37 @@
 package org.asourcious.plusbot.commands.maintenance;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.CommandUtils;
+import org.asourcious.plusbot.util.DiscordUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Clean implements Command {
+public class Clean extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Clean",
-            "Removes all commands and responses in the last 100 messages",
-            "clean",
-            null,
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Clean command doesn't take any args";
-
-        return null;
+    public Clean(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Removes all commands and responses in the last 100 messages.";
+        this.requiredPermissions = new Permission[] { Permission.MESSAGE_MANAGE };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        List<Message> toRemove = channel.getHistory().retrieve()
-                .parallelStream().filter(msg -> CommandUtils.isValidCommand(msg, plusBot)
-                        || message.getJDA().getSelfInfo().equals(msg.getAuthor())).collect(Collectors.toList());
-
-        int numRemoved = toRemove.size();
-
-        if (toRemove.size() > 1)
-            channel.deleteMessages(toRemove);
-        else if (toRemove.size() > 0)
-            toRemove.get(0).deleteMessage();
-
-        channel.sendMessageAsync("Removed **" + numRemoved + "** messages.", null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        try {
+            List<Message> messages = channel.getHistory().retrievePast(100).block()
+                    .parallelStream()
+                    .filter(msg -> msg.getAuthor().equals(msg.getJDA().getSelfUser()) || DiscordUtils.isCommand(plusBot, msg))
+                    .collect(Collectors.toList());
+            channel.deleteMessages(messages).queue();
+            channel.sendMessage("Deleted **" + messages.size() + "** messages").queue();
+        } catch (RateLimitedException ignored) {}
     }
 }

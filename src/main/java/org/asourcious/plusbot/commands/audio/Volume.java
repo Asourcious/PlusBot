@@ -1,56 +1,49 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
 import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.handle.audio.Player;
 
-public class Volume implements Command {
+public class Volume extends Command {
 
-    private CommandDescription description = new CommandDescription(
-            "Volume",
-            "Sets the volume of the Music Player",
-            "volume 50",
-            new Argument[] { new Argument("Volume", false) },
-            PermissionLevel.EVERYONE
-    );
+    public Volume(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Updates the volume of the audio playback";
+        this.permissionLevel = PermissionLevel.EVERYONE;
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length > 1)
-            return "The Volume command only takes up to one argument!";
-        if (args.length == 1) {
-            if (!NumberUtils.isNumber(args[0]))
-                return "Please enter a valid number";
+    public String isValid(Message message, String stripped) {
+        if (stripped.isEmpty())
+            return null;
+        if (!NumberUtils.isParsable(stripped))
+            return "That is not a valid number!";
 
-            int volume = NumberUtils.toInt(args[0]);
-            if (volume > 100 || volume < 1)
-                return "Enter a number between 1 and 100";
-        }
+        int volume = NumberUtils.toInt(stripped);
+        if (volume < 1 || volume > 100)
+            return "You must enter a value between 1 and 100";
+
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        if (args.length == 0) {
-            channel.sendMessageAsync("The current volume is **" +
-                    (int) (plusBot.getMusicPlayer(channel.getGuild()).getVolume() * 100) + "**", null);
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
+        player.setUpdateChannel(channel);
+
+        if (stripped.isEmpty()) {
+            channel.sendMessage("Current volume is **" + player.getVolume() + "**").queue();
             return;
         }
 
-        int volume = NumberUtils.toInt(args[0]);
-        int oldVolume = (int) (plusBot.getMusicPlayer(channel.getGuild()).getVolume() * 100);
-
-        plusBot.getMusicPlayer(channel.getGuild()).setVolume(volume / 100f);
-        channel.sendMessageAsync("Updated volume from **" + oldVolume + "** to **" + volume + "**", null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        int old = player.getVolume();
+        player.setVolume(Integer.parseInt(stripped));
+        channel.sendMessage("Updated volume from **" + old + "** to **" + player.getVolume() + "**").queue();
     }
 }

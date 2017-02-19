@@ -1,76 +1,98 @@
 package org.asourcious.plusbot.commands.config;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.*;
+import org.asourcious.plusbot.commands.Command;
+import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.config.DataSource;
 
-public class CommandToggle implements Command {
+public class CommandToggle extends CommandContainer {
 
-    private CommandDescription description = new CommandDescription(
-            "Command",
-            "Enables and disables commands in this server or channel",
-            "command server disable skip",
-            new Argument[] { new Argument("Server / Channel", true), new Argument("Enable / Disable", true), new Argument("Command name", true) },
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 3)
-            return "The Command command takes 3 args";
-        if (!args[0].equalsIgnoreCase("Server") && ! args[0].equalsIgnoreCase("Channel"))
-            return "The first argument must be either server or channel";
-        if (!args[1].equalsIgnoreCase("Enable") && ! args[1].equalsIgnoreCase("Disable"))
-            return "The second argument must be either add or remove";
-        if (!CommandRegistry.hasCommand(args[2]))
-            return "That command doesn't exist!";
-        if (args[2].equalsIgnoreCase("Command"))
-            return "You can't disable this command";
-
-        return null;
+    public CommandToggle(PlusBot plusBot) {
+        super(plusBot);
+        this.name = "Command";
+        this.help = "Used to enable and disable commands on a channel or server-wide basis";
+        this.children = new Command[] {
+                new Enable(plusBot),
+                new Disable(plusBot)
+        };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        boolean isEnable = args[1].equalsIgnoreCase("enable");
-        boolean isServer = args[0].equalsIgnoreCase("server");
+    private class Enable extends Command {
+        Enable(PlusBot plusBot) {
+            super(plusBot);
+        }
 
-        if (!isEnable) {
-            if (isServer) {
-                if (plusBot.getConfiguration().getDisabledCommands(channel.getGuild()).contains(args[2].toLowerCase())) {
-                    channel.sendMessageAsync("That command is already disabled!", null);
-                    return;
-                }
-                plusBot.getConfiguration().addDisabledCommand(args[2].toLowerCase(), channel.getGuild());
+        @Override
+        public String isValid(Message message, String stripped) {
+            return checkArguments(stripped);
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            String[] args = stripped.split("\\s+");
+            boolean isChannel = args.length == 2;
+
+            String containerId = isChannel ? channel.getId() : guild.getId();
+            DataSource<String> disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
+            if (args[0].equals("all")) {
+                disabledCommands.clear(containerId);
+                channel.sendMessage("Enabled all commands in **" + (isChannel ? channel.getName() : guild.getName()) + "**.").queue();
             } else {
-                if (plusBot.getConfiguration().getDisabledCommands(channel).contains(args[2].toLowerCase())) {
-                    channel.sendMessageAsync("That command is already disabled!", null);
+                if (!disabledCommands.has(containerId, args[0])) {
+                    channel.sendMessage("That command is already enabled!").queue();
                     return;
                 }
-                plusBot.getConfiguration().addDisabledCommand(args[2].toLowerCase(), channel);
+                disabledCommands.remove(containerId, args[0]);
+                channel.sendMessage("Successfully enabled command.").queue();
             }
-            channel.sendMessageAsync("Disabled command **" + args[2] + "**", null);
-        } else {
-            if (isServer) {
-                if (!plusBot.getConfiguration().getDisabledCommands(channel.getGuild()).contains(args[2].toLowerCase())) {
-                    channel.sendMessageAsync("That command is already enabled!", null);
-                    return;
-                }
-                plusBot.getConfiguration().removeDisabledCommand(args[2].toLowerCase(), channel.getGuild());
-            } else {
-                if (!plusBot.getConfiguration().getDisabledCommands(channel).contains(args[2].toLowerCase())) {
-                    channel.sendMessageAsync("That command is already enabled!", null);
-                    return;
-                }
-                plusBot.getConfiguration().removeDisabledCommand(args[2].toLowerCase(), channel);
-            }
-            channel.sendMessageAsync("Enabled command **" + args[2] + "**", null);
         }
     }
 
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    private class Disable extends Command {
+        Disable(PlusBot plusBot) {
+            super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            return checkArguments(stripped);
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            String[] args = stripped.split("\\s+");
+            boolean isChannel = args.length == 2;
+
+            String containerId = isChannel ? channel.getId() : guild.getId();
+            DataSource<String> disabledCommands = isChannel ? settings.getChannelDisabledCommands() : settings.getGuildDisabledCommands();
+            if (args[0].equals("all")) {
+                channel.sendMessage("Disabling all commands is not allowed!").queue();
+            } else {
+                if (disabledCommands.has(containerId, args[0])) {
+                    channel.sendMessage("That command is already disabled!").queue();
+                    return;
+                }
+                disabledCommands.add(containerId, args[0]);
+                channel.sendMessage("Successfully disabled command.").queue();
+            }
+        }
+    }
+
+    private String checkArguments(String stripped) {
+        String[] args = stripped.toLowerCase().split("\\s+");
+        if (args.length == 0 || args.length > 2)
+            return "You must provide at between one and two arguments for this command";
+        if (args.length == 2 && !args[1].equals("server"))
+            return "The only accepted second argument is server";
+        if (!args[0].equals("all") && !plusBot.getCommandHandler().hasCommand(args[0]))
+            return "There is no command with the name \"" + args[1] + "\"!";
+
+        return null;
     }
 }

@@ -1,59 +1,56 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.Statistics;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.handle.audio.Player;
 
-public class Join implements Command {
+import java.util.List;
 
-    private CommandDescription description = new CommandDescription(
-            "Join",
-            "Joins the user's voice channel",
-            "join",
-            null,
-            PermissionLevel.EVERYONE
-    );
+public class Join extends Command {
+    public Join(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Joins a voice channel with the specified name, or the one the message sender is in if no name is provided";
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Join command doesn't take any args!";
-
+    public String isValid(Message message, String stripped) {
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        VoiceChannel voiceChannel = channel.getGuild().getVoiceStatusOfUser(message.getAuthor()).getChannel();
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
+        player.setUpdateChannel(channel);
 
-        if (voiceChannel == null) {
-            channel.sendMessageAsync(FormatUtils.error("You are not in a valid voice channel!"), null);
+        VoiceChannel target;
+        if (stripped.isEmpty()) {
+            target = guild.getMember(author).getVoiceState().getChannel();
+
+            if (target == null) {
+                channel.sendMessage("You aren't in a voice channel!").queue();
+                return;
+            }
+        } else {
+            List<VoiceChannel> channels = guild.getVoiceChannelsByName(stripped, true);
+            if (channels.isEmpty()) {
+                channel.sendMessage("There are no channels with that name!").queue();
+                return;
+            }
+            if (channels.size() > 1) {
+                channel.sendMessage("There are multiple channels with that name!").queue();
+                return;
+            }
+
+            target = channels.get(0);
+        }
+
+        if (!guild.getSelfMember().hasPermission(target, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
+            channel.sendMessage("I can't send audio in that channel!").queue();
             return;
         }
 
-        AudioManager audioManager = channel.getGuild().getAudioManager();
-
-        if (audioManager.isConnected()) {
-            channel.sendMessageAsync("I'm already in a voice channel! Use the move command instead!", null);
-            return;
-        }
-
-        audioManager.openAudioConnection(voiceChannel);
-        audioManager.setSendingHandler(plusBot.getMusicPlayer(channel.getGuild()));
-        plusBot.getMusicPlayer(channel.getGuild()).setVolume(0.5f);
-        channel.sendMessageAsync("Joined voice channel **" + voiceChannel.getName() + "**", null);
-        Statistics.numConnections++;
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        player.join(target);
     }
 }

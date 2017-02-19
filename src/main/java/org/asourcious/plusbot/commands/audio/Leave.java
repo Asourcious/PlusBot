@@ -1,50 +1,28 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.managers.AudioManager;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.Statistics;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
+import org.asourcious.plusbot.handle.audio.Player;
 
-public class Leave implements Command {
+public class Leave extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Leave",
-            "Leaves the current Voice Channel",
-            "leave",
-            null,
-            PermissionLevel.EVERYONE
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Leave command doesn't take any args!";
-
-        return null;
+    public Leave(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Leaves the current voice channel";
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        AudioManager audioManager = channel.getGuild().getAudioManager();
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
 
-        if (!audioManager.isConnected()) {
-            channel.sendMessageAsync(FormatUtils.error("Not connected to a voice channel!"), null);
+        if (!player.isConnected()) {
             return;
         }
 
-        String channelName = audioManager.getConnectedChannel().getName();
-        audioManager.closeAudioConnection();
-        channel.sendMessageAsync("Left voice channel **" + channelName + "**", null);
-        Statistics.numConnections--;
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        player.leave();
     }
 }

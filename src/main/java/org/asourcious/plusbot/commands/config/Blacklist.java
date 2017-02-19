@@ -1,72 +1,101 @@
 package org.asourcious.plusbot.commands.config;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.CommandContainer;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.CommandUtils;
+import org.asourcious.plusbot.config.source.Blacklists;
+import org.asourcious.plusbot.util.DiscordUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Blacklist implements Command {
+public class Blacklist extends CommandContainer {
 
-    private CommandDescription description = new CommandDescription(
-            "Blacklist",
-            "Adds and removes people from this server's blacklist. This prevents them from using any command.",
-            "blacklist add @spammer",
-            new Argument[] { new Argument("Add/remove", true) },
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 1)
-            return "The Blacklist command only takes one argument!";
-        if (!args[0].equalsIgnoreCase("add") && !args[0].equalsIgnoreCase("remove"))
-            return "The only acceptable args are \"Add\" and \"Remove\"";
-
-        return null;
+    public Blacklist(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Adds and removes users from the server's blacklist.";
+        this.children = new Command[] {
+                new Add(plusBot),
+                new Remove(plusBot),
+                new Clear(plusBot)
+        };
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
-    @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        int numUpdated = 0;
-        List<User> toUpdate = new ArrayList<>(message.getMentionedUsers());
+    private class Add extends Command {
+        Add(PlusBot plusBot) {
+            super(plusBot);
+        }
 
-        if (CommandUtils.getPrefixForMessage(plusBot, message).equals(message.getJDA().getSelfInfo().getAsMention()))
-            toUpdate.remove(message.getJDA().getSelfInfo());
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (DiscordUtils.getTrimmedMentions(message).isEmpty())
+                return "You must mention at least one user!";
+            return null;
+        }
 
-        if (args[0].equalsIgnoreCase("add")) {
-            for (User user : toUpdate) {
-                if (!plusBot.getConfiguration().getBlacklist(channel.getGuild()).contains(user.getId())) {
-                    if (PermissionLevel.getPermissionLevel(message.getAuthor(), channel.getGuild()).getValue()
-                            > PermissionLevel.getPermissionLevel(user, channel.getGuild()).getValue()) {
-                        plusBot.getConfiguration().addUserToBlacklist(user, channel.getGuild());
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            Blacklists blacklist = settings.getBlacklists();
+            List<User> targets = DiscordUtils.getTrimmedMentions(message);
+            int numUpdated = 0;
+
+            for (User user : targets) {
+                if (!blacklist.has(guild.getId(), user.getId())) {
+                    if (PermissionLevel.canInteract(guild.getMember(author), guild.getMember(user))) {
+                        blacklist.add(guild.getId(), user.getId());
                         numUpdated++;
                     } else {
-                        channel.sendMessageAsync("You don't have the necessary permissions to add **" + user.getUsername() + "** to the blacklist", null);
+                        channel.sendMessage("You don't have the necessary permissions to add **" + user.getName() + "** to the blacklist").queue();
                     }
                 }
             }
-            channel.sendMessageAsync("Successfully added **" + numUpdated + "** users to the blacklist.", null);
-        } else {
-            for (User user : toUpdate) {
-                if (plusBot.getConfiguration().getBlacklist(channel.getGuild()).contains(user.getId())) {
-                    plusBot.getConfiguration().removeUserFromBlacklist(user, channel.getGuild());
-                    numUpdated++;
-                }
-            }
-            channel.sendMessageAsync("Successfully removed **" + numUpdated + "** users from the blacklist.", null);
+            channel.sendMessage("Successfully added **" + numUpdated + "** users to the blacklist.").queue();
         }
     }
 
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    private class Remove extends Command {
+        Remove(PlusBot plusBot) {
+            super(plusBot);
+        }
+
+        @Override
+        public String isValid(Message message, String stripped) {
+            if (DiscordUtils.getTrimmedMentions(message).isEmpty())
+                return "You must mention at least one user!";
+            return null;
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            Blacklists blacklist = settings.getBlacklists();
+            List<User> targets = DiscordUtils.getTrimmedMentions(message);
+            int numUpdated = 0;
+
+            for (User user : targets) {
+                if (blacklist.has(guild.getId(), user.getId())) {
+                    blacklist.remove(guild.getId(), user.getId());
+                    numUpdated++;
+                }
+            }
+            channel.sendMessage("Successfully removed **" + numUpdated + "** users from the blacklist.").queue();
+        }
+    }
+
+    private class Clear extends NoArgumentCommand {
+        Clear(PlusBot plusBot) {
+            super(plusBot);
+        }
+
+        @Override
+        public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+            settings.getBlacklists().clear(guild.getId());
+            channel.sendMessage("Successfully cleared blacklist.").queue();
+        }
     }
 }

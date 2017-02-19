@@ -1,41 +1,31 @@
 package org.asourcious.plusbot.commands.fun;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
-public class Triggered implements Command {
+public class Triggered extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Triggered",
-            "Sends a fun gif",
-            "triggered",
-            null,
-            PermissionLevel.EVERYONE
-    );
+    private Random random;
 
-    private Random random = new Random();
+    public Triggered(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Posts a \"triggered\" GIF.";
 
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Triggered command doesn't take arguments";
-        return null;
+        this.random = new Random();
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        channel.sendFileAsync(new File("media/triggered" + (random.nextInt(3) + 1) + ".gif"), null, null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        try {
+            channel.sendFile(new File("media/triggered" + (random.nextInt(3) + 1) + ".gif"), null).queue();
+        } catch (IOException ignored) {}
     }
 }

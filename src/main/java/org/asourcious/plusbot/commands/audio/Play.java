@@ -1,75 +1,38 @@
 package org.asourcious.plusbot.commands.audio;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.player.MusicPlayer;
-import net.dv8tion.jda.player.Playlist;
-import net.dv8tion.jda.player.source.AudioInfo;
-import net.dv8tion.jda.player.source.AudioSource;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import org.asourcious.plusbot.PlusBot;
-import org.asourcious.plusbot.commands.Argument;
 import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
-import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.events.MusicPlayerEventListener;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.handle.audio.Player;
 
-import java.util.List;
+import java.util.regex.Pattern;
 
-public class Play implements Command {
+public class Play extends Command {
 
-    private CommandDescription description = new CommandDescription(
-            "Play",
-            "Adds an audio source to the queue",
-            "play (Youtube URL)",
-            new Argument[] { new Argument("The URL of the audio source", true) },
-            PermissionLevel.EVERYONE
-    );
+    private static final Pattern URL = Pattern.compile("^(http(s)?://)?(www\\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)");
+
+    public Play(PlusBot plusBot) {
+        super(plusBot);
+        this.help = "Adds audio from the provided url to the queue.";
+    }
 
     @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 1)
-            return "The Play command only takes one argument!";
-
+    public String isValid(Message message, String stripped) {
         return null;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
-        MusicPlayer player = plusBot.getMusicPlayer(channel.getGuild());
-        ((MusicPlayerEventListener) player.getListeners().get(0)).setStatusUpdateChannel(channel);
-        Playlist playlist = Playlist.getPlaylist(args[0]);
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        Player player = plusBot.getPlayerHandler().getPlayer(guild);
+        player.setUpdateChannel(channel);
 
-        if (playlist == null) {
-            channel.sendMessageAsync(FormatUtils.error("Invalid URL: " + args[0]), null);
-            return;
-        }
-
-        List<AudioSource> sources = playlist.getSources();
-
-        if (sources.size() > 1) {
-            channel.sendMessageAsync(FormatUtils.error("Found a playlist. If you want to add a playlist to the audio queue, use the Playlist command"), null);
-            return;
-        }
-        if (sources.isEmpty()) {
-            channel.sendMessageAsync("No sources found at the provided URL.", null);
-            return;
-        }
-
-        AudioSource source = sources.get(0);
-        AudioInfo info = source.getInfo();
-        if (info.getError() == null) {
-            player.getAudioQueue().add(source);
-            channel.sendMessageAsync("The provided URL has been added the to queue", null);
-            if (player.isStopped())
-                player.play();
+        if (URL.matcher(stripped).matches()) {
+            player.queue(stripped);
         } else {
-            channel.sendMessageAsync("There was an error while loading the provided URL. \nError: " + info.getError(), null);
+            player.search(stripped);
         }
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
     }
 }

@@ -1,68 +1,52 @@
 package org.asourcious.plusbot.commands.maintenance;
 
-import com.sun.management.OperatingSystemMXBean;
-import net.dv8tion.jda.MessageBuilder;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import org.apache.commons.math3.util.Precision;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import org.asourcious.plusbot.Constants;
 import org.asourcious.plusbot.PlusBot;
 import org.asourcious.plusbot.Statistics;
-import org.asourcious.plusbot.commands.Command;
-import org.asourcious.plusbot.commands.CommandDescription;
+import org.asourcious.plusbot.commands.NoArgumentCommand;
 import org.asourcious.plusbot.commands.PermissionLevel;
-import org.asourcious.plusbot.utils.FormatUtils;
+import org.asourcious.plusbot.handle.ShardHandler;
+import org.asourcious.plusbot.util.FormatUtils;
+import org.asourcious.plusbot.util.SystemUtils;
 
-import java.lang.management.ManagementFactory;
-import java.time.OffsetDateTime;
+import java.awt.Color;
+import java.time.ZonedDateTime;
 
-public class Status implements Command {
+public class Status extends NoArgumentCommand {
 
-    private CommandDescription description = new CommandDescription(
-            "Status",
-            "Returns information about " + PlusBot.NAME,
-            "status",
-            null,
-            PermissionLevel.SERVER_MODERATOR
-    );
-
-    private OperatingSystemMXBean systemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-
-    @Override
-    public String checkArgs(String[] args) {
-        if (args.length != 0)
-            return "The Status command doesn't take any args!";
-
-        return null;
+    public Status(PlusBot civBot) {
+        super(civBot);
+        this.help = "Returns information about the status of " + Constants.NAME;
+        this.permissionLevel = PermissionLevel.SERVER_MODERATOR;
     }
 
     @Override
-    public void execute(PlusBot plusBot, String[] args, TextChannel channel, Message message) {
+    public void execute(String stripped, Message message, User author, TextChannel channel, Guild guild) {
+        ShardHandler shardHandler = plusBot.getShardHandler();
+        EmbedBuilder embedBuilder = new EmbedBuilder();
 
+        embedBuilder
+                .setColor(Color.CYAN)
+                .addField("Name", Constants.NAME, true)
+                .addField("Version", Constants.VERSION, true)
+                .addField("Uptime", FormatUtils.getFormattedDuration(Statistics.startTime, ZonedDateTime.now()), true)
+                .addField("Threads", String.valueOf(Thread.activeCount()), true)
+                .addField("CPU Usage", SystemUtils.getCPUUsage() + "%", true)
+                .addField("RAM Usage", SystemUtils.getUsedMemory() + "/" + SystemUtils.getTotalMemory() + "MB", true)
+                .addField("Messages Received", String.valueOf(Statistics.numMessages), true)
+                .addField("Commands Executed", String.valueOf(Statistics.numCommands), true)
+                .addField("Audio Connections", String.valueOf(shardHandler.getNumberOfOpenAudioConnections()), true)
+                .addField("Guilds", String.valueOf(shardHandler.getNumberOfGuilds()), true)
+                .addField("Text Channels", String.valueOf(shardHandler.getNumberOfTextChannels()), true)
+                .addField("Voice Channels", String.valueOf(shardHandler.getNumberOfVoiceChannels()), true)
+                .addField("Users", String.valueOf(shardHandler.getNumberOfUsers()), true);
 
-        MessageBuilder messageBuilder = new MessageBuilder();
-        messageBuilder.appendString(PlusBot.NAME + " Status:\n")
-                .appendString("```Prolog\n")
-                .appendString("Name: " + PlusBot.NAME + "\n")
-                .appendString("Version " + PlusBot.VERSION + "\n")
-                .appendString("Uptime: " + FormatUtils.getFormattedTime(Statistics.startTime, OffsetDateTime.now()) + "\n")
-                .appendString("Threads: " + Thread.activeCount() + "\n")
-                .appendString("CPU Usage: " + Precision.round(systemMXBean.getProcessCpuLoad() * 100, 2) + "%\n")
-                .appendString("RAM Usage: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576 + "MB\n")
-                .appendString("Commands: " + Statistics.numCommands + "\n")
-                .appendString("Connections: " + Statistics.numConnections + "\n\n")
-
-                .appendString("JDA Info:\n")
-                .appendString("Guilds: " + plusBot.getShardManager().getNumberOfGuilds() + "\n")
-                .appendString("Text Channels: " + plusBot.getShardManager().getNumberOfTextChannels() + "\n")
-                .appendString("Voice Channels: " + plusBot.getShardManager().getNumberOfVoiceChannels() + "\n")
-                .appendString("Users: " + plusBot.getShardManager().getNumberOfUsers() + "\n")
-                .appendString("```");
-
-        channel.sendMessageAsync(messageBuilder.build(), null);
-    }
-
-    @Override
-    public CommandDescription getDescription() {
-        return description;
+        channel.sendMessage(embedBuilder.build()).queue();
     }
 }
+
